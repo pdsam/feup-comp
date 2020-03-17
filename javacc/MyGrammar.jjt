@@ -236,17 +236,10 @@ Statement WhileStmt() #WhileLoop : {Expression condition; Statement body;}
     }
 }
 
-<<<<<<< HEAD
 Statement IdSub() #void : {Expression e1; Statement st;} {
     e1=ArrayAccess() (
         st = ArrayAssignment(e1)
         | st = ArrayAccessExprStatement(e1)
-=======
-void IdSub() : {} {
-    <IDENTIFIER> <L_SBRACKET> Expression() <R_SBRACKET> (
-    (<EQUAL> Expression())
-    | Expr2()
->>>>>>> fixed semicolo token out of place
     )
 
     {return st;}
@@ -395,7 +388,6 @@ Expression AndExpr(Expression l) #And(2) : {Expression r;}
     <AND> r=ExpressionNoArt() (LOOKAHEAD(2) r=LessThan(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
     {return jjtThis;}
 }
-
 
 Expression LessThan(Expression l) #void : {Expression r;}
 {
