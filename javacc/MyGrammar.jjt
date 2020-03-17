@@ -205,10 +205,10 @@ void Expression() : {}
     Expr1() (LOOKAHEAD(2) Expr2() )?
 }
 
-void Expr1() : {} {
-    <INTEGER_LITERAL>
-    |   <TRUE>
-    |   <FALSE>
+void Expr1() : {Token value;} {
+    value = <INTEGER_LITERAL> {jjtThis.type = "int"; jjtThis.val = Integer.pasrInt(value.image);} #Literal
+    | <TRUE> {jjtThis.type = "boolean"; jjtThis.val = true;} #Literal
+    | <FALSE> {jjtThis.type = "boolean"; jjtThis.val = false;} #Literal
     |   <IDENTIFIER>
     |   <THIS>
     |   (<NEW>  (
