@@ -1,0 +1,239 @@
+options {
+  LOOKAHEAD = 1;
+}
+
+PARSER_BEGIN(MyGrammar)
+    import java.io.InputStream;
+    import java.io.FileInputStream;
+
+    // Java code invoking the parser
+    public class MyGrammar{
+        public static void main(String args[]) throws ParseException {
+            if(args.length < 1) {
+                System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
+                return;
+            } else if (!args[0].matches("(.*).jmm")) {
+                System.out.println("Invalid file type: only .jmm files are accepted");
+                return;
+            }
+            InputStream file = null;
+
+            try {
+                file = new FileInputStream(args[0]);
+            } catch(Exception e) {
+                System.out.println(e.getMessage());
+                //e.printStackTrace();
+                return;
+            }
+
+            MyGrammar parser = new MyGrammar(file);
+            parser.Program();
+        }
+    }
+PARSER_END(MyGrammar)
+
+// Symbols that must be skipped during the lexical analysis
+SKIP : 
+{
+    " "
+    | "\t" 
+    | "\r"
+    | "\n" 
+    //skip comments of both types   
+    |   <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+    |   <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+}
+
+// token definition(terminal symbols)
+TOKEN : 
+{
+    <UNDERSCORE: "_" >
+    |   <L_SBRACKET: "[" >
+    |   <R_SBRACKET: "]" >
+    |   <L_BRACKET: "{" >
+    |   <R_BRACKET: "}" >
+    |   <L_PAR: "(" >
+    |   <R_PAR: ")" >
+    |   <PLUS: "+" >
+    |   <MINUS: "-" >
+    |   <MUL: "*" >
+    |   <DIV: "/" >
+    |   <EQUAL: "=" >
+    |   <COMMA : "," >
+    |   <DOT : "." >
+    |   <NOT : "!" >
+    |   <AND : "&&" >
+    |   <LESS_THAN : "<" >
+    |   <LENGTH : "length" >
+    |   <CLASS : "class" >
+    |   <THIS : "this" >
+    |   <NEW : "new" >
+    |   <EXTENDS : "extends" >
+    |   <IMPORT : "import" > : IMPORT_STATE
+    |   <STRING : "String" >
+    |   <PUBLIC : "public" >
+    |   <STATIC: "static">
+    |   <MAIN: "main">
+    |   <VOID: "void">
+    |   <INT : "int" >
+    |   <BOOL : "boolean" >
+    |   <TRUE : "true" >
+    |   <FALSE : "false" >
+    |   <RETURN : "return" >
+    |   <IF : "if" >
+    |   <ELSE : "else" >
+    |   <WHILE : "while" >
+    |   <INTEGER_LITERAL: (<DIGIT>)+ >
+    |   <IDENTIFIER: (<LETTER> (<LETTER> | <DIGIT> | <UNDERSCORE>)*) >
+    |   <DIGIT: (["0"-"9"]) >
+    |   <LETTER: (["a"-"z","A"-"Z"]) >
+}
+
+<IMPORT_STATE> TOKEN : {
+    <IMPORTED: ((<LETTER>)+ (<DOT> (<LETTER>)+)*) >
+}
+
+<IMPORT_STATE, DEFAULT> TOKEN : {
+    <SEMICOLON : ";" > : DEFAULT
+}
+
+// Production definition
+void Program() : {}
+{
+    ImportDeclaration()
+    ClassDeclaration() <EOF>
+}
+
+void ImportDeclaration() : {}
+{
+    (<IMPORT> <IMPORTED> <SEMICOLON> )*
+}
+
+void ClassDeclaration() : {}
+{
+    <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
+    <L_BRACKET>
+        (VarDeclaration())*
+        (
+            LOOKAHEAD(2)
+            MethodDeclaration()
+        )*
+        MainDeclaration()            // This forces 'main' to only appear once
+        (MethodDeclaration())*
+    <R_BRACKET> 
+}
+
+void VarDeclaration() : {} 
+{
+    Type() <IDENTIFIER> <SEMICOLON>
+}
+
+void MethodDeclaration() : {}
+{
+    <PUBLIC> Type() <IDENTIFIER> <L_PAR> Arguments() <R_PAR>
+    <L_BRACKET>
+        (
+            LOOKAHEAD(2)
+            VarDeclaration()
+        )*
+        (Statement())*
+        <RETURN> Expression() <SEMICOLON> // A return statement has to be the last thing in a method declaration
+    <R_BRACKET>
+}
+
+void MainDeclaration() : {}
+{
+    <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> <STRING> <L_SBRACKET> <R_SBRACKET> <IDENTIFIER> <R_PAR>
+    <L_BRACKET>
+        (LOOKAHEAD(2) VarDeclaration())*
+        (Statement())*
+    <R_BRACKET>
+}
+
+void Arguments() : {}
+{
+    ( Type() <IDENTIFIER> ( <COMMA> Type() <IDENTIFIER> )* )?
+}
+
+void Type(): {}
+{
+    <INT> (<L_SBRACKET> <R_SBRACKET>)?
+    |   <BOOL>
+    |   <IDENTIFIER>    
+}
+
+void Statement() : {}
+{
+    <L_BRACKET> (Statement())* <R_BRACKET>
+    |   IfElseStmt()
+    |   WhileStmt()
+    |   (
+            LOOKAHEAD(2)
+            Expression() <SEMICOLON>
+            | (<IDENTIFIER> (
+                <EQUAL> Expression() <SEMICOLON>
+                | <L_SBRACKET> Expression() <R_SBRACKET> <EQUAL> Expression() <SEMICOLON>
+            ))
+        )
+}
+
+void IfElseStmt() : {}
+{
+    <IF> <L_PAR> Expression() <R_PAR>
+        Statement()
+    <ELSE>
+        Statement()
+}
+
+void WhileStmt() : {}
+{
+    <WHILE> <L_PAR> Expression() <R_PAR>
+        Statement()
+}
+
+void Expression() : {}
+{
+    A2() (LOOKAHEAD(2) <AND> A2())*
+}
+
+void ExprAlt() : {} {
+    Expr1() (LOOKAHEAD(2) Expr2())?
+}
+
+void Expr1() : {} {
+    <INTEGER_LITERAL>
+    |   <TRUE>
+    |   <FALSE>
+    |   <IDENTIFIER>
+    |   <THIS>
+    |   (<NEW>  (
+            <INT> <L_SBRACKET> Expression() <R_SBRACKET>
+            | <IDENTIFIER> <L_PAR> <R_PAR>
+        ))
+    |   ( <NOT> Expression() )
+    |   ( <L_PAR> Expression() <R_PAR> )
+}
+
+// Equivalent to E'. Used to remove left recursion on Expression()
+void Expr2() : {}
+{
+    ( <L_SBRACKET> Expression() <R_SBRACKET> )
+    |   (<DOT> (
+            <LENGTH>
+            | <IDENTIFIER> <L_PAR> ( Expression() ( <COMMA> Expression() )* )?  <R_PAR>
+        ))
+    // Maybe missing empty string??
+}
+
+void A2() : {} {
+    A3() (LOOKAHEAD(2) <LESS_THAN> A3())*
+}
+void A3() : {} {
+    A4() (LOOKAHEAD(2) (<PLUS> | <MINUS>) A4())*
+}
+void A4() : {} {
+    A5() (LOOKAHEAD(2) (<MUL> | <DIV> ) A5())*
+}
+void A5() : {} {
+    ExprAlt()
+}
