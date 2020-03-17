@@ -101,17 +101,17 @@ TOKEN :
 void Program() : {}
 {
     ImportDeclaration()
-    ClassDeclaration() <EOF>
+    ClassDeclaration() <EOF> { return jjtThis; }
 }
 
-void ImportDeclaration() : {}
+void ImportDeclaration() : { Token imported;}
 {
-    (<IMPORT> <IMPORTED> <SEMICOLON> )*
+    (<IMPORT> imported=<IMPORTED> {jjtThis.imported = imported;}  <SEMICOLON> )*
 }
 
-void ClassDeclaration() : {}
+void ClassDeclaration() : {Token identifier, extended;}
 {
-    <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
+    <CLASS> identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}(<EXTENDS> extended=<IDENTIFIER> {jjtThis.extended = extended;})?
     <L_BRACKET>
         (VarDeclaration())*
         (
@@ -123,14 +123,14 @@ void ClassDeclaration() : {}
     <R_BRACKET> 
 }
 
-void VarDeclaration() : {} 
+void VarDeclaration() : {Token type, identifier;}
 {
-    Type() <IDENTIFIER> <SEMICOLON>
+    type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <SEMICOLON>
 }
 
-void MethodDeclaration() : {}
+void MethodDeclaration() : {Token type, identifier;}
 {
-    <PUBLIC> Type() <IDENTIFIER> <L_PAR> Arguments() <R_PAR>
+    <PUBLIC> type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}  <L_PAR> Arguments() <R_PAR>
     <L_BRACKET>
         (
             LOOKAHEAD(2)
@@ -141,9 +141,9 @@ void MethodDeclaration() : {}
     <R_BRACKET>
 }
 
-void MainDeclaration() : {}
+void MainDeclaration() : {Token identifier;}
 {
-    <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> <STRING> <L_SBRACKET> <R_SBRACKET> <IDENTIFIER> <R_PAR>
+    <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> <STRING> <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <R_PAR>
     <L_BRACKET>
         (LOOKAHEAD(2) VarDeclaration())*
         (Statement())*
@@ -152,17 +152,22 @@ void MainDeclaration() : {}
 
 void Arguments() : {}
 {
-    ( Type() <IDENTIFIER> ( <COMMA> Type() <IDENTIFIER> )* )?
+    ( Argument() ( <COMMA> Argument())* )?
+}
+
+void Argument() : {Token identifier;}
+{
+    Type() identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}
 }
 
 void Type(): {}
 {
-    <INT> (<L_SBRACKET> <R_SBRACKET>)?
-    |   <BOOL>
-    |   <IDENTIFIER>    
+    <INT> {jjtThis.type = "int";} (<L_SBRACKET> <R_SBRACKET> {jjtThis.type = "array";} )?
+    |   <BOOL> {jjtThis.type = "boolean";}
+    |   <IDENTIFIER> {jjtThis.type = "identifier";}
 }
 
-void Statement() : {}
+void Statement() : { Token identifier;}
 {
     <L_BRACKET> (Statement())* <R_BRACKET>
     |   IfElseStmt()
@@ -170,7 +175,7 @@ void Statement() : {}
     |   (
             LOOKAHEAD(2)
             Expression() <SEMICOLON>
-            | (<IDENTIFIER> (
+            | (identifier=<IDENTIFIER> (
                 <EQUAL> Expression() <SEMICOLON>
                 | <L_SBRACKET> Expression() <R_SBRACKET> <EQUAL> Expression() <SEMICOLON>
             ))
@@ -191,12 +196,12 @@ void WhileStmt() : {}
         Statement()
 }
 
-void Expression() : {}
+void Expression() #void : {}
 {
-    A2() (LOOKAHEAD(2) <AND> A2())*
+    A2() (LOOKAHEAD(2) <AND> A2() #And(2))*
 }
 
-void ExprAlt() : {} {
+void ExprAlt() #void : {} {
     Expr1() (LOOKAHEAD(2) Expr2())?
 }
 
@@ -225,15 +230,15 @@ void Expr2() : {}
     // Maybe missing empty string??
 }
 
-void A2() : {} {
-    A3() (LOOKAHEAD(2) <LESS_THAN> A3())*
+void A2() #void : {} {
+    A3() (LOOKAHEAD(2) <LESS_THAN> A3() #LessThan(2))*
 }
-void A3() : {} {
-    A4() (LOOKAHEAD(2) (<PLUS> | <MINUS>) A4())*
+void A3() #void : {} {
+    A4() (LOOKAHEAD(2) (<PLUS> A4() #Add(2) | <MINUS> A4() #Sub(2)) )*
 }
-void A4() : {} {
-    A5() (LOOKAHEAD(2) (<MUL> | <DIV> ) A5())*
+void A4() #void : {} {
+    A5() (LOOKAHEAD(2) (<MUL> A5() #Mul(2) | <DIV> A5() #Div(2) ))*
 }
-void A5() : {} {
+void A5() #void : {} {
     ExprAlt()
 }
