@@ -170,10 +170,10 @@ void Type(): {}
 void Statement() : { Token identifier;}
 {
     <L_BRACKET> (Statement())* <R_BRACKET>
-    |   IfElseStmt()
-    |   WhileStmt()
+    |   IfElseStmt() {jjtThis.statement = "ifElse";}
+    |   WhileStmt() {jjtThis.statement = "while";}
     |   (
-            LOOKAHEAD(<IDENTIFIER> <EQUAL>) <IDENTIFIER> <EQUAL> Expression() <SEMICOLON>
+            LOOKAHEAD(<IDENTIFIER> <EQUAL>) identifier= <IDENTIFIER> {jjtThis.identifier = identifier;}  <EQUAL> Expression() <SEMICOLON>
             | LOOKAHEAD(<IDENTIFIER> <L_BRACKET> ) IdSub()
             | Expression() <SEMICOLON>
         )
@@ -220,9 +220,9 @@ void Expr1() : {Token value;} {
 }
 
 // Equivalent to E'. Used to remove left recursion on Expression()
-void Expr2() : {}
+void Expr2() #void : {}
 {
-    A1() |
+    And() |
     ((
         ( <L_SBRACKET> Expression() <R_SBRACKET> )
         |   (<DOT> (
@@ -234,16 +234,19 @@ void Expr2() : {}
     // Maybe missing empty string??
 }
 
-void A1() : {} {
-    A2() (LOOKAHEAD(2) <AND> A2())?
+void And() #void : {} {
+    LessThan() (LOOKAHEAD(2) <AND> LessThan() #And(2))?
 }
 
-void A2() : {} {
-    A3() (LOOKAHEAD(2) <LESS_THAN> A3())?
+void LessThan() #void : {} {
+    SumOrSub() (LOOKAHEAD(2) <LESS_THAN> SumOrSub() #LessThan(2))?
 }
-void A3() : {} {
-    A4() (LOOKAHEAD(2) (<PLUS> | <MINUS>) A4())?
+
+void SumOrSub() #void : {} {
+    MulOrDiv() (LOOKAHEAD(2) (<PLUS> MulOrDiv() #Sum(2) | <MINUS> MulOrDiv() #Sub(2)) )?
 }
-void A4() : {} {
-    (<MUL> | <DIV> ) Expression()
+
+void MulOrDiv() : {} {
+    (<MUL> Expression() #Mul(2) )
+    | (<DIV> Expression() #Div(2) )
 }

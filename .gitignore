@@ -2,6 +2,7 @@
 /build/
 /generated/
 *.jar
+*.iml
 
 # Ignore Gradle GUI config
 gradle-app.setting
