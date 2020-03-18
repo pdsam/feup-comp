@@ -420,7 +420,6 @@ Expression Sub(Expression l) #Sub(2) : {Expression r;}
     <MINUS> r=ExpressionNoArt() (LOOKAHEAD(2) r=MulOrDiv(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
 }
 
-
 Expression MulOrDiv(Expression l) #void : {Expression r;}
 {
     (r=Mul(l)
