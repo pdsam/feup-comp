@@ -105,12 +105,12 @@ SimpleNode Program() : {}
     ClassDeclaration() <EOF> { return jjtThis; }
 }
 
-void ImportDeclaration() : { Token imported;}
+void ImportDeclaration() #Import : { Token imported;}
 {
     (<IMPORT> imported=<IMPORTED> {jjtThis.imported = imported;}  <SEMICOLON> )*
 }
 
-void ClassDeclaration() : {Token identifier, extended;}
+void ClassDeclaration() #Class : {Token identifier, extended;}
 {
     <CLASS> identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}(<EXTENDS> extended=<IDENTIFIER> {jjtThis.extended = extended;})?
     <L_BRACKET>
@@ -124,12 +124,12 @@ void ClassDeclaration() : {Token identifier, extended;}
     <R_BRACKET> 
 }
 
-void VarDeclaration() : {Token type, identifier;}
+void VarDeclaration() #Var : {Token type, identifier;}
 {
     type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <SEMICOLON>
 }
 
-void MethodDeclaration() : {Token type, identifier;}
+void MethodDeclaration() #Method : {Token type, identifier;}
 {
     <PUBLIC> type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}  <L_PAR> Arguments() <R_PAR>
     <L_BRACKET>
@@ -142,7 +142,7 @@ void MethodDeclaration() : {Token type, identifier;}
     <R_BRACKET>
 }
 
-void MainDeclaration() : {Token identifier;}
+void MainDeclaration() #MainFunction : {Token identifier;}
 {
     <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> <STRING> <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <R_PAR>
     <L_BRACKET>
@@ -151,17 +151,17 @@ void MainDeclaration() : {Token identifier;}
     <R_BRACKET>
 }
 
-void Arguments() : {}
+void Arguments() #ArgumentList : {}
 {
     ( Argument() ( <COMMA> Argument())* )?
 }
 
-void Argument() : {Token identifier;}
+void Argument() #Argument : {Token identifier;}
 {
     Type() identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}
 }
 
-void Type(): {}
+void Type() #Type : {}
 {
     <INT> {jjtThis.type = "int";} (<L_SBRACKET> <R_SBRACKET> {jjtThis.type = "array";} )?
     |   <BOOL> {jjtThis.type = "boolean";}
@@ -180,7 +180,7 @@ void Statement() : { Token identifier;}
         )
 }
 
-void IfElseStmt() : {}
+void IfElseStmt() #Branch : {}
 {
     <IF> <L_PAR> Expression() <R_PAR>
         Statement()
@@ -188,7 +188,7 @@ void IfElseStmt() : {}
         Statement()
 }
 
-void WhileStmt() : {}
+void WhileStmt() #WhileLoop : {}
 {
     <WHILE> <L_PAR> Expression() <R_PAR>
         Statement()
@@ -201,7 +201,7 @@ void IdSub() : {Token identifier;} {
     )
 }
 
-void Expression()  #void : {}
+void Expression() #void : {}
 {
     Expr1() (LOOKAHEAD(2) Expr2() )?
 }
