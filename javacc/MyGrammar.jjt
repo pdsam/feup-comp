@@ -31,6 +31,18 @@ PARSER_BEGIN(MyGrammar)
             SimpleNode root = parser.Program();
             root.dump(">");
         }
+    PARSER_END(MyGrammar)
+
+    // Symbols that must be skipped during the lexical analysis
+    SKIP : 
+    {
+        " "
+        | "\t" 
+        | "\r"
+        | "\n" 
+        //skip comments of both types   
+        |   <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+        |   <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
     }
 PARSER_END(MyGrammar)
 
