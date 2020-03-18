@@ -194,41 +194,41 @@ void WhileStmt() : {}
         Statement()
 }
 
-void IdSub() : {} {
-    <IDENTIFIER> <L_SBRACKET> Expression() <R_SBRACKET> (
+void IdSub() : {Token identifier;} {
+    identifier=<IDENTIFIER>{jjtThis.identifier = identifier;} <L_SBRACKET> Expression() <R_SBRACKET> (
     (<EQUAL> Expression() <SEMICOLON>)
     | Expr2()
     )
 }
 
-void Expression() : {}
+void Expression()  #void : {}
 {
     Expr1() (LOOKAHEAD(2) Expr2() )?
 }
 
-void Expr1() : {Token value;} {
+void Expr1() : {Token identifier, value;} {
     value = <INTEGER_LITERAL> {jjtThis.type = "int"; jjtThis.val = Integer.pasrInt(value.image);} #Literal
     | <TRUE> {jjtThis.type = "boolean"; jjtThis.val = true;} #Literal
     | <FALSE> {jjtThis.type = "boolean"; jjtThis.val = false;} #Literal
-    |   <IDENTIFIER>
+    |  identifier= <IDENTIFIER> {jjtThis.identifier = identifier;}
     |   <THIS>
     |   (<NEW>  (
             <INT> <L_SBRACKET> Expression() <R_SBRACKET>
-            | <IDENTIFIER> <L_PAR> <R_PAR>
+            |  identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <L_PAR> <R_PAR>
         ))
     |   ( <NOT> Expression() )
     |   ( <L_PAR> Expression() <R_PAR> )
 }
 
 // Equivalent to E'. Used to remove left recursion on Expression()
-void Expr2() #void : {}
+void Expr2() #void : {Token identifier;}
 {
     And() |
     ((
         ( <L_SBRACKET> Expression() <R_SBRACKET> )
         |   (<DOT> (
                     <LENGTH>
-                    | <IDENTIFIER> <L_PAR> ( Expression() ( <COMMA> Expression() )* )?  <R_PAR>
+                    |  identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <L_PAR> ( Expression() ( <COMMA> Expression() )* )?  <R_PAR>
                 )
             )
     ) (LOOKAHEAD(2) Expr2())?)

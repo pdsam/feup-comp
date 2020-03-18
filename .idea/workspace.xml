@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ed7cd60e-77d8-4ea9-8bfc-de37acf8c60d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/bit.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/javacc/MyGrammar.jjt" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/MyGrammar.jjt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +64,6 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="show.unlinked.gradle.project.popup" value="true" />
   </component>
@@ -145,6 +143,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="93" y="93" width="1095" height="495" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.0.1280.680/1920.0.1920.1080@0.0.1280.680" timestamp="1584542143271" />
+    <state x="337" y="165" key="com.intellij.ide.util.TipDialog" timestamp="1584542409212">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="337" y="165" key="com.intellij.ide.util.TipDialog/0.0.1280.680/1920.0.1920.1080@0.0.1280.680" timestamp="1584542409212" />
     <state x="315" y="132" key="git4idea.merge.GitPullDialog" timestamp="1584541999916">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
