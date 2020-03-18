@@ -173,9 +173,8 @@ void Statement() : { Token identifier;}
     |   IfElseStmt()
     |   WhileStmt()
     |   (
-            LOOKAHEAD(2)
-            <IDENTIFIER> <EQUAL> Expression() <SEMICOLON>
-            | helper()
+            LOOKAHEAD(<IDENTIFIER> <EQUAL>) <IDENTIFIER> <EQUAL> Expression() <SEMICOLON>
+            | LOOKAHEAD(<IDENTIFIER> <L_BRACKET> ) IdSub()
             | Expression() <SEMICOLON>
         )
 }
@@ -194,7 +193,7 @@ void WhileStmt() : {}
         Statement()
 }
 
-void helper() : {} {
+void IdSub() : {} {
     <IDENTIFIER> <L_SBRACKET> Expression() <R_SBRACKET> (
     (<EQUAL> Expression() <SEMICOLON>)
     | Expr2()
@@ -203,7 +202,7 @@ void helper() : {} {
 
 void Expression() : {}
 {
-    Expr1() (Expr2() )?
+    Expr1() (LOOKAHEAD(2) Expr2() )?
 }
 
 void Expr1() : {} {
@@ -231,7 +230,7 @@ void Expr2() : {}
                     | <IDENTIFIER> <L_PAR> ( Expression() ( <COMMA> Expression() )* )?  <R_PAR>
                 )
             )
-    ) (Expr2())?)
+    ) (LOOKAHEAD(2) Expr2())?)
     // Maybe missing empty string??
 }
 
@@ -246,5 +245,5 @@ void A3() : {} {
     A4() (LOOKAHEAD(2) (<PLUS> | <MINUS>) A4())?
 }
 void A4() : {} {
-    (LOOKAHEAD(2) (<MUL> | <DIV> ) Expression())?
+    (<MUL> | <DIV> ) Expression()
 }
