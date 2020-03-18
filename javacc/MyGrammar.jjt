@@ -174,11 +174,9 @@ void Statement() : { Token identifier;}
     |   WhileStmt()
     |   (
             LOOKAHEAD(2)
-            Expression() <SEMICOLON>
-            | (identifier=<IDENTIFIER> (
-                <EQUAL> Expression() <SEMICOLON>
-                | <L_SBRACKET> Expression() <R_SBRACKET> <EQUAL> Expression() <SEMICOLON>
-            ))
+            <IDENTIFIER> <EQUAL> Expression() <SEMICOLON>
+            | helper()
+            | Expression() <SEMICOLON>
         )
 }
 
@@ -196,13 +194,16 @@ void WhileStmt() : {}
         Statement()
 }
 
-void Expression() #void : {}
-{
-    A2() (LOOKAHEAD(2) <AND> A2() #And(2))*
+void helper() : {} {
+    <IDENTIFIER> <L_SBRACKET> Expression() <R_SBRACKET> (
+    (<EQUAL> Expression() <SEMICOLON>)
+    | Expr2()
+    )
 }
 
-void ExprAlt() #void : {} {
-    Expr1() (LOOKAHEAD(2) Expr2())?
+void Expression() : {}
+{
+    Expr1() (Expr2() )?
 }
 
 void Expr1() : {} {
@@ -222,23 +223,28 @@ void Expr1() : {} {
 // Equivalent to E'. Used to remove left recursion on Expression()
 void Expr2() : {}
 {
-    ( <L_SBRACKET> Expression() <R_SBRACKET> )
-    |   (<DOT> (
-            <LENGTH>
-            | <IDENTIFIER> <L_PAR> ( Expression() ( <COMMA> Expression() )* )?  <R_PAR>
-        ))
+    A1() |
+    ((
+        ( <L_SBRACKET> Expression() <R_SBRACKET> )
+        |   (<DOT> (
+                    <LENGTH>
+                    | <IDENTIFIER> <L_PAR> ( Expression() ( <COMMA> Expression() )* )?  <R_PAR>
+                )
+            )
+    ) (Expr2())?)
     // Maybe missing empty string??
 }
 
-void A2() #void : {} {
-    A3() (LOOKAHEAD(2) <LESS_THAN> A3() #LessThan(2))*
+void A1() : {} {
+    A2() (LOOKAHEAD(2) <AND> A2())?
 }
-void A3() #void : {} {
-    A4() (LOOKAHEAD(2) (<PLUS> A4() #Add(2) | <MINUS> A4() #Sub(2)) )*
+
+void A2() : {} {
+    A3() (LOOKAHEAD(2) <LESS_THAN> A3())?
 }
-void A4() #void : {} {
-    A5() (LOOKAHEAD(2) (<MUL> A5() #Mul(2) | <DIV> A5() #Div(2) ))*
+void A3() : {} {
+    A4() (LOOKAHEAD(2) (<PLUS> | <MINUS>) A4())?
 }
-void A5() #void : {} {
-    ExprAlt()
+void A4() : {} {
+    (LOOKAHEAD(2) (<MUL> | <DIV> ) Expression())?
 }
