@@ -27,7 +27,8 @@ PARSER_BEGIN(MyGrammar)
             }
 
             MyGrammar parser = new MyGrammar(file);
-            parser.Program();
+            SimpleNode root = parser.Program();
+            root.dump(">");
         }
     }
 PARSER_END(MyGrammar)
@@ -98,7 +99,7 @@ TOKEN :
 }
 
 // Production definition
-void Program() : {}
+SimpleNode Program() : {}
 {
     ImportDeclaration()
     ClassDeclaration() <EOF> { return jjtThis; }
