@@ -169,7 +169,7 @@ void Statement() : {}
     |   WhileStmt()
     |   (
             LOOKAHEAD(2) <IDENTIFIER> <EQUAL> Expression() <SEMICOLON>
-            | LOOKAHEAD(2) IdSub()
+            | LOOKAHEAD(2) IdSub() <SEMICOLON>
             | Expression() <SEMICOLON>
         )
 }
@@ -190,7 +190,7 @@ void WhileStmt() : {}
 
 void IdSub() : {} {
     <IDENTIFIER> <L_SBRACKET> Expression() <R_SBRACKET> (
-    (<EQUAL> Expression() <SEMICOLON>)
+    (<EQUAL> Expression())
     | Expr2()
     )
 }
