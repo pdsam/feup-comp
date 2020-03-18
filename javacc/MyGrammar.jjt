@@ -168,8 +168,8 @@ void Statement() : {}
     |   IfElseStmt()
     |   WhileStmt()
     |   (
-            LOOKAHEAD(<IDENTIFIER> <EQUAL>) <IDENTIFIER> <EQUAL> Expression() <SEMICOLON>
-            | LOOKAHEAD(<IDENTIFIER> <L_BRACKET> ) IdSub()
+            LOOKAHEAD(2) <IDENTIFIER> <EQUAL> Expression() <SEMICOLON>
+            | LOOKAHEAD(2) IdSub()
             | Expression() <SEMICOLON>
         )
 }
