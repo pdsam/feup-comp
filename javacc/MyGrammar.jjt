@@ -9,7 +9,7 @@ PARSER_BEGIN(MyGrammar)
 
     // Java code invoking the parser
     public class MyGrammar{
-        public static void main(String args[]) throws ParseException {
+        public static void main(String[] args) throws ParseException {
             if(args.length < 1) {
                 System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
                 return;
