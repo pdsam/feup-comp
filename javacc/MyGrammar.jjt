@@ -379,13 +379,13 @@ Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier;}
 Expression And(Expression l) #void : {Expression r;}
 {
 
-    (LOOKAHEAD(2) r = AndExpr(l) | r = LessThan(l))
+    (LOOKAHEAD(2) r = AndExpr(l) | r = LessThan(l)) (LOOKAHEAD(2) r=And(r))?
 
     {return r;}
 }
 Expression AndExpr(Expression l) #And(2) : {Expression r;}
 {
-    <AND> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    <AND> r=ExpressionNoArt() (LOOKAHEAD(2) r=LessThan(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
     {return jjtThis;}
 }
 
@@ -393,12 +393,12 @@ Expression AndExpr(Expression l) #And(2) : {Expression r;}
 Expression LessThan(Expression l) #void : {Expression r;}
 {
 
-    (LOOKAHEAD(2) r=LessThanExpr(l) | r=SumOrSub(l))
+    (LOOKAHEAD(2) r=LessThanExpr(l) | r=SumOrSub(l)) (LOOKAHEAD(2) r=LessThan(r))?
     {return r;}
 }
 Expression LessThanExpr(Expression l) #LessThan(2) : {Expression r;}
 {
-    <LESS_THAN> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    <LESS_THAN> r=ExpressionNoArt() (LOOKAHEAD(2) r=SumOrSub(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
     {return jjtThis;}
 }
 
@@ -408,30 +408,50 @@ Expression SumOrSub(Expression l) #void : {Expression r;}
 
     (LOOKAHEAD(2) (
         r=Sum(l)
-        | r=Sub(l)) | r=MulOrDiv(l))
+        | r=Sub(l)) | r=MulOrDiv(l)) (LOOKAHEAD(2) r=SumOrSub(r))?
     {return r;}
 }
 Expression Sum(Expression l) #Sum(2) : {Expression r;}
 {
-    <PLUS> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    <PLUS> r=ExpressionNoArt() (LOOKAHEAD(2) r=MulOrDiv(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
 }
 Expression Sub(Expression l) #Sub(2) : {Expression r;}
 {
-    <MINUS> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    <MINUS> r=ExpressionNoArt() (LOOKAHEAD(2) r=MulOrDiv(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
 }
 
 
 Expression MulOrDiv(Expression l) #void : {Expression r;}
 {
     (r=Mul(l)
-    | r=Div(l))
+    | r=Div(l)) (LOOKAHEAD(2) r=MulOrDiv(r))?
     {return r;}
 }
 Expression Mul(Expression l) #Mul(2) : {Expression r;}
 {
-    <MUL> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    <MUL> r=ExpressionNoArt() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
 }
 Expression Div(Expression l) #Div(2) : {Expression r;}
 {
-    <DIV> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    <DIV> r=ExpressionNoArt() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+
+Expression ExpressionNoArt() #void : {Expression e, e2 = null;}
+{
+    e=Expr1() (LOOKAHEAD(2) e2=Expr2NoArt(e) )?
+    {
+        return e2 == null ? e : e2;
+    }
+}
+
+Expression Expr2NoArt(Expression l) #void : {Token identifier; Expression e, e2 = null;}
+{
+    ( e = ArrayAccessExpr(l)
+    |   <DOT> (
+                e = ArrayLength(l)
+                | e = FunctionCall(l)
+            ))
+    (LOOKAHEAD(2) e2=Expr2NoArt(e))?
+    // Maybe missing empty string??
+    {return e2 == null ? e : e2;}
 }
