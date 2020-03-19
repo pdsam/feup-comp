@@ -2,8 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ed7cd60e-77d8-4ea9-8bfc-de37acf8c60d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__junit_junit_4_11.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_core_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/comp2020-5b.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/comp2020-5b.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/comp2020-5b.main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/comp2020-5b.test.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/javacc/MyGrammar.jjt" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/MyGrammar.jjt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/ParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/ParserTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +72,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="show.unlinked.gradle.project.popup" value="true" />
@@ -72,6 +82,7 @@
       <recent name="" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/javacc" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -115,14 +126,25 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="454" y="231" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1584457326510">
+    <state x="413" y="176" width="530" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1584550770695">
       <screen x="0" y="0" width="1366" height="768" />
+    </state>
+    <state x="413" y="176" width="530" height="396" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1366.768@0.0.1366.768" timestamp="1584550770695" />
+    <state x="732" y="350" width="311" height="206" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1584629322259">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="522" y="262" width="311" height="206" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1366.768@0.0.1366.768" timestamp="1584616777640" />
+    <state x="732" y="350" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1920.1080/1920.0.1366.768@0.0.1920.1080" timestamp="1584629322259" />
+    <state x="636" y="307" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1584629604355">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="454" y="231" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1366.768@0.0.1366.768" timestamp="1584457326510" />
-    <state x="412" y="110" width="528" height="492" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1584456715204">
-      <screen x="0" y="0" width="1366" height="768" />
+    <state x="636" y="307" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1080/1920.0.1366.768@0.0.1920.1080" timestamp="1584629604355" />
+    <state x="575" y="119" width="528" height="492" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1584630836169">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="412" y="110" width="528" height="492" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1366.768@0.0.1366.768" timestamp="1584456715204" />
+    <state x="575" y="119" width="528" height="492" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1080/1920.0.1366.768@0.0.1920.1080" timestamp="1584630836169" />
     <state width="1320" height="216" key="GridCell.Tab.0.bottom" timestamp="1584466548412">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
@@ -139,14 +161,19 @@
       <screen x="0" y="0" width="1366" height="768" />
     </state>
     <state width="1320" height="216" key="GridCell.Tab.0.right/0.0.1366.768@0.0.1366.768" timestamp="1584466548411" />
+    <state x="657" y="217" width="400" height="430" key="chooseDestDirectoryDialog" timestamp="1584629603504">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="657" y="217" width="400" height="430" key="chooseDestDirectoryDialog/0.0.1920.1080/1920.0.1366.768@0.0.1920.1080" timestamp="1584629603504" />
     <state x="93" y="93" width="1095" height="495" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1584542143271">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="93" y="93" width="1095" height="495" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.0.1280.680/1920.0.1920.1080@0.0.1280.680" timestamp="1584542143271" />
-    <state x="337" y="165" key="com.intellij.ide.util.TipDialog" timestamp="1584542409212">
-      <screen x="0" y="0" width="1280" height="680" />
+    <state x="504" y="244" key="com.intellij.ide.util.TipDialog" timestamp="1584628828061">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="337" y="165" key="com.intellij.ide.util.TipDialog/0.0.1280.680/1920.0.1920.1080@0.0.1280.680" timestamp="1584542409212" />
+    <state x="504" y="244" key="com.intellij.ide.util.TipDialog/0.0.1920.1080/1920.0.1366.768@0.0.1920.1080" timestamp="1584628828061" />
     <state x="315" y="132" key="git4idea.merge.GitPullDialog" timestamp="1584541999916">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

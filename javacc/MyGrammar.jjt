@@ -1,5 +1,6 @@
 options {
   LOOKAHEAD = 1;
+  MULTI = true;
 }
 
 PARSER_BEGIN(MyGrammar)
@@ -86,6 +87,8 @@ TOKEN :
     |   <WHILE : "while" >
     |   <INTEGER_LITERAL: (<DIGIT>)+ >
     |   <IDENTIFIER: (<LETTER> (<LETTER> | <DIGIT> | <UNDERSCORE>)*) >
+    |   <RESERVED: (<LENGTH> | <CLASS> | <THIS> | <NEW> | <EXTENDS> | <IMPORT> | <PUBLIC> | <STATIC> | <VOID> | <INT>
+                | <BOOL> | <TRUE> | <FALSE> | <RETURN> | <IF> | <ELSE> | <WHILE> )>
     |   <DIGIT: (["0"-"9"]) >
     |   <LETTER: (["a"-"z","A"-"Z"]) >
 }
@@ -107,47 +110,51 @@ SimpleNode Program() : {}
 
 void ImportDeclaration() #Import : { Token imported;}
 {
-    (<IMPORT> imported=<IMPORTED> {jjtThis.imported = imported;}  <SEMICOLON> )*
+    (<IMPORT> imported=<IMPORTED> {jjtThis.imported = imported.image;}  <SEMICOLON> )*
 }
 
-void ClassDeclaration() #Class : {Token identifier, extended;}
+void ClassDeclaration() #Class : {Token identifier, parent;}
 {
-    <CLASS> identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}(<EXTENDS> extended=<IDENTIFIER> {jjtThis.extended = extended;})?
+    <CLASS> identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
+        (<EXTENDS> parent=<IDENTIFIER> {jjtThis.parent = parent.image;})?
     <L_BRACKET>
-        (VarDeclaration())*
+        (VarDeclaration())* #VarDeclarationsList(true)
         (
             LOOKAHEAD(2)
             MethodDeclaration()
-        )*
+        )* #MethodList
         MainDeclaration()            // This forces 'main' to only appear once
-        (MethodDeclaration())*
+        (MethodDeclaration())* #MethodList
     <R_BRACKET> 
 }
 
-void VarDeclaration() #Var : {Token type, identifier;}
+void VarDeclaration() #Var : {String type; Token identifier;}
 {
-    type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <SEMICOLON>
+    type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;} <SEMICOLON>
 }
 
-void MethodDeclaration() #Method : {Token type, identifier;}
+void MethodDeclaration() #Method : {String type; Token identifier;}
 {
-    <PUBLIC> type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}  <L_PAR> Arguments() <R_PAR>
+    <PUBLIC> type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER>
+        {jjtThis.identifier = identifier.image;}  <L_PAR> Arguments() <R_PAR>
     <L_BRACKET>
         (
             LOOKAHEAD(2)
             VarDeclaration()
-        )*
-        (Statement())*
-        <RETURN> Expression() <SEMICOLON> // A return statement has to be the last thing in a method declaration
+        )* #VarDeclarationsList(true)
+        (Statement())* #StatementList
+        <RETURN> Expression() #ReturnStatement <SEMICOLON> // A return statement has to be the last thing in a method declaration
     <R_BRACKET>
 }
 
-void MainDeclaration() #MainFunction : {Token identifier;}
+void MainDeclaration() #MainMethod : {Token identifier;}
 {
-    <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> <STRING> <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <R_PAR>
+    <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> (
+        (<STRING> <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
+            {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Argument) #ArgumentList <R_PAR>
     <L_BRACKET>
-        (LOOKAHEAD(2) VarDeclaration())*
-        (Statement())*
+        (LOOKAHEAD(2) VarDeclaration())* #VarDeclarationsList(true)
+        (Statement())* #StatementList
     <R_BRACKET>
 }
 
@@ -156,98 +163,269 @@ void Arguments() #ArgumentList : {}
     ( Argument() ( <COMMA> Argument())* )?
 }
 
-void Argument() #Argument : {Token identifier;}
+void Argument() #Argument : {Token identifier;String type;}
 {
-    Type() identifier=<IDENTIFIER> {jjtThis.identifier = identifier;}
+    type=Type() identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image; jjtThis.type=type;}
 }
 
-void Type() #Type : {}
+String Type() #void : {String type; Token identifier;}
 {
-    <INT> {jjtThis.type = "int";} (<L_SBRACKET> <R_SBRACKET> {jjtThis.type = "array";} )?
-    |   <BOOL> {jjtThis.type = "boolean";}
-    |   <IDENTIFIER> {jjtThis.type = "identifier";}
+    (<INT> {type = "int";} (<L_SBRACKET> <R_SBRACKET> {type = "array";} )?
+    |   <BOOL> {type = "boolean";}
+    |   identifier=<IDENTIFIER> {type = identifier.image;})
+    {return type;}
 }
 
-void Statement() : { Token identifier;}
+Statement Statement() #void : {Statement st;}
+{
+    (st = ScopedStatementList()
+    |   st = IfElseStmt()
+    |   st = WhileStmt()
+    |   (
+            LOOKAHEAD(2) st = Assignment()
+            | LOOKAHEAD(2) st = IdSub()
+            | st = ExprStatement()
+        ))
+    {return st;}
+}
+
+Statement ScopedStatementList() #ScopedStatementList : {}
 {
     <L_BRACKET> (Statement())* <R_BRACKET>
-    |   IfElseStmt() {jjtThis.statement = "ifElse";}
-    |   WhileStmt() {jjtThis.statement = "while";}
-    |   (
-            LOOKAHEAD(<IDENTIFIER> <EQUAL>) identifier= <IDENTIFIER> {jjtThis.identifier = identifier;}  <EQUAL> Expression() <SEMICOLON>
-            | LOOKAHEAD(<IDENTIFIER> <L_BRACKET> ) IdSub()
-            | Expression() <SEMICOLON>
-        )
+    {return jjtThis;}
 }
 
-void IfElseStmt() #Branch : {}
+Statement Assignment() #Assignment : {Expression varRef, value;}
 {
-    <IF> <L_PAR> Expression() <R_PAR>
-        Statement()
+    varRef=VarReference() <EQUAL> value=Expression() <SEMICOLON>
+    {
+        jjtThis.varReference = varRef;
+        jjtThis.value = value;
+        return jjtThis;
+    }
+}
+
+Statement IfElseStmt() #Branch : {Expression condition; Statement thenStatement, elseStatement;}
+{
+    <IF> <L_PAR> condition=Expression() <R_PAR>
+        thenStatement=Statement()
     <ELSE>
-        Statement()
+        elseStatement=Statement()
+    {
+        jjtThis.condition = condition;
+        jjtThis.thenStatement = thenStatement;
+        jjtThis.elseStatement = elseStatement;
+        return jjtThis;
+    }
 }
 
-void WhileStmt() #WhileLoop : {}
+Statement WhileStmt() #WhileLoop : {Expression condition; Statement body;}
 {
-    <WHILE> <L_PAR> Expression() <R_PAR>
-        Statement()
+    <WHILE> <L_PAR> condition = Expression() <R_PAR>
+        body = Statement()
+    {
+        jjtThis.condition = condition;
+        jjtThis.body = body;
+        return jjtThis;
+    }
 }
 
-void IdSub() : {Token identifier;} {
-    identifier=<IDENTIFIER>{jjtThis.identifier = identifier;} <L_SBRACKET> Expression() <R_SBRACKET> (
-    (<EQUAL> Expression() <SEMICOLON>)
-    | Expr2()
+Statement IdSub() #void : {Expression e1; Statement st;} {
+    e1=ArrayAccess() (
+        st = ArrayAssignment(e1)
+        | st = ArrayAccessExprStatement(e1)
     )
+
+    {return st;}
 }
 
-void Expression() #void : {}
+Statement ArrayAssignment(Expression arrayRef) #ArrayAssignment : {Expression value;}
 {
-    Expr1() (LOOKAHEAD(2) Expr2() )?
+    <EQUAL> value=Expression() <SEMICOLON>
+    {
+        jjtThis.arrayRef = arrayRef;
+        jjtThis.value = value;
+        return jjtThis;
+    }
 }
 
-void Expr1() : {Token identifier, value;} {
-    value = <INTEGER_LITERAL> {jjtThis.type = "int"; jjtThis.val = Integer.pasrInt(value.image);} #Literal
-    | <TRUE> {jjtThis.type = "boolean"; jjtThis.val = true;} #Literal
-    | <FALSE> {jjtThis.type = "boolean"; jjtThis.val = false;} #Literal
-    |  identifier= <IDENTIFIER> {jjtThis.identifier = identifier;}
-    |   <THIS>
+Statement ArrayAccessExprStatement(Expression arrayRef) #ExprStatement: {Expression e = null;}
+{
+    (e = Expr2(arrayRef))? <SEMICOLON>
+    {jjtThis.expression = e == null ? arrayRef : e;}
+    {return jjtThis;}
+}
+
+Statement ExprStatement() #ExprStatement : {Expression e;}
+{
+    e = Expression() <SEMICOLON>
+    {jjtThis.expression = e;}
+    {return jjtThis;}
+}
+
+Expression ArrayAccess() #ArrayAccess : {Token identifier; Expression index, arrRef;}
+{
+    arrRef=VarReference() <L_SBRACKET> index = Expression() <R_SBRACKET>
+    {
+        jjtThis.arrayRef = arrRef;
+        jjtThis.index = index;
+    }
+    {return jjtThis;}
+}
+
+Expression Expression() #void : {Expression e, e2 = null;}
+{
+    e=Expr1() (LOOKAHEAD(2) e2=Expr2(e) )?
+    {
+        return e2 == null ? e : e2;
+    }
+}
+
+Expression Expr1() : {Token identifier, value; Expression e;} {
+    (e = Literal()
+    | e = VarReference()
+    | e =  SelfReference()
     |   (<NEW>  (
-            <INT> <L_SBRACKET> Expression() <R_SBRACKET>
-            |  identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <L_PAR> <R_PAR>
+            e = ArrayCreation()
+            | e = ConstructorCall()
         ))
-    |   ( <NOT> Expression() )
-    |   ( <L_PAR> Expression() <R_PAR> )
+    |   e = Negation()
+    |   <L_PAR> e = Expression() <R_PAR>)
+
+    {return e;}
+}
+
+Expression Literal() #Literal : {Token value;}
+{
+    (value = <INTEGER_LITERAL> {jjtThis.type = "int"; jjtThis.val = Integer.parseInt(value.image);}
+    | <TRUE> {jjtThis.type = "boolean"; jjtThis.val = true;}
+    | <FALSE> {jjtThis.type = "boolean"; jjtThis.val = false;})
+
+    {return jjtThis;}
+}
+
+Expression VarReference() #VarReference : {Token id;}
+{
+    id=<IDENTIFIER>
+    {jjtThis.identifier = id.image; return jjtThis;}
+}
+
+Expression SelfReference() #SelfReference : {}
+{
+    <THIS>
+    {return jjtThis;}
+}
+
+Expression ArrayCreation() #ArrayCreation : {Expression e;}
+{
+    <INT> <L_SBRACKET> e=Expression() <R_SBRACKET> {jjtThis.size = e;}
+    {return jjtThis;}
+}
+
+Expression ConstructorCall() #ConstructorCall : {Token identifier;}
+{
+    identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;} <L_PAR> <R_PAR>
+    {return jjtThis;}
+}
+
+Expression Negation() #Negation : {Expression e;}
+{
+    <NOT> e=Expression()
+    {jjtThis.child = e; return jjtThis;}
 }
 
 // Equivalent to E'. Used to remove left recursion on Expression()
-void Expr2() #void : {Token identifier;}
+Expression Expr2(Expression l) #void : {Token identifier; Expression e, e2 = null;}
 {
-    And() |
-    ((
-        ( <L_SBRACKET> Expression() <R_SBRACKET> )
-        |   (<DOT> (
-                    <LENGTH>
-                    |  identifier=<IDENTIFIER> {jjtThis.identifier = identifier;} <L_PAR> ( Expression() ( <COMMA> Expression() )* )?  <R_PAR>
-                )
-            )
-    ) (LOOKAHEAD(2) Expr2())?)
+    (e = And(l)
+    | e = ArrayAccessExpr(l)
+    |   <DOT> (
+                e = ArrayLength(l)
+                | e = FunctionCall(l)
+            ))
+    (LOOKAHEAD(2) e2=Expr2(e))?
     // Maybe missing empty string??
+    {return e2 == null ? e : e2;}
 }
 
-void And() #void : {} {
-    LessThan() (LOOKAHEAD(2) <AND> LessThan() #And(2))?
+Expression ArrayAccessExpr(Expression l) #ArrayAccess : {Expression e;}
+{
+    <L_SBRACKET> e=Expression() <R_SBRACKET> {jjtThis.index = e; jjtThis.arrayRef = l;}
+    {return jjtThis;}
 }
 
-void LessThan() #void : {} {
-    SumOrSub() (LOOKAHEAD(2) <LESS_THAN> SumOrSub() #LessThan(2))?
+
+Expression ArrayLength(Expression l) #ArrayLength : {}
+{
+    <LENGTH> {jjtThis.arrayRef = l;}
+    {return jjtThis;}
 }
 
-void SumOrSub() #void : {} {
-    MulOrDiv() (LOOKAHEAD(2) (<PLUS> MulOrDiv() #Sum(2) | <MINUS> MulOrDiv() #Sub(2)) )?
+Expression FunctionCall(Expression l) #FunctionCall : {Token identifier;}
+{
+    identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
+                <L_PAR> (( Expression() ( <COMMA> Expression() )* )?) #Parameters  <R_PAR>
+
+    {jjtThis.ownerRef = l;}
+    {return jjtThis;}
 }
 
-void MulOrDiv() : {} {
-    (<MUL> Expression() #Mul(2) )
-    | (<DIV> Expression() #Div(2) )
+Expression And(Expression l) #void : {Expression r;}
+{
+
+    (LOOKAHEAD(2) r = AndExpr(l) | r = LessThan(l))
+
+    {return r;}
+}
+Expression AndExpr(Expression l) #And(2) : {Expression r;}
+{
+    <AND> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    {return jjtThis;}
+}
+
+
+Expression LessThan(Expression l) #void : {Expression r;}
+{
+
+    (LOOKAHEAD(2) r=LessThanExpr(l) | r=SumOrSub(l))
+    {return r;}
+}
+Expression LessThanExpr(Expression l) #LessThan(2) : {Expression r;}
+{
+    <LESS_THAN> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    {return jjtThis;}
+}
+
+
+Expression SumOrSub(Expression l) #void : {Expression r;}
+{
+
+    (LOOKAHEAD(2) (
+        r=Sum(l)
+        | r=Sub(l)) | r=MulOrDiv(l))
+    {return r;}
+}
+Expression Sum(Expression l) #Sum(2) : {Expression r;}
+{
+    <PLUS> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+Expression Sub(Expression l) #Sub(2) : {Expression r;}
+{
+    <MINUS> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+
+
+Expression MulOrDiv(Expression l) #void : {Expression r;}
+{
+    (r=Mul(l)
+    | r=Div(l))
+    {return r;}
+}
+Expression Mul(Expression l) #Mul(2) : {Expression r;}
+{
+    <MUL> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+Expression Div(Expression l) #Div(2) : {Expression r;}
+{
+    <DIV> r=Expression() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
 }
