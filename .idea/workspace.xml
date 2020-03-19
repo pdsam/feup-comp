@@ -2,7 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b7d684ef-a1b3-4a46-b8be-346b5aaa4e78" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__junit_junit_4_11.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_core_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/comp2020-5b.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/comp2020-5b.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/comp2020-5b.main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/comp2020-5b.test.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTImport.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTImport.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/javacc/MyGrammar.jjt" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/MyGrammar.jjt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -13,6 +25,9 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
@@ -67,5 +82,9 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="620" y="362" key="com.intellij.ide.util.TipDialog/0.0.1920.1080/1920.0.1366.768@0.0.1920.1080" timestamp="1584665668839" />
+    <state x="623" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1584666451512">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="623" y="257" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080/1920.0.1366.768@0.0.1920.1080" timestamp="1584666451512" />
   </component>
 </project>
