@@ -35,7 +35,7 @@ PARSER_BEGIN(MyGrammar)
 PARSER_END(MyGrammar)
 
 // Symbols that must be skipped during the lexical analysis
-SKIP : 
+SKIP :
 {
     " "
     | "\t" 
@@ -47,11 +47,12 @@ SKIP :
 }
 
 // token definition(terminal symbols)
-TOKEN : 
+TOKEN :
 {
     <UNDERSCORE: "_" >
     |   <L_SBRACKET: "[" >
     |   <R_SBRACKET: "]" >
+    |   <DOLLARSIGN: "$">
     |   <L_BRACKET: "{" >
     |   <R_BRACKET: "}" >
     |   <L_PAR: "(" >
@@ -63,6 +64,7 @@ TOKEN :
     |   <EQUAL: "=" >
     |   <COMMA : "," >
     |   <DOT : "." >
+    |   <SEMICOLON : ";" >
     |   <NOT : "!" >
     |   <AND : "&&" >
     |   <LESS_THAN : "<" >
@@ -71,7 +73,7 @@ TOKEN :
     |   <THIS : "this" >
     |   <NEW : "new" >
     |   <EXTENDS : "extends" >
-    |   <IMPORT : "import" > : IMPORT_STATE
+    |   <IMPORT : "import" >
     |   <STRING : "String" >
     |   <PUBLIC : "public" >
     |   <STATIC: "static">
@@ -86,31 +88,35 @@ TOKEN :
     |   <ELSE : "else" >
     |   <WHILE : "while" >
     |   <INTEGER_LITERAL: (<DIGIT>)+ >
-    |   <IDENTIFIER: (<LETTER> (<LETTER> | <DIGIT> | <UNDERSCORE>)*) >
-    |   <RESERVED: (<LENGTH> | <CLASS> | <THIS> | <NEW> | <EXTENDS> | <IMPORT> | <PUBLIC> | <STATIC> | <VOID> | <INT>
-                | <BOOL> | <TRUE> | <FALSE> | <RETURN> | <IF> | <ELSE> | <WHILE> )>
+    |   <IDENTIFIER: ((<LETTER> | <UNDERSCORE> | <DOLLARSIGN>) (<LETTER> | <DIGIT> | <UNDERSCORE> | <DOLLARSIGN>)*) >
     |   <DIGIT: (["0"-"9"]) >
     |   <LETTER: (["a"-"z","A"-"Z"]) >
-}
-
-<IMPORT_STATE> TOKEN : {
-    <IMPORTED: ((<LETTER>)+ (<DOT> (<LETTER>)+)*) >
-}
-
-<IMPORT_STATE, DEFAULT> TOKEN : {
-    <SEMICOLON : ";" > : DEFAULT
 }
 
 // Production definition
 SimpleNode Program() : {}
 {
-    ImportDeclaration()
+    (LOOKAHEAD(2) ImportDeclaration())*
     ClassDeclaration() <EOF> { return jjtThis; }
 }
 
-void ImportDeclaration() #Import : { Token imported;}
+void ImportDeclaration() #void : { Token imported;}
 {
-    (<IMPORT> imported=<IMPORTED> {jjtThis.imported = imported.image;}  <SEMICOLON> )*
+    <IMPORT> (
+        ClassImport()
+        | StaticMethodImport()
+    )
+    <SEMICOLON>
+}
+
+void ClassImport() : {}
+{
+    <IDENTIFIER> (<DOT> <IDENTIFIER>)* (<L_PAR> (<VOID> | (Type() (<COMMA> Type())*))? <R_PAR> (Type() | <VOID>))?
+}
+
+void StaticMethodImport() #MethodImport : {}
+{
+    <STATIC> <IDENTIFIER> (<DOT> <IDENTIFIER>)+ <L_PAR> (<VOID> | (Type() (<COMMA> Type())*))? <R_PAR> (Type() | <VOID>)
 }
 
 void ClassDeclaration() #Class : {Token identifier, parent;}
@@ -171,8 +177,8 @@ void Argument() #Argument : {Token identifier;String type;}
 String Type() #void : {String type; Token identifier;}
 {
     (<INT> {type = "int";} (<L_SBRACKET> <R_SBRACKET> {type = "array";} )?
-    |   <BOOL> {type = "boolean";}
-    |   identifier=<IDENTIFIER> {type = identifier.image;})
+    | <BOOL> {type = "boolean";}
+    | identifier=<IDENTIFIER> {type = identifier.image;})
     {return type;}
 }
 
@@ -239,7 +245,7 @@ Statement IdSub() #void : {Expression e1; Statement st;} {
     {return st;}
 }
 
-Statement ArrayAssignment(Expression arrayRef) #ArrayAssignment : {Expression value;}
+Statement ArrayAssignment(Expression arrayRef) #ArrayAssignment(2) : {Expression value;}
 {
     <EQUAL> value=Expression() <SEMICOLON>
     {
@@ -281,7 +287,7 @@ Expression Expression() #void : {Expression e, e2 = null;}
     }
 }
 
-Expression Expr1() : {Token identifier, value; Expression e;} {
+Expression Expr1() #void : {Token identifier, value; Expression e;} {
     (e = Literal()
     | e = VarReference()
     | e =  SelfReference()
@@ -348,20 +354,20 @@ Expression Expr2(Expression l) #void : {Token identifier; Expression e, e2 = nul
     {return e2 == null ? e : e2;}
 }
 
-Expression ArrayAccessExpr(Expression l) #ArrayAccess : {Expression e;}
+Expression ArrayAccessExpr(Expression l) #ArrayAccess(2) : {Expression e;}
 {
     <L_SBRACKET> e=Expression() <R_SBRACKET> {jjtThis.index = e; jjtThis.arrayRef = l;}
     {return jjtThis;}
 }
 
 
-Expression ArrayLength(Expression l) #ArrayLength : {}
+Expression ArrayLength(Expression l) #ArrayLength(1) : {}
 {
     <LENGTH> {jjtThis.arrayRef = l;}
     {return jjtThis;}
 }
 
-Expression FunctionCall(Expression l) #FunctionCall : {Token identifier;}
+Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier;}
 {
     identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
                 <L_PAR> (( Expression() ( <COMMA> Expression() )* )?) #Parameters  <R_PAR>
