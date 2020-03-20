@@ -227,7 +227,11 @@ Statement IfElseStmt() #Branch : {Expression condition; Statement thenStatement,
 
 Statement WhileStmt() #WhileLoop : {Expression condition; Statement body;}
 {
-    <WHILE> <L_PAR> condition = Expression() <R_PAR>
+    <WHILE>
+    try{ <L_PAR> condition = Expression() <R_PAR>}
+    catch(ParseException e){
+        whileErrorRecovery(e);
+    }
         body = Statement()
     {
         jjtThis.condition = condition;
@@ -235,6 +239,8 @@ Statement WhileStmt() #WhileLoop : {Expression condition; Statement body;}
         return jjtThis;
     }
 }
+
+
 
 Statement IdSub() #void : {Expression e1; Statement st;} {
     e1=ArrayAccess() (
