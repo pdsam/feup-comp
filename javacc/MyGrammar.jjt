@@ -31,16 +31,17 @@ PARSER_BEGIN(MyGrammar)
             SimpleNode root = parser.Program();
             root.dump(">");
         }
+    }
 PARSER_END(MyGrammar)
 
 // Symbols that must be skipped during the lexical analysis
 SKIP :
 {
     " "
-    | "\t" 
+    | "\t"
     | "\r"
-    | "\n" 
-    //skip comments of both types   
+    | "\n"
+    //skip comments of both types
     |   <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
     |   <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
 }
@@ -130,7 +131,7 @@ void ClassDeclaration() #Class : {Token identifier, parent;}
         )* #MethodList
         MainDeclaration()            // This forces 'main' to only appear once
         (MethodDeclaration())* #MethodList
-    <R_BRACKET> 
+    <R_BRACKET>
 }
 
 void VarDeclaration() #Var : {String type; Token identifier;}
