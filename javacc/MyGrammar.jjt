@@ -225,7 +225,7 @@ Statement IfElseStmt() #Branch : {Expression condition; Statement thenStatement,
     }
 }
 
-Statement WhileStmt() #WhileLoop : {Expression condition; Statement body;}
+Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;}
 {
     <WHILE>
     try{ 
@@ -235,7 +235,7 @@ Statement WhileStmt() #WhileLoop : {Expression condition; Statement body;}
         whileErrorRecovery(e);
     }
         body = Statement()
-    {
+        {
         jjtThis.condition = condition;
         jjtThis.body = body;
         return jjtThis;
@@ -245,13 +245,13 @@ Statement WhileStmt() #WhileLoop : {Expression condition; Statement body;}
 JAVACODE
 void whileErrorRecovery(ParseException e){
     System.out.println("Our handler recorded: " + e.toString());
-
-
+    
     Token t;
     do{
         t=getNextToken();
     }while(t.kind != 0 && t.kind != R_PAR);
-
+    
+    throw new ParseException() ;
 }
 
 
