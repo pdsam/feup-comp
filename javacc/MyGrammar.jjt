@@ -9,6 +9,9 @@ PARSER_BEGIN(MyGrammar)
 
     // Java code invoking the parser
     public class MyGrammar{
+        public static const int MAX_ERRORS = 2;
+        public static int num_errors = 0;
+
         public static void main(String[] args) throws ParseException {
             if(args.length < 1) {
                 System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
@@ -23,7 +26,6 @@ PARSER_BEGIN(MyGrammar)
                 file = new FileInputStream(args[0]);
             } catch(Exception e) {
                 System.out.println(e.getMessage());
-                //e.printStackTrace();
                 return;
             }
 
@@ -252,8 +254,8 @@ Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;
     catch(ParseException e){
         whileErrorRecovery(e);
     }
-        body = Statement()
-        {
+
+    body = Statement() {
         jjtThis.condition = condition;
         jjtThis.body = body;
         return jjtThis;
@@ -263,13 +265,17 @@ Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;
 JAVACODE
 void whileErrorRecovery(ParseException e){
     System.out.println("Our handler recorded: " + e.toString());
+
+    MyGrammar.num_errors++;
+    if(MyGrammar.num_errors >= MyGrammar.MAX_ERRORS) {
+        System.out.println("Max number of errors (" + Integer.toString(MyGrammar) + ") reached. Exiting...");
+        System.exit(-1);
+    }
     
     Token t;
     do{
         t=getNextToken();
     }while(t.kind != 0 && t.kind != R_PAR);
-    
-    throw new ParseException() ;
 }
 
 
