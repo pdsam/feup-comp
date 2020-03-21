@@ -109,14 +109,32 @@ void ImportDeclaration() #void : { Token imported;}
     <SEMICOLON>
 }
 
-void ClassImport() : {}
+void ClassImport() #MethodImport : {String returnType;}
 {
-    <IDENTIFIER> (<DOT> <IDENTIFIER>)* (<L_PAR> (<VOID> | (Type() (<COMMA> Type())*))? <R_PAR> (Type() | <VOID>))?
+    Import() (<DOT> Import())* 
+    (<L_PAR> 
+        (<VOID> | (Types() (<COMMA> Types())*))? 
+    <R_PAR>
+    (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";}))?
 }
 
-void StaticMethodImport() #MethodImport : {}
+void StaticMethodImport() #StaticMethodImport : {String returnType;}
 {
-    <STATIC> <IDENTIFIER> (<DOT> <IDENTIFIER>)+ <L_PAR> (<VOID> | (Type() (<COMMA> Type())*))? <R_PAR> (Type() | <VOID>)
+    <STATIC> Import() (<DOT> Import() )+ 
+    <L_PAR> 
+        (<VOID> | (Types() (<COMMA> Types())*))? 
+    <R_PAR> 
+    (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";})
+}
+
+void Import() #void : {Token identifier;}
+{
+    identifier= <IDENTIFIER> {jjtThis.identifier = identifier.image;}
+}
+
+void Types() #void: {String type;}
+{
+    type=Type() {jjtThis.type = type;} 
 }
 
 void ClassDeclaration() #Class : {Token identifier, parent;}
