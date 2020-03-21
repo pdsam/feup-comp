@@ -9,7 +9,7 @@ PARSER_BEGIN(MyGrammar)
 
     // Java code invoking the parser
     public class MyGrammar{
-        public static const int MAX_ERRORS = 2;
+        public static int MAX_ERRORS = 2;
         public static int num_errors = 0;
 
         public static void main(String[] args) throws ParseException {
@@ -263,12 +263,12 @@ Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;
 }
 
 JAVACODE
-void whileErrorRecovery(ParseException e){
+void whileErrorRecovery(ParseException e) #void {
     System.out.println("Our handler recorded: " + e.toString());
 
     MyGrammar.num_errors++;
     if(MyGrammar.num_errors >= MyGrammar.MAX_ERRORS) {
-        System.out.println("Max number of errors (" + Integer.toString(MyGrammar) + ") reached. Exiting...");
+        System.out.println("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
         System.exit(-1);
     }
     
