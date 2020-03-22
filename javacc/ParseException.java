@@ -154,7 +154,10 @@ public class ParseException extends Exception {
               break;
           }
           for(int j = 0; j < expectedTokenSequences[i].length; j++) {
-              msg += tokenImage[expectedTokenSequences[i][j]] + ", ";
+              msg += tokenImage[expectedTokenSequences[i][j]];
+
+              if(i != expectedTokenSequences.length - 1)
+                msg += ", ";
           }
       }
       return msg;
