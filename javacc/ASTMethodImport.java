@@ -3,6 +3,8 @@
 public
 class ASTMethodImport extends ASTImport {
   public String returnType;
+  public String importSequence;
+  public String parameters;
 
   public ASTMethodImport(int id) {
     super(id);

@@ -29,6 +29,7 @@ PARSER_BEGIN(MyGrammar)
                 return;
             }
 
+            num_errors=0;
             MyGrammar parser = new MyGrammar(file);
             SimpleNode root = parser.Program();
             root.dump(">");
@@ -111,32 +112,55 @@ void ImportDeclaration() #void : { Token imported;}
     <SEMICOLON>
 }
 
-void ClassImport() #MethodImport : {String returnType;}
+void ClassImport() #MethodImport : {String imp, param, returnType;}
 {
-    Import() (<DOT> Import())* 
+    imp=ImportSequence() {jjtThis.importSequence = imp;}
     (<L_PAR> 
-        (<VOID> | (Types() (<COMMA> Types())*))? 
+        (<VOID> { jjtThis.parameters="void"; } | param=TypeSequence() { jjtThis.parameters=param; } )?
     <R_PAR>
     (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";}))?
 }
 
-void StaticMethodImport() #StaticMethodImport : {String returnType;}
+void StaticMethodImport() #StaticMethodImport : {String imp, param, returnType;}
 {
-    <STATIC> Import() (<DOT> Import() )+ 
+    <STATIC> imp=StaticImportSequence() {jjtThis.importSequence = imp;}
     <L_PAR> 
-        (<VOID> | (Types() (<COMMA> Types())*))? 
+        (<VOID> { jjtThis.parameters="void"; } | param=TypeSequence() { jjtThis.parameters=param; } )?
     <R_PAR> 
     (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";})
 }
 
-void Import() #void : {Token identifier;}
+String ImportSequence() #void : {Token t;}
 {
-    identifier= <IDENTIFIER> {jjtThis.identifier = identifier.image;}
+    t=<IDENTIFIER> (<DOT> <IDENTIFIER>)* {
+        String importString = "";
+        do {
+            importString += t.image;
+            t=t.next;
+        } while(t.kind == IDENTIFIER || t.kind == DOT);
+        System.out.println(importString);
+        return importString;
+    }
 }
 
-void Types() #void: {String type;}
+String StaticImportSequence() #void : {Token t;}
 {
-    type=Type() {jjtThis.type = type;} 
+    t=<IDENTIFIER> (<DOT> <IDENTIFIER>)+ {
+        String importString = "";
+        do {
+            importString += t.image;
+            t=t.next;
+        } while(t.kind == IDENTIFIER || t.kind == DOT);
+        System.out.println(importString);
+        return importString;
+    }
+}
+
+String TypeSequence() #void: {String t;}
+{
+    t=Type() (<COMMA> Type())* {
+        return t;
+    }
 }
 
 void ClassDeclaration() #Class : {Token identifier, parent;}

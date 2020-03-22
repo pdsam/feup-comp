@@ -3,6 +3,8 @@
 public
 class ASTStaticMethodImport extends SimpleNode {
   public String returnType;
+  public String importSequence;
+  public String parameters;
 
   public ASTStaticMethodImport(int id) {
     super(id);

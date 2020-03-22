@@ -2,6 +2,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 public class Main {
+	public static int MAX_ERRORS=2;
+	public static int num_errors=0;
 	
 	public static void main(String[] args) throws ParseException {
 		if(args.length < 1) {
@@ -21,6 +23,7 @@ public class Main {
 			return;
 		}
 
+		num_errors=0;
 		MyGrammar parser = new MyGrammar(file);
 		SimpleNode root = parser.Program();
 		root.dump(">");
