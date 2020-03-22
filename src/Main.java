@@ -3,7 +3,7 @@ import java.io.FileInputStream;
 
 // Java code invoking the parser
 public class Main{
-	public static int MAX_ERRORS = 2;
+	public static int MAX_ERRORS = 4;
 	public static int numErrors = 0;
 	public static boolean foundError = false;
 
@@ -29,8 +29,7 @@ public class Main{
 		MyGrammar parser = new MyGrammar(file);
 		SimpleNode root = parser.Program();
 		if(MyGrammar.foundError) {
-			System.err.println("Errors were found during parsing. Fix them and try again.");
-			System.exit(-1);
+			throw new ParseException(Integer.toString(numErrors) + " error(s) were found during parsing. Fix them and try again.");
 		}
 		root.dump(">");
 	}

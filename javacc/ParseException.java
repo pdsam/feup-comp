@@ -146,8 +146,9 @@ public class ParseException extends Exception {
       Token errorToken = currentToken.next;
       msg += "\"" + errorToken.image + "\"";
       msg += " at line " + errorToken.beginLine + ", column " + errorToken.beginColumn + ". ";
-      msg += "Was expecting: " + expectedTokenSequences[0][0];
+      msg += "Was expecting: " + tokenImage[expectedTokenSequences[0][0]];
 
+      msg += "\n Debugging: total.length = " + expectedTokenSequences.length + " ; 0.length = " + expectedTokenSequences[0].length;
       return msg;
   }
 
