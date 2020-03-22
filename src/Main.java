@@ -3,7 +3,7 @@ import java.io.FileInputStream;
 
 // Java code invoking the parser
 public class Main{
-	public static int MAX_ERRORS = 4;
+	public static int MAX_ERRORS = 10;
 	public static int numErrors = 0;
 	public static boolean foundError = false;
 
