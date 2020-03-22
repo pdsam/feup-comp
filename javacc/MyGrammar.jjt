@@ -9,7 +9,7 @@ PARSER_BEGIN(MyGrammar)
 
     // Java code invoking the parser
     public class MyGrammar{
-        public static int MAX_ERRORS = 4;
+        public static int MAX_ERRORS = 10;
         public static int numErrors = 0;
         public static boolean foundError = false;
 
@@ -35,7 +35,7 @@ PARSER_BEGIN(MyGrammar)
             MyGrammar parser = new MyGrammar(file);
             SimpleNode root = parser.Program();
             if(MyGrammar.foundError) {
-                throw new ParseException(Integer.toString(numErrors) + " error(s) were found during parsing. Fix them and try again.");
+                throw new ParseException(Integer.toString(MyGrammar.numErrors) + " error(s) were found during parsing. Fix them and try again.");
             }
             root.dump(">");
         }
@@ -291,7 +291,6 @@ Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;
 
 JAVACODE
 void whileErrorRecovery(ParseException e) #void {
-    System.err.println("Our handler recorded an error");
     System.err.println("ParserException: " + e.getWhileMsg());
 
     MyGrammar.foundError=true;
@@ -303,7 +302,9 @@ void whileErrorRecovery(ParseException e) #void {
     Token t;
     do{
         t=getNextToken();
-    }while(t.kind != 0 && t.kind != SEMICOLON && t.kind != R_BRACKET && t.kind != L_BRACKET && t.kind != WHILE);
+    }while(t.kind != R_PAR && t.kind != L_BRACKET);
+
+    System.out.println(t.image);
 }
 
 
