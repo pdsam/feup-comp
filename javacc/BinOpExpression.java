@@ -9,4 +9,10 @@ public abstract class BinOpExpression extends Expression {
     public BinOpExpression(MyGrammar p, int id) {
         super(p, id);
     }
+
+    public void dump(String prefix) {
+        System.out.println(toString(prefix));
+        left.dump(prefix + " ");
+        right.dump(prefix + " ");
+    }
 }

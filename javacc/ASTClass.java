@@ -15,11 +15,18 @@ class ASTClass extends SimpleNode {
 
   @Override
   public void dump(String prefix) {
-    System.out.println(toString(prefix));
-    System.out.printf("%s\tIdentifier: %s\n", prefix, identifier);
+    System.out.printf("%s : %s\n", toString(prefix), identifier);
 
     if (parent != null) {
-      System.out.printf("%s\tExtends: %s\n", prefix, parent);
+      System.out.printf("%s Extends: %s\n", prefix, parent);
+    }
+    if (children != null) {
+      for (int i = 0; i < children.length; ++i) {
+        SimpleNode n = (SimpleNode)children[i];
+        if (n != null) {
+          n.dump(prefix + " ");
+        }
+      }
     }
   }
 }

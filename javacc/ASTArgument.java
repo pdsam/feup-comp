@@ -15,8 +15,7 @@ class ASTArgument extends SimpleNode {
 
   @Override
   public void dump(String prefix) {
-    System.out.println(toString(prefix));
-    System.out.printf("%s\t%s: %s\n", prefix, identifier, type);
+    System.out.printf("%s %s: %s\n", prefix, identifier, type);
   }
 }
 /* JavaCC - OriginalChecksum=c430fbd62544d7d522d0a25eec5becdf (do not edit this line) */

@@ -16,10 +16,10 @@ public class ASTArrayAssignment extends Statement {
   @Override
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-    System.out.printf("%s\tReference:\n", prefix);
-    arrayRef.dump(prefix + "\t\t");
-    System.out.printf("%s\tvalue:\n", prefix);
-    value.dump(prefix + "\t\t");
+    System.out.printf("%s Reference:\n", prefix);
+    arrayRef.dump(prefix + "  ");
+    System.out.printf("%s value:\n", prefix);
+    value.dump(prefix + "  ");
   }
 }
 /* JavaCC - OriginalChecksum=5abeb09cb988ad85b4f2f3f7e6845ab2 (do not edit this line) */

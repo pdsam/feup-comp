@@ -15,8 +15,8 @@ class ASTArrayLength extends Expression {
   @Override
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-    System.out.printf("%s\tArray Reference:\n", prefix);
-    arrayRef.dump(prefix + "\t\t");
+    System.out.printf("%s Array Reference:\n", prefix);
+    arrayRef.dump(prefix + "  ");
   }
 }
 /* JavaCC - OriginalChecksum=1f8775333fd9ffeb990d54271f0f6278 (do not edit this line) */

@@ -17,12 +17,12 @@ class ASTBranch extends Statement {
   @Override
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-    System.out.printf("%s\tCondition:\n", prefix);
-    condition.dump(prefix + "\t\t");
-    System.out.printf("%s\tThen:\n", prefix);
-    thenStatement.dump(prefix + "\t\t");
-    System.out.printf("%s\tElse:\n", prefix);
-    elseStatement.dump(prefix + "\t\t");
+    System.out.printf("%s Condition:\n", prefix);
+    condition.dump(prefix + "  ");
+    System.out.printf("%s Then:\n", prefix);
+    thenStatement.dump(prefix + "  ");
+    System.out.printf("%s Else:\n", prefix);
+    elseStatement.dump(prefix + "  ");
   }
 }
 /* JavaCC - OriginalChecksum=82bf9e9154f4c386dcef3ed1b685eed3 (do not edit this line) */

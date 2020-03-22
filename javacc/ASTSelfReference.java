@@ -10,5 +10,9 @@ class ASTSelfReference extends Expression {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+  }
 }
 /* JavaCC - OriginalChecksum=1b12a8a5fdf2dfa9880d4385718a69db (do not edit this line) */

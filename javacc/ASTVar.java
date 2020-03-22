@@ -13,5 +13,9 @@ class ASTVar extends SimpleNode {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.printf("%s %s: %s\n", prefix, identifier, type);
+  }
 }
 /* JavaCC - OriginalChecksum=f4007b07e33e21399e121c30aa957674 (do not edit this line) */

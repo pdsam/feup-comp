@@ -14,8 +14,7 @@ class ASTConstructorCall extends Expression {
 
   @Override
   public void dump(String prefix) {
-    System.out.println(toString(prefix));
-    System.out.printf("%s\tClass Name: %s\n", prefix, identifier);
+    System.out.printf("%s : new %s()\n", toString(prefix), identifier);
   }
 }
 /* JavaCC - OriginalChecksum=b08e45add43ed768d356944cbfdc00cb (do not edit this line) */

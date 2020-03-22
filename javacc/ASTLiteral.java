@@ -16,8 +16,8 @@ class ASTLiteral extends Expression {
   @Override
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-    System.out.printf("%s\tType: %s\n", prefix, type);
-    System.out.printf("%s\tValue: %s\n", prefix, val);
+    System.out.printf("%s Type: %s\n", prefix, type);
+    System.out.printf("%s Value: %s\n", prefix, val);
   }
 
 }

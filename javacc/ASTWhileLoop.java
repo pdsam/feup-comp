@@ -13,5 +13,13 @@ class ASTWhileLoop extends Statement {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s Condition:\n", prefix);
+    condition.dump(prefix + "  ");
+    System.out.printf("%s Body:\n", prefix);
+    body.dump(prefix + "  ");
+  }
 }
 /* JavaCC - OriginalChecksum=3c1356b15eb614280454e4920a4588d9 (do not edit this line) */

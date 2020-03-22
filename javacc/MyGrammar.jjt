@@ -440,12 +440,21 @@ Expression ArrayLength(Expression l) #ArrayLength(1) : {}
     {return jjtThis;}
 }
 
-Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier;}
+Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier; ASTParameters par = null;}
 {
     identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
-                <L_PAR> (( Expression() ( <COMMA> Expression() )* )?) #Parameters  <R_PAR>
+                <L_PAR> par=Parameters() <R_PAR>
 
-    {jjtThis.ownerRef = l;}
+    {
+        jjtThis.ownerRef = l;
+        jjtThis.parameters = par;
+    }
+    {return jjtThis;}
+}
+
+ASTParameters Parameters() #Parameters: {}
+{
+    (Expression() ( <COMMA> Expression() )*)?
     {return jjtThis;}
 }
 

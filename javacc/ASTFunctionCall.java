@@ -4,6 +4,7 @@ public
 class ASTFunctionCall extends Expression {
   protected Expression ownerRef;
   protected String identifier;
+  protected ASTParameters parameters;
 
   public ASTFunctionCall(int id) {
     super(id);
@@ -13,5 +14,14 @@ class ASTFunctionCall extends Expression {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s Function name: %s\n", prefix, identifier);
+    System.out.printf("%s Owner Reference:\n", prefix);
+    ownerRef.dump(prefix+"  ");
+
+    parameters.dump(prefix + " ");
+  }
 }
 /* JavaCC - OriginalChecksum=33fb9ed4dec67bbb1d82c4764f788c5f (do not edit this line) */
