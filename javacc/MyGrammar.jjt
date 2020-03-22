@@ -10,7 +10,8 @@ PARSER_BEGIN(MyGrammar)
     // Java code invoking the parser
     public class MyGrammar{
         public static int MAX_ERRORS = 2;
-        public static int num_errors = 0;
+        public static int numErrors = 0;
+        public static boolean foundError = false;
 
         public static void main(String[] args) throws ParseException {
             if(args.length < 1) {
@@ -29,9 +30,14 @@ PARSER_BEGIN(MyGrammar)
                 return;
             }
 
-            num_errors=0;
+            MyGrammar.numErrors = 0;
+            MyGrammar.foundError = false;
             MyGrammar parser = new MyGrammar(file);
             SimpleNode root = parser.Program();
+            if(MyGrammar.foundError) {
+                System.err.println("Errors were found during parsing. Fix them and try again.");
+                System.exit(-1);
+            }
             root.dump(">");
         }
     }
@@ -193,12 +199,12 @@ void MainDeclaration() #MainMethod : {Token string, identifier;}
 {
     <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> (
         (string=<IDENTIFIER> {if(!string.image.equals("String")) {
-    System.out.println("Exception in thread \"main\" ParseException: Encountered \""
-            + string.image + "\" at line " + string.beginLine + ", column " + string.beginColumn + ".");
-    System.out.println("Was expecting: \"String\"");
-    System.exit(-1);
+        String msg = "Encountered \"" + string.image + "\" at line " + string.beginLine + ", column " + string.beginColumn + ".\n";
+        msg += "Was expecting: \"String\"";
+        throw new ParseException(msg);
+       }
     }
-    } <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
+    <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
             {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Argument) #ArgumentList <R_PAR>
     <L_BRACKET>
         (LOOKAHEAD(2) VarDeclaration())* #VarDeclarationsList(true)
@@ -286,18 +292,20 @@ Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;
 
 JAVACODE
 void whileErrorRecovery(ParseException e) #void {
-    System.out.println("Our handler recorded an error");
+    System.err.println("Our handler recorded an error");
+    System.err.println("ParserException: " + e.getWhileMsg());
 
-    MyGrammar.num_errors++;
-    if(MyGrammar.num_errors >= MyGrammar.MAX_ERRORS) {
-        System.out.println("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
+    MyGrammar.foundError=true;
+    MyGrammar.numErrors++;
+    if(MyGrammar.numErrors >= MyGrammar.MAX_ERRORS) {
+        System.err.println("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
         System.exit(-1);
     }
     
     Token t;
     do{
         t=getNextToken();
-    }while(t.kind != 0 && t.kind != R_PAR);
+    }while(t.kind != 0 && t.kind != SEMICOLON);
 }
 
 
