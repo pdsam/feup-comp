@@ -12,5 +12,9 @@ class ASTVarReference extends Expression {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.printf("%s [ %s ]\n", toString(prefix), identifier);
+  }
 }
 /* JavaCC - OriginalChecksum=1b26da79c32f646f480044bf94dafc7c (do not edit this line) */

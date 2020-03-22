@@ -13,5 +13,12 @@ class ASTLiteral extends Expression {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s Type: %s\n", prefix, type);
+    System.out.printf("%s Value: %s\n", prefix, val);
+  }
+
 }
 /* JavaCC - OriginalChecksum=0d41266a3c855e938b1bcdfe22a9ce61 (do not edit this line) */

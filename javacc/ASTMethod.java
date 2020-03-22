@@ -13,5 +13,18 @@ class ASTMethod extends SimpleNode {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.printf("%s : %s -> %s\n", toString(prefix), identifier, type);
+
+    if (children != null) {
+      for (int i = 0; i < children.length; ++i) {
+        SimpleNode n = (SimpleNode)children[i];
+        if (n != null) {
+          n.dump(prefix + " ");
+        }
+      }
+    }
+  }
 }
 /* JavaCC - OriginalChecksum=e520198b9ad9d425775d48b35053f06f (do not edit this line) */

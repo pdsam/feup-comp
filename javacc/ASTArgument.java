@@ -13,5 +13,9 @@ class ASTArgument extends SimpleNode {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.printf("%s %s: %s\n", prefix, identifier, type);
+  }
 }
 /* JavaCC - OriginalChecksum=c430fbd62544d7d522d0a25eec5becdf (do not edit this line) */

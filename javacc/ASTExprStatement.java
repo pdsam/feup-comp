@@ -12,5 +12,9 @@ class ASTExprStatement extends Statement {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+      expression.dump(prefix);
+  }
 }
 /* JavaCC - OriginalChecksum=988a6c04c7c47489c995959a538df7d2 (do not edit this line) */

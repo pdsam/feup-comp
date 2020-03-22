@@ -12,5 +12,11 @@ class ASTArrayCreation extends Expression {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s Size Expression:\n", prefix);
+    size.dump(prefix + "  ");
+  }
 }
 /* JavaCC - OriginalChecksum=a55d11e209245c684a60771f3bcb4b0b (do not edit this line) */

@@ -12,5 +12,9 @@ class ASTNegation extends Expression {
     super(p, id);
   }
 
+  public void  dump(String prefix) {
+    System.out.println(toString(prefix));
+    child.dump(prefix + " ");
+  }
 }
 /* JavaCC - OriginalChecksum=48b7763635cf5b147f70ac01b5969500 (do not edit this line) */

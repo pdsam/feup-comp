@@ -14,5 +14,15 @@ class ASTBranch extends Statement {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s Condition:\n", prefix);
+    condition.dump(prefix + "  ");
+    System.out.printf("%s Then:\n", prefix);
+    thenStatement.dump(prefix + "  ");
+    System.out.printf("%s Else:\n", prefix);
+    elseStatement.dump(prefix + "  ");
+  }
 }
 /* JavaCC - OriginalChecksum=82bf9e9154f4c386dcef3ed1b685eed3 (do not edit this line) */

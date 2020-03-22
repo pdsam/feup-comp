@@ -13,5 +13,13 @@ class ASTAssignment extends Statement {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s Variable:\n", prefix);
+    varReference.dump(prefix + "  ");
+    System.out.printf("%s Value:\n", prefix);
+    value.dump(prefix + "  ");
+  }
 }
 /* JavaCC - OriginalChecksum=62e1e838c675001b7573c6604b2957d0 (do not edit this line) */

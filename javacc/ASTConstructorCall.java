@@ -12,5 +12,9 @@ class ASTConstructorCall extends Expression {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.printf("%s : new %s()\n", toString(prefix), identifier);
+  }
 }
 /* JavaCC - OriginalChecksum=b08e45add43ed768d356944cbfdc00cb (do not edit this line) */
