@@ -299,8 +299,14 @@ void whileErrorRecovery(ParseException e) #void {
     }
     
     Token t = getToken(0);
-    while(t.kind != R_PAR && t.next.kind != L_BRACKET) {
-        t=getNextToken();
+    while(true) { /*t.kind != R_PAR && t.next.kind != L_BRACKET*/
+        if(t.kind == R_PAR && getToken(1).kind != R_PAR) {
+            break;
+        } else if ( getToken(1).kind == L_BRACKET ) {
+            break;
+        }
+
+        t = getNextToken();
     }
 }
 
