@@ -6,7 +6,6 @@ options {
 PARSER_BEGIN(MyGrammar)
     import java.io.InputStream;
     import java.io.FileInputStream;
-
     // Java code invoking the parser
     public class MyGrammar{
         public static int MAX_ERRORS = 10;
@@ -299,12 +298,10 @@ void whileErrorRecovery(ParseException e) #void {
         throw new ParseException("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
     }
     
-    Token t;
-    do{
+    Token t = getToken(0);
+    while(t.kind != R_PAR && t.next.kind != L_BRACKET) {
         t=getNextToken();
-    }while(t.kind != R_PAR && t.kind != L_BRACKET);
-
-    System.out.println(t.image);
+    }
 }
 
 
