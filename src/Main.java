@@ -1,10 +1,12 @@
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.FileInputStream;
 
-public class Main {
-	public static int MAX_ERRORS=2;
-	public static int num_errors=0;
-	
+// Java code invoking the parser
+public class Main{
+	public static int MAX_ERRORS = 2;
+	public static int numErrors = 0;
+	public static boolean foundError = false;
+
 	public static void main(String[] args) throws ParseException {
 		if(args.length < 1) {
 			System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
@@ -19,14 +21,17 @@ public class Main {
 			file = new FileInputStream(args[0]);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
-			//e.printStackTrace();
 			return;
 		}
 
-		num_errors=0;
+		MyGrammar.numErrors = 0;
+		MyGrammar.foundError = false;
 		MyGrammar parser = new MyGrammar(file);
 		SimpleNode root = parser.Program();
+		if(MyGrammar.foundError) {
+			System.err.println("Errors were found during parsing. Fix them and try again.");
+			System.exit(-1);
+		}
 		root.dump(">");
 	}
-
 }
