@@ -118,11 +118,7 @@ void ClassImport() #MethodImport : {String imp, param, returnType;}
         (<VOID> | param=Type() { jjtThis.parameters.add(param); } (<COMMA> param=Type() { jjtThis.parameters.add(param); } )*)?
     <R_PAR>
     (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";}))?
-    { jjtThis.numParams = jjtThis.parameters.size();
-        System.out.println("Normal import: " + jjtThis.importSequence + " with " + jjtThis.numParams + " parameters");
-            for(int i = 0; i < jjtThis.numParams; i++)
-                System.out.println(jjtThis.parameters.get(i));
-            }
+    { jjtThis.numParams = jjtThis.parameters.size(); }
 }
 
 void StaticMethodImport() #StaticMethodImport : {String imp, param, returnType;}
@@ -132,11 +128,7 @@ void StaticMethodImport() #StaticMethodImport : {String imp, param, returnType;}
         (<VOID> | param=Type() { jjtThis.parameters.add(param); } (<COMMA> param=Type() { jjtThis.parameters.add(param); } )*)?
     <R_PAR> 
     (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";})
-    { jjtThis.numParams = jjtThis.parameters.size();
-        System.out.println("Static import: " + jjtThis.importSequence + " with " + jjtThis.numParams + " parameters");
-        for(int i = 0; i < jjtThis.numParams; i++)
-            System.out.println(jjtThis.parameters.get(i));
-        }
+    { jjtThis.numParams = jjtThis.parameters.size(); }
 }
 
 String ImportSequence() #void : {Token t;}
