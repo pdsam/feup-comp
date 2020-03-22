@@ -35,7 +35,7 @@ PARSER_BEGIN(MyGrammar)
             MyGrammar parser = new MyGrammar(file);
             SimpleNode root = parser.Program();
             if(MyGrammar.foundError) {
-                throw new ParseException(Integer.toString(numErrors) + " error(s) were found during parsing. Fix them and try again.");
+                throw new ParseException(Integer.toString(MyGrammar.numErrors) + " error(s) were found during parsing. Fix them and try again.");
             }
             root.dump(">");
         }
@@ -302,7 +302,9 @@ void whileErrorRecovery(ParseException e) #void {
     Token t;
     do{
         t=getNextToken();
-    }while(t.kind != L_BRACKET);
+    }while(t.kind != R_PAR && t.kind != L_BRACKET);
+
+    System.out.println(t.image);
 }
 
 

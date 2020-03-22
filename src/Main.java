@@ -29,7 +29,7 @@ public class Main{
 		MyGrammar parser = new MyGrammar(file);
 		SimpleNode root = parser.Program();
 		if(MyGrammar.foundError) {
-			throw new ParseException(Integer.toString(numErrors) + " error(s) were found during parsing. Fix them and try again.");
+			throw new ParseException(Integer.toString(MyGrammar.numErrors)  + " error(s) were found during parsing. Fix them and try again.");
 		}
 		root.dump(">");
 	}
