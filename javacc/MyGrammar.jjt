@@ -77,7 +77,6 @@ TOKEN :
     |   <NEW : "new" >
     |   <EXTENDS : "extends" >
     |   <IMPORT : "import" >
-    |   <STRING : "String" >
     |   <PUBLIC : "public" >
     |   <STATIC: "static">
     |   <MAIN: "main">
@@ -116,18 +115,28 @@ void ClassImport() #MethodImport : {String imp, param, returnType;}
 {
     imp=ImportSequence() {jjtThis.importSequence = imp;}
     (<L_PAR> 
-        (<VOID> { jjtThis.parameters="void"; } | param=TypeSequence() { jjtThis.parameters=param; } )?
+        (<VOID> | param=Type() { jjtThis.parameters.add(param); } (<COMMA> param=Type() { jjtThis.parameters.add(param); } )*)?
     <R_PAR>
     (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";}))?
+    { jjtThis.numParams = jjtThis.parameters.size();
+        System.out.println("Normal import: " + jjtThis.importSequence + " with " + jjtThis.numParams + " parameters");
+            for(int i = 0; i < jjtThis.numParams; i++)
+                System.out.println(jjtThis.parameters.get(i));
+            }
 }
 
 void StaticMethodImport() #StaticMethodImport : {String imp, param, returnType;}
 {
     <STATIC> imp=StaticImportSequence() {jjtThis.importSequence = imp;}
     <L_PAR> 
-        (<VOID> { jjtThis.parameters="void"; } | param=TypeSequence() { jjtThis.parameters=param; } )?
+        (<VOID> | param=Type() { jjtThis.parameters.add(param); } (<COMMA> param=Type() { jjtThis.parameters.add(param); } )*)?
     <R_PAR> 
     (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";})
+    { jjtThis.numParams = jjtThis.parameters.size();
+        System.out.println("Static import: " + jjtThis.importSequence + " with " + jjtThis.numParams + " parameters");
+        for(int i = 0; i < jjtThis.numParams; i++)
+            System.out.println(jjtThis.parameters.get(i));
+        }
 }
 
 String ImportSequence() #void : {Token t;}
@@ -138,7 +147,6 @@ String ImportSequence() #void : {Token t;}
             importString += t.image;
             t=t.next;
         } while(t.kind == IDENTIFIER || t.kind == DOT);
-        System.out.println(importString);
         return importString;
     }
 }
@@ -151,15 +159,7 @@ String StaticImportSequence() #void : {Token t;}
             importString += t.image;
             t=t.next;
         } while(t.kind == IDENTIFIER || t.kind == DOT);
-        System.out.println(importString);
         return importString;
-    }
-}
-
-String TypeSequence() #void: {String t;}
-{
-    t=Type() (<COMMA> Type())* {
-        return t;
     }
 }
 
@@ -197,10 +197,16 @@ void MethodDeclaration() #Method : {String type; Token identifier;}
     <R_BRACKET>
 }
 
-void MainDeclaration() #MainMethod : {Token identifier;}
+void MainDeclaration() #MainMethod : {Token string, identifier;}
 {
     <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> (
-        (<STRING> <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
+        (string=<IDENTIFIER> {if(!string.image.equals("String")) {
+    System.out.println("Exception in thread \"main\" ParseException: Encountered \""
+            + string.image + "\" at line " + string.beginLine + ", column " + string.beginColumn + ".");
+    System.out.println("Was expecting: \"String\"");
+    System.exit(-1);
+    }
+    } <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
             {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Argument) #ArgumentList <R_PAR>
     <L_BRACKET>
         (LOOKAHEAD(2) VarDeclaration())* #VarDeclarationsList(true)
@@ -288,7 +294,7 @@ Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;
 
 JAVACODE
 void whileErrorRecovery(ParseException e) #void {
-    System.out.println("Our handler recorded: " + e.toString());
+    System.out.println("Our handler recorded an error");
 
     MyGrammar.num_errors++;
     if(MyGrammar.num_errors >= MyGrammar.MAX_ERRORS) {
