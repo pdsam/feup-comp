@@ -1,5 +1,6 @@
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.text.ParseException;
 
 // Java code invoking the parser
 public class Main{
@@ -29,8 +30,7 @@ public class Main{
 		MyGrammar parser = new MyGrammar(file);
 		SimpleNode root = parser.Program();
 		if(MyGrammar.foundError) {
-			System.err.println("Errors were found during parsing. Fix them and try again.");
-			System.exit(-1);
+			throw new ParseException(Integer.toString(numErrors) + " error(s) were found during parsing. Fix them and try again.");
 		}
 		root.dump(">");
 	}

@@ -35,8 +35,7 @@ PARSER_BEGIN(MyGrammar)
             MyGrammar parser = new MyGrammar(file);
             SimpleNode root = parser.Program();
             if(MyGrammar.foundError) {
-                System.err.println("Errors were found during parsing. Fix them and try again.");
-                System.exit(-1);
+                throw new ParseException(Integer.toString(numErrors) + " error(s) were found during parsing. Fix them and try again.");
             }
             root.dump(">");
         }
@@ -298,8 +297,7 @@ void whileErrorRecovery(ParseException e) #void {
     MyGrammar.foundError=true;
     MyGrammar.numErrors++;
     if(MyGrammar.numErrors >= MyGrammar.MAX_ERRORS) {
-        System.err.println("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
-        System.exit(-1);
+        throw new ParseException("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
     }
     
     Token t;
