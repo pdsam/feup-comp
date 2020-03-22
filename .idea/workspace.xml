@@ -2,48 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b7d684ef-a1b3-4a46-b8be-346b5aaa4e78" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/bit.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/comp2020-5b.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTAnd.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTArgument.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTArrayAccess.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTArrayAssignment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTArrayCreation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTArrayLength.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTAssignment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTBranch.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTClass.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTClassImport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTConstructorCall.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTDiv.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTExprStatement.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTFunctionCall.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTImport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTLessThan.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTLiteral.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTMainMethod.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTMethod.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTMethodImport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTMul.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTNegation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTScopedStatementList.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTSelfReference.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTSub.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTSum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTVar.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTVarReference.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/ASTWhileLoop.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/BinOpExpression.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/Expression.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/javacc/Statement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/javacc/MyGrammar.jjt" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/MyGrammar.jjt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/ParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/ParserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTArgument.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTArgument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTArrayAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTArrayAccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTArrayAssignment.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTArrayAssignment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTArrayCreation.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTArrayCreation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTArrayLength.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTArrayLength.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTAssignment.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTAssignment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTBranch.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTBranch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTConstructorCall.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTConstructorCall.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/ASTLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/ASTLiteral.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

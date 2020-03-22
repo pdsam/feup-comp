@@ -3,7 +3,7 @@
 public
 class ASTClass extends SimpleNode {
   protected String identifier;
-  protected String parent;
+  protected String parent = null;
 
   public ASTClass(int id) {
     super(id);
@@ -13,5 +13,14 @@ class ASTClass extends SimpleNode {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s\tIdentifier: %s\n", prefix, identifier);
+
+    if (parent != null) {
+      System.out.printf("%s\tExtends: %s\n", prefix, parent);
+    }
+  }
 }
 /* JavaCC - OriginalChecksum=e5d622066819fa5dbc374d37ea6811bc (do not edit this line) */

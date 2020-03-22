@@ -13,5 +13,13 @@ class ASTArrayAccess extends Expression {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(toString(prefix));
+    System.out.printf("%s\tReference:\n", prefix);
+    arrayRef.dump(prefix + "\t\t");
+    System.out.printf("%s\tIndex:\n", prefix);
+    index.dump(prefix + "\t\t");
+  }
 }
 /* JavaCC - OriginalChecksum=e3590b2cb8e57392b3ef9f40abdb8647 (do not edit this line) */
