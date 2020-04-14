@@ -4,7 +4,7 @@ import java.util.HashMap;
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTClass extends SimpleNode {
-  public HashMap<String, String> symtbl = new HashMap<String, String>();
+  public HashMap<int, String> symbol_table = new HashMap<int, String>();
   
   protected String identifier;
   protected String parent = null;

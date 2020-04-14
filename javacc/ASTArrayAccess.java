@@ -7,10 +7,12 @@ class ASTArrayAccess extends Expression {
 
   public ASTArrayAccess(int id) {
     super(id);
+    add_to_symbol_table(id, arrayRef, index);
   }
 
   public ASTArrayAccess(MyGrammar p, int id) {
     super(p, id);
+    add_to_symbol_table(id, arrayRef, index);
   }
 
   @Override

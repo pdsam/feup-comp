@@ -7,10 +7,12 @@ class ASTVar extends SimpleNode {
 
   public ASTVar(int id) {
     super(id);
+    add_to_symbol_table(id, type + " " + identifier);
   }
 
   public ASTVar(MyGrammar p, int id) {
     super(p, id);
+    add_to_symbol_table(id, type + " " + identifier);
   }
 
   @Override

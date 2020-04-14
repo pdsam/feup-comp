@@ -7,7 +7,7 @@ class ASTMethod extends SimpleNode {
   protected String identifier;
   protected String type;
 
-  public HashMap<String, String> symbolTable = new HashMap<String, String>();
+  public HashMap<id, String> symbolTable = new HashMap<id, String>();
 
   public ASTMethod(int id) {
     super(id);

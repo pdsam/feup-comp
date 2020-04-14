@@ -8,11 +8,13 @@ class ASTArgument extends SimpleNode {
   public ASTArgument(int id) {
     super(id);
     //add to symbol table
+    add_to_symbol_table(id, type + " " + identifier);
   }
 
   public ASTArgument(MyGrammar p, int id) {
     super(p, id);
     //add to symbol table
+    add_to_symbol_table(id, type + " " +  identifier);
   }
 
   @Override
