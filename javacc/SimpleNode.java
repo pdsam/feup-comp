@@ -86,32 +86,43 @@ class SimpleNode implements Node {
     while(node != null)
     {
       
-      if(node instanceof ASTMethod)
-      {
-        if( ((ASTMethod) node).symboltable.get(id) != null)
+      if(node instanceof ASTImport ) {
+
+        if( ((ASTImport) node).symbol_table.get(id) != null)
           return false;
 
-        ((ASTMethod) node).symboltable.put(id, type);
+        ((ASTImport) node).symbol_table.put(id, type);
+
+        return true;
+
+      }
+
+      if(node instanceof ASTMethod) {
+
+        if( ((ASTMethod) node).symbol_table.get(id) != null)
+          return false;
+
+        ((ASTMethod) node).symbol_table.put(id, type);
 
         return true;
       } 
 
-      if(node instanceof ASTMainMethod)
-      {
-        if( ((ASTMainMethod) node).symboltable.get(id) != null)
+      if(node instanceof ASTMainMethod) {
+        
+        if( ((ASTMainMethod) node).symbol_table.get(id) != null)
           return false;
 
-        ((ASTMainMethod) node).symboltable.put(id, type);
+        ((ASTMainMethod) node).symbol_table.put(id, type);
 
         return true;
       }
 
-      if(node instanceof ASTClass)
-      {
-        if( ((ASTClass) node).symboltable.get(id) != null)
+      if(node instanceof ASTClass) {
+
+        if( ((ASTClass) node).symbol_table.get(id) != null)
           return false;
 
-        ((ASTClass) node).symboltable.put(id, type);
+        ((ASTClass) node).symbol_table.put(id, type);
         return true;
       }
 
