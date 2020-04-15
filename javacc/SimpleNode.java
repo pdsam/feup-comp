@@ -79,13 +79,52 @@ class SimpleNode implements Node {
     return id;
   }
 
-  public boolean add_to_symbol_table(String id, String type)
+  public boolean add_to_symbol_table(String key, String value)
   {
     Node node = parent;
 
     while(node != null)
     {
-      
+      if(node instanceof ASTVar ) {
+        if( (ASTMethod) node).vars_symbol_table.get(key) != null )
+          return false;
+
+        (ASTMethod) node).vars_symbol_table.put(key, value );
+
+        return true;
+      }
+
+      if(node instanceof ASTParameters ){
+        if( (ASTMethod) node).parameters_symbol_table.get(key) != null )
+          return false;
+
+        (ASTMethod) node).parameters_symbol_table.put(key, value );
+
+        return true;
+      }
+
+/**  In progress
+      if(node instanceof ASTParameters ){
+        if( (ASTClass) node).attributes_symbol_table.get(key) != null )
+          return false;
+
+        (ASTClass) node)attributes_symbol_table.put(key, value );
+
+        return true;
+      }
+
+      if(node instanceof ASTParameters ){
+        if( (ASTClass) node).methods_symbol_table.get(key) != null )
+          return false;
+
+        (ASTClass) node)methods_symbol_table.put(key, value );
+
+        return true;
+      }
+
+*/
+/*/
+
       if(node instanceof ASTImport ) {
 
         if( ((ASTImport) node).symbol_table.get(id) != null)
@@ -125,6 +164,7 @@ class SimpleNode implements Node {
         ((ASTClass) node).symbol_table.put(id, type);
         return true;
       }
+*/
 
       node = (SimpleNode) parent.jjtGetParent();
     }
