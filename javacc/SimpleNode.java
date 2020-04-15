@@ -78,20 +78,36 @@ class SimpleNode implements Node {
   public int getId() {
     return id;
   }
-
-  public boolean add_to_symbol_table(String key, String value)
+/*
+  public boolean add_to_symbol_table(Node node)
   {
-    Node node = parent;
+  
+    Node parent = node.jjtGetParent();
 
-    while(node != null)
-    {
-      if(node instanceof ASTVar ) {
-        if( (ASTMethod) node).vars_symbol_table.get(key) != null )
+    if(node instanceof ASTVar ) {
+
+      String key = ((ASTVar) node).get_identifier();
+        
+      if(parent instanceof ASTMethod) {
+        if( (ASTMethod) parent).attributes_symbol_table.get(key) != null )
           return false;
 
-        (ASTMethod) node).vars_symbol_table.put(key, value );
+        (ASTMethod) parent).vars_symbol_table.put(key, value );
 
         return true;
+
+      } else (node instanceof ASTClass ) {
+
+          if( (ASTClass ) parent).vars_symbol_table.get(key) != null )
+            return false;
+
+          (ASTClass) parent).vars_symbol_table.put(key, value );
+
+          return true;
+        }
+
+        throw new InvalidDeclaration();
+        
       }
 
       if(node instanceof ASTParameters ){
@@ -164,13 +180,8 @@ class SimpleNode implements Node {
         ((ASTClass) node).symbol_table.put(id, type);
         return true;
       }
-*/
-
-      node = (SimpleNode) parent.jjtGetParent();
-    }
-
     return false;
-  }
+  } */
 }
 
 /* JavaCC - OriginalChecksum=93ad6855db0df46c9c1b9ebbb09966cc (do not edit this line) */

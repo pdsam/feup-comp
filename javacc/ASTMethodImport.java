@@ -10,13 +10,16 @@ public class ASTMethodImport extends ASTImport {
 
   public ASTMethodImport(int id) {
     super(id);
-   // add_to_symbol_table(id, returnType);
   }
 
   public ASTMethodImport(MyGrammar p, int id) {
     super(p, id);
-   // add_to_symbol_table(id, returnType);
   }
+
+  public String get_returnType() {
+    return type;
+  }
+
 
 }
 /* JavaCC - OriginalChecksum=721b526f9ba26e0137474d2c4ef1d531 (do not edit this line) */

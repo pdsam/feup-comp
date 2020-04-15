@@ -7,14 +7,20 @@ class ASTVar extends SimpleNode {
 
   public ASTVar(int id) {
     super(id);
-    add_to_symbol_table(identifier, type);
   }
 
   public ASTVar(MyGrammar p, int id) {
     super(p, id);
-    add_to_symbol_table(identifier, type);
   }
 
+  public String get_type() {
+    return type;
+  }
+
+  public String get_identifier() {
+    return identifier;
+  }
+  
   @Override
   public void dump(String prefix) {
     System.out.printf("%s %s: %s\n", prefix, identifier, type);
