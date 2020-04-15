@@ -6,8 +6,13 @@ public
 class ASTMethod extends SimpleNode {
   protected String identifier;
   protected String type;
+  protected String parent = null;
 
-  public HashMap<id, String> symbol_table = new HashMap<id, String>();
+  //parameters HashMap
+  public HashMap<String, String> parameters_symbol_table = new HashMap<String, String>();
+
+  //vars HashMap
+  public HashMap<String, String> vars_symbol_table = new HashMap<String, String>();
 
   public ASTMethod(int id) {
     super(id);

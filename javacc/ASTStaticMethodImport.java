@@ -10,12 +10,12 @@ public class ASTStaticMethodImport extends SimpleNode {
 
   public ASTStaticMethodImport(int id) {
     super(id);
-    add_to_symbol_table(id, returnType + " " + importSequence);
+    add_to_symbol_table(id, returnType);
   }
 
   public ASTStaticMethodImport(MyGrammar p, int id) {
     super(p, id);
-    add_to_symbol_table(id, returnType + " " + importSequence);
+    add_to_symbol_table(id, returnType);
   }
 
 }

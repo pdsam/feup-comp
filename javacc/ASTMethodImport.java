@@ -10,12 +10,12 @@ public class ASTMethodImport extends ASTImport {
 
   public ASTMethodImport(int id) {
     super(id);
-    add_to_symbol_table(id, returnType + " " + importSequence);
+    add_to_symbol_table(id, returnType);
   }
 
   public ASTMethodImport(MyGrammar p, int id) {
     super(p, id);
-    add_to_symbol_table(id, returnType + " " + importSequence);
+    add_to_symbol_table(id, returnType);
   }
 
 }

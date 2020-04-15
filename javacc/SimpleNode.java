@@ -79,7 +79,7 @@ class SimpleNode implements Node {
     return id;
   }
 
-  public boolean add_to_symbol_table(int id, String type)
+  public boolean add_to_symbol_table(String id, String type)
   {
     Node node = parent;
 

@@ -4,12 +4,10 @@ public
 class ASTClassImport extends ASTImport {
   public ASTClassImport(int id) {
     super(id);
-    add_to_symbol_table(id);
   }
 
   public ASTClassImport(MyGrammar p, int id) {
     super(p, id);
-    add_to_symbol_table(id);
   }
 
 }

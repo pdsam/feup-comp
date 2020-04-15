@@ -4,7 +4,7 @@ import java.util.HashMap;
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTMainMethod extends ASTMethod {
-  public HashMap<id, String> symbol_table = new HashMap<id, String>();
+  public HashMap<String, String> symbol_table = new HashMap<String, String>();
 
   public ASTMainMethod(int id) {
     super(id);
