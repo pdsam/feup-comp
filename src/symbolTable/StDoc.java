@@ -25,8 +25,15 @@ public class StDoc extends SymbolTable {
 
     @Override
     public void put_method(String id, MethodDescriptor descriptor) {
-    {
         this.imports.put(id, descriptor);
     }
-    
+
+    @Override
+    public Descriptor variables_lookup(String id) {
+        return null;
+    }
+
+    @Override
+    public void put_variables(String id, VarDescriptor descriptor) {    }
+
 }
