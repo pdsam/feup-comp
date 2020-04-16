@@ -1,27 +1,24 @@
 package symbolTable;
 
-public class VarDescriptor {
-    private final String name;
+public class VarDescriptor extends Descriptor {
     private final String type;
     private int stackOffset;
     private String value;
 
     public VarDescriptor(String name, String type) {
-        this(name, type, null);
+        super(name);
+        this.type = type;
+        value = null;
     }
 
     public VarDescriptor(String name, String type, String value) {
-        this.name = name;
+        super(name);
         this.type = type;
         this.value = value;
     }
 
     public boolean isInitialized() {
         return this.value != null;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getType() {

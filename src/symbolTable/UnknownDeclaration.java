@@ -1,12 +1,13 @@
+package symbolTable;
 
 public class UnknownDeclaration extends Exception {
 
-    InvalidDeclaration()
+    UnknownDeclaration()
     {
         super();
     }
 
-    InvalidDeclaration(String message)
+    UnknownDeclaration(String message)
     {
         super(message);
     }

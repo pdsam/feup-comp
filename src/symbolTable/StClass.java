@@ -1,5 +1,6 @@
 package symbolTable;
 
+import javacc.SimpleNode;
 import java.util.HashMap;
 
 public class StClass extends SymbolTable {
@@ -9,21 +10,31 @@ public class StClass extends SymbolTable {
     public StClass(SimpleNode node, SymbolTable parent){
         super(node, parent);
     }
-    
-    public VarDescriptor lookup_field(String id) {
-        return this.fields_table.get(id);
-    }
-    
-    public void put_field(String id, VarDescriptor descriptor){
-        this.fields_table.put(id, descriptor);
+
+    public StClass(SimpleNode node) {
+        super(node);
     }
 
-    public MethodDescriptor lookup_method(String id) {
+    @Override
+    public Descriptor method_lookup(String id) {
         return this.methods_table.get(id);
     }
-    
+
+    @Override
     public void put_method(String id, MethodDescriptor descriptor){
         this.methods_table.put(id, descriptor);
     }
+
+    @Override
+    public Descriptor variables_lookup(String id) {
+        return this.fields_table.get(id);
+    }
+
+    @Override
+    public void put_variables(String id, VarDescriptor descriptor){
+        this.fields_table.put(id, descriptor);
+    }
+
+
     
 }
