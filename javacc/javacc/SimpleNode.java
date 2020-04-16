@@ -105,7 +105,7 @@ class SimpleNode implements Node {
           if( ((ASTClass) node).symbol_table.variables_lookup(id) != null)
             return false;
 
-          ((ASTClass) node).symbol_table.put_field(id, (VarDescriptor) descriptor);
+          ((ASTClass) node).symbol_table.put_variables(id, (VarDescriptor) descriptor);
         }
 
         return true;
@@ -114,18 +114,22 @@ class SimpleNode implements Node {
 
       if (node instanceof ASTMethod) {
 
-        if(descriptor instanceof MethodDescriptor ) {
-          if(((ASTMethod) node).symbol_table.method_lookup(id) != null)
-            return false;
-
-          ((ASTMethod) node).symbol_table.put_method(id, (MethodDescriptor) descriptor);
-
-        } else {
+        if(descriptor instanceof  VarDescriptor) {
           if( ((ASTMethod) node).symbol_table.variables_lookup(id) != null)
             return false;
 
-          ((ASTMethod) node).symbol_table.put_field(id, (VarDescriptor) descriptor);
+          ((ASTMethod) node).symbol_table.put_variables(id, (VarDescriptor) descriptor);
         }
+     /*   if(descriptor instanceof MethodDescriptor ) {
+          if(((ASTMethod) node).symbol_table.method_lookup(id) != null)
+            return false;
+
+          ((ASTMethod) node).symbol_table.p
+                  put_method(id, (MethodDescriptor) descriptor);
+
+        } else {
+
+        } */
 
         return true;
       }

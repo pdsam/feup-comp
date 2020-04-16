@@ -17,7 +17,6 @@ public class StMethod extends SymbolTable {
         super(node);
     }
 
-    @Override
     public Descriptor method_lookup(String id) {
         return this.parameters.get(id);
     }
@@ -26,12 +25,11 @@ public class StMethod extends SymbolTable {
         this.parameters.put(id, descriptor);
     }
 
-    @Override
     public Descriptor variables_lookup(String id) {
          return this.local_variables.get(id);
     }
 
-    public void put(String id, VarDescriptor descriptor){
+    public void put_variables(String id, VarDescriptor descriptor) {
         this.local_variables.put(id, descriptor);
     }
     
