@@ -1,6 +1,7 @@
 options {
   LOOKAHEAD = 1;
   MULTI = true;
+  VISITOR = true;
 }
 
 PARSER_BEGIN(MyGrammar)
