@@ -16,5 +16,12 @@ class ASTConstructorCall extends Expression {
   public void dump(String prefix) {
     System.out.printf("%s : new %s()\n", toString(prefix), identifier);
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=b08e45add43ed768d356944cbfdc00cb (do not edit this line) */

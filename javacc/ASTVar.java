@@ -17,5 +17,14 @@ class ASTVar extends SimpleNode {
   public void dump(String prefix) {
     System.out.printf("%s %s: %s\n", prefix, identifier, type);
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=f4007b07e33e21399e121c30aa957674 (do not edit this line) */

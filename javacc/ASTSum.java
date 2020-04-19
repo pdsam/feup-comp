@@ -12,5 +12,14 @@ class ASTSum extends BinOpExpression {
     this.type = "int";
   }
 
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    left.jjtAccept(visitor, data);
+    right.jjtAccept(visitor, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=80e0c57c002571cb7dba1674ad4bb3f4 (do not edit this line) */

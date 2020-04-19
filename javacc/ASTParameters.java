@@ -10,5 +10,13 @@ class ASTParameters extends SimpleNode {
     super(p, id);
   }
 
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    childrenAccept(visitor, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=8958c394ec71e4c951c05f67dbb8c665 (do not edit this line) */

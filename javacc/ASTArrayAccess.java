@@ -21,5 +21,15 @@ class ASTArrayAccess extends Expression {
     System.out.printf("%s Index:\n", prefix);
     index.dump(prefix + "  ");
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    arrayRef.jjtAccept(visitor, data);
+    index.jjtAccept(visitor, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=e3590b2cb8e57392b3ef9f40abdb8647 (do not edit this line) */

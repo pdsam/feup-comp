@@ -16,5 +16,14 @@ class ASTExprStatement extends Statement {
   public void dump(String prefix) {
       expression.dump(prefix);
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    expression.jjtAccept(visitor, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=988a6c04c7c47489c995959a538df7d2 (do not edit this line) */

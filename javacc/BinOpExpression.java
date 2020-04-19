@@ -15,4 +15,14 @@ public abstract class BinOpExpression extends Expression {
         left.dump(prefix + " ");
         right.dump(prefix + " ");
     }
+
+    @Override
+    public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+        visitor.visit(this, data);
+
+        left.jjtAccept(visitor, data);
+        right.jjtAccept(visitor, data);
+
+        return data;
+    }
 }

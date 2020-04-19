@@ -12,5 +12,15 @@ class ASTLessThan extends BinOpExpression {
     this.type = "boolean";
   }
 
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    left.jjtAccept(visitor, data);
+    right.jjtAccept(visitor, data);
+
+    return data;
+  }
+
 }
 /* JavaCC - OriginalChecksum=d40724c42ee8060b3dcae9a7303625b8 (do not edit this line) */

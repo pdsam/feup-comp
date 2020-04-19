@@ -21,5 +21,14 @@ class ASTAssignment extends Statement {
     System.out.printf("%s Value:\n", prefix);
     value.dump(prefix + "  ");
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    varReference.jjtAccept(visitor, data);
+    value.jjtAccept(visitor, data);
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=62e1e838c675001b7573c6604b2957d0 (do not edit this line) */

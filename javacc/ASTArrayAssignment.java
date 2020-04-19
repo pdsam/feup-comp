@@ -21,5 +21,15 @@ public class ASTArrayAssignment extends Statement {
     System.out.printf("%s value:\n", prefix);
     value.dump(prefix + "  ");
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    arrayRef.jjtAccept(visitor, data);
+    value.jjtAccept(visitor, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=5abeb09cb988ad85b4f2f3f7e6845ab2 (do not edit this line) */

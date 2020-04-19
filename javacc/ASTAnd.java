@@ -2,8 +2,6 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTAnd extends BinOpExpression {
-
-
   public ASTAnd(int id) {
     super(id);
     this.type = "boolean";
@@ -14,6 +12,14 @@ class ASTAnd extends BinOpExpression {
     this.type = "boolean";
   }
 
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
 
+    left.jjtAccept(visitor, data);
+    right.jjtAccept(visitor, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=6d17c8b9226d3f3e295ca5d1059b16bf (do not edit this line) */

@@ -12,5 +12,14 @@ class ASTSub extends BinOpExpression {
     this.type = "int";
   }
 
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    left.jjtAccept(visitor, data);
+    right.jjtAccept(visitor, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=bfb61ee7c75babb3e92617c46c5a0691 (do not edit this line) */

@@ -23,9 +23,7 @@ class ASTImport extends SimpleNode {
 
   /** Accept the visitor. **/
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-
-    return
-    visitor.visit(this, data);
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=adfce7cfaebda5f64600e3ae32ea0dbf (do not edit this line) */

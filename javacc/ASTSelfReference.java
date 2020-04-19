@@ -14,5 +14,12 @@ class ASTSelfReference extends Expression {
   public void dump(String prefix) {
     System.out.println(toString(prefix));
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=1b12a8a5fdf2dfa9880d4385718a69db (do not edit this line) */

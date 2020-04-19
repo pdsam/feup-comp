@@ -16,5 +16,12 @@ class ASTVarReference extends Expression {
   public void dump(String prefix) {
     System.out.printf("%s [ %s ]\n", toString(prefix), identifier);
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=1b26da79c32f646f480044bf94dafc7c (do not edit this line) */

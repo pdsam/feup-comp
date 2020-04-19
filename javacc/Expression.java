@@ -20,4 +20,11 @@ public abstract class Expression extends SimpleNode {
             }
         }
     }
+
+    @Override
+    public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+        visitor.visit(this, data);
+
+        return data;
+    }
 }

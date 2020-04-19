@@ -23,5 +23,14 @@ class ASTFunctionCall extends Expression {
 
     parameters.dump(prefix + " ");
   }
+
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+    visitor.visit(this, data);
+
+    ownerRef.jjtAccept(visitor, data);
+    //TODO check if we should visit arguments
+    return data;
+  }
 }
 /* JavaCC - OriginalChecksum=33fb9ed4dec67bbb1d82c4764f788c5f (do not edit this line) */
