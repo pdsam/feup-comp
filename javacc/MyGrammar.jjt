@@ -77,7 +77,6 @@ TOKEN :
     |   <NOT : "!" >
     |   <AND : "&&" >
     |   <LESS_THAN : "<" >
-    |   <LENGTH : "length" >
     |   <CLASS : "class" >
     |   <THIS : "this" >
     |   <NEW : "new" >
@@ -109,7 +108,7 @@ SimpleNode Program() #Document : {}
 }
 
 void ImportDeclaration() #Import : {Token t; String type;}{
-  <IMPORT> [<STATIC> {jjtThis.isStatic=true;}] t=<IDENTIFIER>{jjtThis.className=t.image;}
+  <IMPORT> [<STATIC> {jjtThis.isStatic=true;}] t=<IDENTIFIER> {jjtThis.className=t.image;}
   [<DOT> t=<IDENTIFIER> {jjtThis.methodName=t.image;}]
   [<L_PAR> ImportParamList(jjtThis.parameters) <R_PAR> [type=Type() {jjtThis.returnType = type;}|<VOID>] ]
   <SEMICOLON>
@@ -128,8 +127,8 @@ void ClassDeclaration() #Class : {Token identifier, parent;}
         (
             LOOKAHEAD(2)
             MethodDeclaration()
-        )* #MethodList
-        MainDeclaration()            // This forces 'main' to only appear once
+        )* #MethodList(true)
+        (LOOKAHEAD(2) MainDeclaration())? #MainContainer(true)           // This forces 'main' to only appear once
         (MethodDeclaration())* #MethodList
     <R_BRACKET>
 }
@@ -142,7 +141,7 @@ void VarDeclaration() #Var : {String type; Token identifier;}
 void MethodDeclaration() #Method : {String type; Token identifier;}
 {
     <PUBLIC> type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER>
-        {jjtThis.identifier = identifier.image;}  <L_PAR> Arguments() <R_PAR>
+        {jjtThis.identifier = identifier.image;}  <L_PAR> Parameters() <R_PAR>
     <L_BRACKET>
         (
             LOOKAHEAD(2)
@@ -163,19 +162,19 @@ void MainDeclaration() #MainMethod : {Token string, identifier;}
        }
     }
     <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
-            {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Argument) #ArgumentList <R_PAR>
+            {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Parameter) #ParameterList <R_PAR>
     <L_BRACKET>
         (LOOKAHEAD(2) VarDeclaration())* #VarDeclarationsList(true)
         (Statement())* #StatementList
     <R_BRACKET>
 }
 
-void Arguments() #ArgumentList : {}
+void Parameters() #ParameterList : {}
 {
-    ( Argument() ( <COMMA> Argument())* )?
+    ( Parameter() ( <COMMA> Parameter())* )?
 }
 
-void Argument() #Argument : {Token identifier;String type;}
+void Parameter() #Parameter : {Token identifier;String type;}
 {
     type=Type() identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image; jjtThis.type=type;}
 }
@@ -380,10 +379,7 @@ Expression Expr2(Expression l) #void : {Token identifier; Expression e, e2 = nul
 {
     (e = And(l)
     | e = ArrayAccessExpr(l)
-    |   <DOT> (
-                e = ArrayLength(l)
-                | e = FunctionCall(l)
-            ))
+    |   <DOT> e = LengthOrCall(l))
     (LOOKAHEAD(2) e2=Expr2(e))?
     // Maybe missing empty string??
     {return e2 == null ? e : e2;}
@@ -396,25 +392,25 @@ Expression ArrayAccessExpr(Expression l) #ArrayAccess(2) : {Expression e;}
 }
 
 
-Expression ArrayLength(Expression l) #ArrayLength(1) : {}
+Expression LengthOrCall(Expression l) #void : {ASTArguments par; Token id;}
 {
-    <LENGTH> {jjtThis.arrayRef = l;}
-    {return jjtThis;}
-}
-
-Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier; ASTParameters par = null;}
-{
-    identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
-                <L_PAR> par=Parameters() <R_PAR>
+    id=<IDENTIFIER>
+    (<L_PAR> par=Arguments() <R_PAR>
+        {
+            jjtThis.identifier = id.image;
+            jjtThis.ownerRef = l;
+            jjtThis.parameters = par;
+            return jjtThis;} #FunctionCall(2))?
 
     {
-        jjtThis.ownerRef = l;
-        jjtThis.parameters = par;
-    }
-    {return jjtThis;}
+        if (!id.image.equals("length")) {
+            throw new ParseException(id, new int[][]{{0}}, new String[]{id.image});
+        }
+        jjtThis.arrayRef = l;
+        return jjtThis;} #ArrayLength
 }
 
-ASTParameters Parameters() #Parameters: {}
+ASTArguments Arguments() #Arguments: {}
 {
     (Expression() ( <COMMA> Expression() )*)?
     {return jjtThis;}
@@ -488,12 +484,9 @@ Expression ExpressionNoArt() #void : {Expression e, e2 = null;}
 
 Expression Expr2NoArt(Expression l) #void : {Token identifier; Expression e, e2 = null;}
 {
-    ( e = ArrayAccessExpr(l)
-    |   <DOT> (
-                e = ArrayLength(l)
-                | e = FunctionCall(l)
-            ))
-    (LOOKAHEAD(2) e2=Expr2NoArt(e))?
+    (e = ArrayAccessExpr(l)
+    |   <DOT> e = LengthOrCall(l))
+    (LOOKAHEAD(2) e2=Expr2(e))?
     // Maybe missing empty string??
     {return e2 == null ? e : e2;}
 }

@@ -37,6 +37,11 @@ public class SemanticVisitor implements MyGrammarVisitor
   }
 
   @Override
+  public Object visit(ASTMainContainer node, Object data) {
+    return null;
+  }
+
+  @Override
   public Object visit(ASTVar node, Object data) {
     return null;
   }
@@ -62,12 +67,12 @@ public class SemanticVisitor implements MyGrammarVisitor
   }
 
   @Override
-  public Object visit(ASTArgument node, Object data) {
+  public Object visit(ASTParameter node, Object data) {
     return null;
   }
 
   @Override
-  public Object visit(ASTArgumentList node, Object data) {
+  public Object visit(ASTParameterList node, Object data) {
     return null;
   }
 
@@ -137,17 +142,17 @@ public class SemanticVisitor implements MyGrammarVisitor
   }
 
   @Override
-  public Object visit(ASTArrayLength node, Object data) {
-    return null;
-  }
-
-  @Override
   public Object visit(ASTFunctionCall node, Object data) {
     return null;
   }
 
   @Override
-  public Object visit(ASTParameters node, Object data) {
+  public Object visit(ASTArrayLength node, Object data) {
+    return null;
+  }
+
+  @Override
+  public Object visit(ASTArguments node, Object data) {
     return null;
   }
 

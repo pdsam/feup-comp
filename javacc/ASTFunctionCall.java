@@ -4,7 +4,7 @@ public
 class ASTFunctionCall extends Expression {
   protected Expression ownerRef;
   protected String identifier;
-  protected ASTParameters parameters;
+  protected ASTArguments parameters;
 
   public ASTFunctionCall(int id) {
     super(id);
