@@ -7,6 +7,7 @@ options {
 PARSER_BEGIN(MyGrammar)
     import java.io.InputStream;
     import java.io.FileInputStream;
+    import java.util.List;
     // Java code invoking the parser
     public class MyGrammar{
         public static int MAX_ERRORS = 10;
@@ -101,63 +102,21 @@ TOKEN :
 }
 
 // Production definition
-SimpleNode Program() : {}
+SimpleNode Program() #Document : {}
 {
-    (LOOKAHEAD(2) ImportDeclaration())*
+    (LOOKAHEAD(2) ImportDeclaration())* #ImportList
     ClassDeclaration() <EOF> { return jjtThis; }
 }
 
-void ImportDeclaration() #void : { Token imported;}
-{
-    <IMPORT> (
-        ClassImport()
-        | StaticMethodImport()
-    )
-    <SEMICOLON>
+void ImportDeclaration() #Import : {Token t; String type;}{
+  <IMPORT> [<STATIC> {jjtThis.isStatic=true;}] t=<IDENTIFIER>{jjtThis.className=t.image;}
+  [<DOT> t=<IDENTIFIER> {jjtThis.methodName=t.image;}]
+  [<L_PAR> ImportParamList(jjtThis.parameters) <R_PAR> [type=Type() {jjtThis.returnType = type;}|<VOID>] ]
+  <SEMICOLON>
 }
-
-void ClassImport() #MethodImport : {String imp, param, returnType;}
-{
-    imp=ImportSequence() {jjtThis.importSequence = imp;}
-    (<L_PAR> 
-        (<VOID> | param=Type() { jjtThis.parameters.add(param); } (<COMMA> param=Type() { jjtThis.parameters.add(param); } )*)?
-    <R_PAR>
-    (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";}))?
-    { jjtThis.numParams = jjtThis.parameters.size(); }
-}
-
-void StaticMethodImport() #StaticMethodImport : {String imp, param, returnType;}
-{
-    <STATIC> imp=StaticImportSequence() {jjtThis.importSequence = imp;}
-    <L_PAR> 
-        (<VOID> | param=Type() { jjtThis.parameters.add(param); } (<COMMA> param=Type() { jjtThis.parameters.add(param); } )*)?
-    <R_PAR> 
-    (returnType=Type(){jjtThis.returnType = returnType;} | <VOID> {jjtThis.returnType = "void";})
-    { jjtThis.numParams = jjtThis.parameters.size(); }
-}
-
-String ImportSequence() #void : {Token t;}
-{
-    t=<IDENTIFIER> (<DOT> <IDENTIFIER>)* {
-        String importString = "";
-        do {
-            importString += t.image;
-            t=t.next;
-        } while(t.kind == IDENTIFIER || t.kind == DOT);
-        return importString;
-    }
-}
-
-String StaticImportSequence() #void : {Token t;}
-{
-    t=<IDENTIFIER> (<DOT> <IDENTIFIER>)+ {
-        String importString = "";
-        do {
-            importString += t.image;
-            t=t.next;
-        } while(t.kind == IDENTIFIER || t.kind == DOT);
-        return importString;
-    }
+void ImportParamList(List<String> params) #void: {String p;} {
+    [(p=Type() {params.add(p);} | <VOID> {params.add("void");})
+    (<COMMA> (p=Type() {params.add(p);} | <VOID> {params.add("void");}))*]
 }
 
 void ClassDeclaration() #Class : {Token identifier, parent;}
