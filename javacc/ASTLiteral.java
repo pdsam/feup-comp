@@ -20,5 +20,23 @@ class ASTLiteral extends Expression {
     System.out.printf("%s Value: %s\n", prefix, val);
   }
 
+  @Override
+  public Object jjtAccept(MyGrammarVisitor visitor, Object data)
+{
+    visitor.visit(this);
+    if(this.children != null){
+      for(int i = 0 ; i < children.length;++i){
+        SimpleNode n = (SimpleNode) children[i];
+        if (n != null) {
+          n.jjtAccept(semanticAnalyzer,null);
+        }
+
+
+      }
+    }
+
+  }
+
+
 }
 /* JavaCC - OriginalChecksum=0d41266a3c855e938b1bcdfe22a9ce61 (do not edit this line) */

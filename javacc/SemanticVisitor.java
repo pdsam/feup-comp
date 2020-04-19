@@ -44,7 +44,9 @@ public class SemanticVisitor implements MyGrammarVisitor
   @Override
   public Object visit(ASTArrayAccess node, Object data){}
   @Override
-  public Object visit(ASTLiteral node, Object data){}
+  public Object visit(ASTLiteral node, Object data){
+    return null;
+  }
   @Override
   public Object visit(ASTVarReference node, Object data){}
   @Override
