@@ -8,7 +8,7 @@ public
 class ASTClass extends SimpleNode {
   public String identifier;
   public String parent = null;
-  protected StClass symbol_table = new StClass();
+  protected SymbolTableClass symbol_table = new SymbolTableClass();
   
   public ASTClass(int id) {
     super(id);

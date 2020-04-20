@@ -1,9 +1,9 @@
 package semantics;
 
 import java.beans.MethodDescriptor;
+import java.util.ArrayList;
 
 import parser.*;
-import symbolTable.SymbolTableDoc;
 import symbolTable.*;
 
 public class SemanticVisitor implements MyGrammarVisitor {
@@ -35,7 +35,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTImport node, Object data) {
         SymbolTableDoc st = (SymbolTableDoc) data;
-        st.put(new MethodDescriptor(node.methodName,node.returnType,node.parameters);
+        MethodDescriptor des = new MethodDescriptor(node.methodName,node.returnType,node.parameters,node.isStatic,node.className);
+        st.put((Descriptor)des);
 
         return null;
     }
