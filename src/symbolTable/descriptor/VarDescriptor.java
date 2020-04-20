@@ -1,4 +1,4 @@
-package symbolTable;
+package symbolTable.descriptor;
 
 public class VarDescriptor extends Descriptor {
     private final String type;

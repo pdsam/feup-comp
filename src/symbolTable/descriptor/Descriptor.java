@@ -1,4 +1,4 @@
-package symbolTable;
+package symbolTable.descriptor;
 
 public class Descriptor {
     private final String name;
