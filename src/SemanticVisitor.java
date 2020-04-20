@@ -9,20 +9,7 @@ public class SemanticVisitor implements MyGrammarVisitor
         return null;
     }
 
-    @Override
-    public Object visit(ASTDocument node, Object data) {
-        return null;
-    }
 
-    @Override
-    public Object visit(ASTImportList node, Object data) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTImport node, Object data) {
-        return null;
-    }
 
     @Override
     public Object visit(ASTClass node, Object data) {
@@ -39,10 +26,6 @@ public class SemanticVisitor implements MyGrammarVisitor
         return null;
     }
 
-    @Override
-    public Object visit(ASTMainContainer node, Object data) {
-        return null;
-    }
 
     @Override
     public Object visit(ASTVar node, Object data) {
@@ -69,15 +52,6 @@ public class SemanticVisitor implements MyGrammarVisitor
         return null;
     }
 
-    @Override
-    public Object visit(ASTParameter node, Object data) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTParameterList node, Object data) {
-        return null;
-    }
 
     @Override
     public Object visit(ASTScopedStatementList node, Object data) {
@@ -154,10 +128,6 @@ public class SemanticVisitor implements MyGrammarVisitor
         return null;
     }
 
-    @Override
-    public Object visit(ASTArguments node, Object data) {
-        return null;
-    }
 
     @Override
     public Object visit(ASTAnd node, Object data) {
@@ -188,5 +158,35 @@ public class SemanticVisitor implements MyGrammarVisitor
     public Object visit(ASTDiv node, Object data) {
         return null;
     }
+
+    @Override 
+    public Object visit(ASTParameters node, Object data){
+        return null;
+    }
+    @Override 
+    public Object visit(ASTArgument node, Object data){
+        return null;
+    }
+
+    @Override 
+    public Object visit(ASTArgumentList node, Object data){
+        return null;
+    }
+
+    @Override 
+    public Object visit(ASTStaticMethodImport node, Object data){
+        return null;
+    }
+
+    @Override 
+    public Object visit(ASTMethodImport node, Object data){
+        return null;
+    }
+
+    @Override 
+    public Object visit(ASTProgram node, Object data){
+        return null;
+    }
+
 }
 /* JavaCC - OriginalChecksum=f4b465338f5f535900f88d4b62af7c27 (do not edit this line) */
