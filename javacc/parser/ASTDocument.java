@@ -2,12 +2,12 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
-import symbolTable.StDoc;
+import symbolTable.SymbolTableDoc;
 
 public
 class ASTDocument extends SimpleNode {
 
-  protected StDoc symbol_table = new StDoc();
+  protected SymbolTableDoc symbol_table = new SymbolTableDoc();
 
   public ASTDocument(int id) {
     super(id);
@@ -17,7 +17,7 @@ class ASTDocument extends SimpleNode {
     super(p, id);
   }
 
-  public StDoc getStDoc(){
+  public SymbolTableDoc getStDoc(){
     return this.symbol_table;
   }
 
