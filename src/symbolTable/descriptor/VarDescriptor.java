@@ -46,4 +46,14 @@ public class VarDescriptor implements Descriptor {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "VarDescriptor{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", stackOffset=" + stackOffset +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

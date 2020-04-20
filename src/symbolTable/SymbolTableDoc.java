@@ -33,8 +33,8 @@ public class  SymbolTableDoc implements SymbolTable {
     }
 
     @Override
-    public VarDescriptor variable_lookup(String id) throws InvalidDescriptor {
-        throw new InvalidDescriptor("Imports only contain methods descriptors");
+    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
+        throw new UnknownDeclaration("Variable \'" + id + "\' not defined");
     }
 
     @Override
@@ -60,6 +60,6 @@ public class  SymbolTableDoc implements SymbolTable {
             return;
         }
 
-        throw new UnknownDeclaration("Invalid descriptor type");
+        throw new UnknownDeclaration("Document can only have methods descriptors");
     }
 }

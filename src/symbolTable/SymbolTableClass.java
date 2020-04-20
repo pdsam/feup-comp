@@ -27,7 +27,10 @@ public class SymbolTableClass implements SymbolTable {
             }
         }
 
-        if(parent != null) return this.parent.method_lookup(id, parameters);
+        if(parent != null) {
+            System.out.println("Passing to parent...");
+            return this.parent.method_lookup(id, parameters);
+        }
 
         throw new UnknownDeclaration("Any of the methods with that id has that list of parameters");
     }
@@ -38,7 +41,10 @@ public class SymbolTableClass implements SymbolTable {
         if(varDescriptor != null)
             return varDescriptor;
 
-        if(parent != null) return this.parent.variable_lookup(id);
+        if(parent != null) {
+            System.out.println("Passing to parent...");
+            return this.parent.variable_lookup(id);
+        }
 
         throw new UnknownDeclaration("Id passed doesn't match any variable");
     }
