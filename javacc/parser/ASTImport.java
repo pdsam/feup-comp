@@ -5,8 +5,7 @@ package parser;
 import java.util.List;
 import java.util.ArrayList;
 
-public
-class ASTImport extends SimpleNode {
+public class ASTImport extends SimpleNode {
   public boolean isStatic = false;
   public String className;
   public String methodName = null;

@@ -2,10 +2,13 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
+import symbolTable.*;
+
 public
 class ASTMethod extends SimpleNode {
   public String identifier;
   public String type;
+  protected StMethod symbol_table = new StMethod();
 
   public ASTMethod(int id) {
     super(id);
@@ -17,7 +20,7 @@ class ASTMethod extends SimpleNode {
 
   @Override
   public void dump(String prefix) {
-    System.out.printf("%s : %s -> %s\n", toString(prefix), identifier, type);
+    System.out.printf("%s : %s -> %s\n", prefix, identifier, type);
 
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {

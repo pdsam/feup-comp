@@ -2,8 +2,13 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
+import symbolTable.StDoc;
+
 public
 class ASTDocument extends SimpleNode {
+
+  protected StDoc symbol_table = new StDoc();
+
   public ASTDocument(int id) {
     super(id);
   }
@@ -12,6 +17,9 @@ class ASTDocument extends SimpleNode {
     super(p, id);
   }
 
+  public StDoc getStDoc(){
+    return this.symbol_table;
+  }
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
