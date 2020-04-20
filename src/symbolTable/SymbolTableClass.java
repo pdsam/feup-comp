@@ -16,7 +16,6 @@ public class SymbolTableClass extends SymbolTable {
 
     MethodDescriptor method_lookup(String id, ArrayList<String> parameters){
 
-
     }
 
     VarDescriptor variable_lookup(String id){

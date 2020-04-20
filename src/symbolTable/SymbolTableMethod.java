@@ -12,12 +12,11 @@ public class SymbolTableMethod implements SymbolTable {
         this.parent = parent;
     }
 
-    MethodDescriptor method_lookup(String id, ArrayList<String> parameters){
-
-
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters){
+        
     }
 
-    VarDescriptor variable_lookup(String id){
+    public VarDescriptor variable_lookup(String id){
 
     }
 

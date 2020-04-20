@@ -13,10 +13,11 @@ public class MethodDescriptor extends Descriptor {
         this.isStatic = isStatic;
     }
 
-    public MethodDescriptor(String name, String returnType, ArrayList<String> parameters) {
+    public MethodDescriptor(String name, String returnType, ArrayList<String> parameters, boolean isStatic) {
         super(name);
         this.returnType = returnType;
         this.parameters = parameters;
+        this.isStatic = isStatic;
     }
 
     public int getNumParameters() { return parameters.size(); }
