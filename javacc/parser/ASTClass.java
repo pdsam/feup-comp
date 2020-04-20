@@ -4,8 +4,8 @@ package parser;
 
 public
 class ASTClass extends SimpleNode {
-  protected String identifier;
-  protected String parent = null;
+  public String identifier;
+  public String parent = null;
 
   public ASTClass(int id) {
     super(id);

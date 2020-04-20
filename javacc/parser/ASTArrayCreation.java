@@ -4,10 +4,11 @@ package parser;
 
 public
 class ASTArrayCreation extends Expression {
-  protected Expression size;
+  public Expression size;
 
   public ASTArrayCreation(int id) {
     super(id);
+    this.type = "array";
   }
 
   public ASTArrayCreation(MyGrammar p, int id) {

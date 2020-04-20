@@ -4,7 +4,7 @@ package parser;
 
 public
 class ASTConstructorCall extends Expression {
-  protected String identifier;
+  public String identifier;
 
   public ASTConstructorCall(int id) {
     super(id);

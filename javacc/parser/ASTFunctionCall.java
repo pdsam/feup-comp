@@ -4,9 +4,9 @@ package parser;
 
 public
 class ASTFunctionCall extends Expression {
-  protected Expression ownerRef;
-  protected String identifier;
-  protected ASTArguments parameters;
+  public Expression ownerRef;
+  public String identifier;
+  public ASTArguments arguments;
 
   public ASTFunctionCall(int id) {
     super(id);
@@ -23,7 +23,7 @@ class ASTFunctionCall extends Expression {
     System.out.printf("%s Owner Reference:\n", prefix);
     ownerRef.dump(prefix+"  ");
 
-    parameters.dump(prefix + " ");
+    arguments.dump(prefix + " ");
   }
 
   @Override

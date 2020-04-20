@@ -1,7 +1,7 @@
 package parser;
 
 public abstract class Expression extends SimpleNode {
-    protected String type;
+    public String type;
 
     public Expression(int id) {
         super(id);

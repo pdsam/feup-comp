@@ -8,6 +8,7 @@ class ASTArrayLength extends Expression {
 
   public ASTArrayLength(int id) {
     super(id);
+    this.type = "int";
   }
 
   public ASTArrayLength(MyGrammar p, int id) {

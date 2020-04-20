@@ -4,7 +4,7 @@ package parser;
 
 public
 class ASTExprStatement extends Statement {
-  protected Expression expression;
+  public Expression expression;
 
   public ASTExprStatement(int id) {
     super(id);

@@ -4,8 +4,8 @@ package parser;
 
 public
 class ASTMethod extends SimpleNode {
-  protected String identifier;
-  protected String type;
+  public String identifier;
+  public String type;
 
   public ASTMethod(int id) {
     super(id);

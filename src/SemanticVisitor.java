@@ -115,7 +115,12 @@ public class SemanticVisitor implements MyGrammarVisitor
     }
 
     @Override
-    public Object visit(ASTLiteral node, Object data) {
+    public Object visit(ASTIntegerLiteral node, Object data) {
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTBooleanLiteral node, Object data) {
         return null;
     }
 

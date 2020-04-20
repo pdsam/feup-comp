@@ -3,8 +3,8 @@
 package parser;
 
 public class ASTArrayAssignment extends Statement {
-  protected Expression arrayRef;
-  protected Expression value;
+  public ASTArrayAccess arrayRef;
+  public Expression value;
 
   public ASTArrayAssignment(int id) {
     super(id);
