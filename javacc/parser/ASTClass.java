@@ -6,7 +6,8 @@ public
 class ASTClass extends SimpleNode {
   protected String identifier;
   protected String parent = null;
-
+  protected StClass symbol_table = new StClass();
+  
   public ASTClass(int id) {
     super(id);
   }

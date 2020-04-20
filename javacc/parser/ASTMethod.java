@@ -6,6 +6,7 @@ public
 class ASTMethod extends SimpleNode {
   protected String identifier;
   protected String type;
+  protected StMethod symbol_table = new StMethod();
 
   public ASTMethod(int id) {
     super(id);
