@@ -17,6 +17,9 @@ class ASTDocument extends SimpleNode {
     super(p, id);
   }
 
+  public StDoc getStDoc(){
+    return this.symbol_table;
+  }
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
