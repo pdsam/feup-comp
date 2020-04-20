@@ -1,29 +1,22 @@
 package symbolTable;
 
-import javacc.SimpleNode;
+import java.util.ArrayList;
 
 abstract class SymbolTable {
-    private SymbolTable parent;
-    private final SimpleNode node;
 
-    public SymbolTable(SimpleNode node) {
-        this.node = node;
-        this.parent = null;
-    }
+    public ArrayList<Descriptor> lookup(String id) {
+        Descriptor varDescriptor = variables_lookup(id);
 
-    public SymbolTable(SimpleNode node, SymbolTable parent) {
-        this.node = node;
-        this.parent = parent;
-    }
-
-    public Descriptor lookup(String id) {
-        Descriptor descriptor = variables_lookup(id);
-        if( descriptor != null)
+        if( varDescriptor != null){
+            ArrayList<Descriptor> descriptor = new ArrayList<>();
+            descriptor.add(varDescriptor);
             return descriptor;
+        }
+
         return method_lookup(id);
     }
 
-    public abstract Descriptor method_lookup(String id);
+    public abstract ArrayList<Descriptor> method_lookup(String id);
 
     public abstract void put_method(String id, MethodDescriptor descriptor);
 

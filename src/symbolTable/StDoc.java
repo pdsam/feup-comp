@@ -1,19 +1,18 @@
 package symbolTable;
 
-import javacc.SimpleNode;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StDoc extends SymbolTable {
 
-    private HashMap<String, MethodDescriptor> imports = new HashMap<String, MethodDescriptor>();
-
-    public StDoc(SimpleNode node, SymbolTable parent){
-        super(node, parent);
-    }
+    //List with MethodDescriptors
+    private HashMap<String, Descriptor> imports = new HashMap<String, Descriptor>();
 
     @Override
-    public Descriptor method_lookup(String id) {
-        return this.imports.get(id);
+    public ArrayList<Descriptor> method_lookup(String id) {
+        ArrayList<Descriptor> methods = new ArrayList<>();
+        methods.add(this.imports.get(id));
+        return methods;
     }
 
     @Override
