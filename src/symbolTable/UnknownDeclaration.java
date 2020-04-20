@@ -2,13 +2,13 @@ package symbolTable;
 
 public class UnknownDeclaration extends Exception {
 
-    UnknownDeclaration()
-    {
-        super();
-    }
+        UnknownDeclaration()
+        {
+            super();
+        }
 
-    UnknownDeclaration(String message)
-    {
-        super(message);
-    }
+        UnknownDeclaration(String message)
+        {
+            super(message);
+        }
 }

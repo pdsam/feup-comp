@@ -2,13 +2,13 @@ package symbolTable;
 
 import java.util.ArrayList;
 
-import src.symbolTable.descriptor.Descriptor;
-import src.symbolTable.descriptor.MethodDescriptor;
-import src.symbolTable.descriptor.VarDescriptor;
+import symbolTable.descriptor.Descriptor;
+import symbolTable.descriptor.MethodDescriptor;
+import symbolTable.descriptor.VarDescriptor;
 
 public interface SymbolTable {
     void setParent(SymbolTable parent);
-    MethodDescriptor method_lookup(String id, ArrayList<String> parameters);
-    VarDescriptor variable_lookup(String id);
-    void put(Descriptor descriptor);
+    MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration;
+    VarDescriptor variable_lookup(String id) throws UnknownDeclaration, InvalidDescriptor;
+    void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration, InvalidDescriptor;
 }
