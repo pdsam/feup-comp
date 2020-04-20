@@ -1,0 +1,497 @@
+options {
+  LOOKAHEAD = 1;
+  MULTI = true;
+  VISITOR = true;
+}
+
+PARSER_BEGIN(MyGrammar)
+    package parser;
+
+    import java.io.InputStream;
+    import java.io.FileInputStream;
+    import java.util.List;
+    // Java code invoking the parser
+    public class MyGrammar{
+        public static int MAX_ERRORS = 10;
+        public static int numErrors = 0;
+        public static boolean foundError = false;
+
+        public static void main(String[] args) throws ParseException {
+            if(args.length < 1) {
+                System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
+                return;
+            } else if (!args[0].matches("(.*).jmm")) {
+                System.out.println("Invalid file type: only .jmm files are accepted");
+                return;
+            }
+            InputStream file = null;
+
+            try {
+                file = new FileInputStream(args[0]);
+            } catch(Exception e) {
+                System.out.println(e.getMessage());
+                return;
+            }
+
+            MyGrammar.numErrors = 0;
+            MyGrammar.foundError = false;
+            MyGrammar parser = new MyGrammar(file);
+            SimpleNode root = parser.Program();
+            if(MyGrammar.foundError) {
+                throw new ParseException(Integer.toString(MyGrammar.numErrors) + " error(s) were found during parsing. Fix them and try again.");
+            }
+            root.dump(">");
+        }
+    }
+PARSER_END(MyGrammar)
+
+// Symbols that must be skipped during the lexical analysis
+SKIP :
+{
+    " "
+    | "\t"
+    | "\r"
+    | "\n"
+    //skip comments of both types
+    |   <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+    |   <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+}
+
+// token definition(terminal symbols)
+TOKEN :
+{
+    <UNDERSCORE: "_" >
+    |   <L_SBRACKET: "[" >
+    |   <R_SBRACKET: "]" >
+    |   <DOLLARSIGN: "$">
+    |   <L_BRACKET: "{" >
+    |   <R_BRACKET: "}" >
+    |   <L_PAR: "(" >
+    |   <R_PAR: ")" >
+    |   <PLUS: "+" >
+    |   <MINUS: "-" >
+    |   <MUL: "*" >
+    |   <DIV: "/" >
+    |   <EQUAL: "=" >
+    |   <COMMA : "," >
+    |   <DOT : "." >
+    |   <SEMICOLON : ";" >
+    |   <NOT : "!" >
+    |   <AND : "&&" >
+    |   <LESS_THAN : "<" >
+    |   <LENGTH : "length" >
+    |   <CLASS : "class" >
+    |   <THIS : "this" >
+    |   <NEW : "new" >
+    |   <EXTENDS : "extends" >
+    |   <IMPORT : "import" >
+    |   <PUBLIC : "public" >
+    |   <STATIC: "static">
+    |   <MAIN: "main">
+    |   <VOID: "void">
+    |   <INT : "int" >
+    |   <BOOL : "boolean" >
+    |   <TRUE : "true" >
+    |   <FALSE : "false" >
+    |   <RETURN : "return" >
+    |   <IF : "if" >
+    |   <ELSE : "else" >
+    |   <WHILE : "while" >
+    |   <INTEGER_LITERAL: (<DIGIT>)+ >
+    |   <IDENTIFIER: ((<LETTER> | <UNDERSCORE> | <DOLLARSIGN>) (<LETTER> | <DIGIT> | <UNDERSCORE> | <DOLLARSIGN>)*) >
+    |   <DIGIT: (["0"-"9"]) >
+    |   <LETTER: (["a"-"z","A"-"Z"]) >
+}
+
+// Production definition
+SimpleNode Program() #Document : {}
+{
+    (LOOKAHEAD(2) ImportDeclaration())* #ImportList
+    ClassDeclaration() <EOF> { return jjtThis; }
+}
+
+void ImportDeclaration() #Import : {Token t; String type;}{
+  <IMPORT> [<STATIC> {jjtThis.isStatic=true;}] t=<IDENTIFIER> {jjtThis.className=t.image;}
+  [<DOT> t=<IDENTIFIER> {jjtThis.methodName=t.image;}]
+  [<L_PAR> ImportParamList(jjtThis.parameters) <R_PAR> [type=Type() {jjtThis.returnType = type;}|<VOID>] ]
+  <SEMICOLON>
+}
+void ImportParamList(List<String> params) #void: {String p;} {
+    [(p=Type() {params.add(p);} | <VOID> {params.add("void");})
+    (<COMMA> (p=Type() {params.add(p);} | <VOID> {params.add("void");}))*]
+}
+
+void ClassDeclaration() #Class : {Token identifier, parent;}
+{
+    <CLASS> identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
+        (<EXTENDS> parent=<IDENTIFIER> {jjtThis.parent = parent.image;})?
+    <L_BRACKET>
+        (VarDeclaration())* #VarDeclarationsList(true)
+        (
+            LOOKAHEAD(2)
+            MethodDeclaration()
+        )* #MethodList(true)
+        (LOOKAHEAD(2) MainDeclaration())? #MainContainer(true)           // This forces 'main' to only appear once
+        (MethodDeclaration())* #MethodList
+    <R_BRACKET>
+}
+
+void VarDeclaration() #Var : {String type; Token identifier;}
+{
+    type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;} <SEMICOLON>
+}
+
+void MethodDeclaration() #Method : {String type; Token identifier;}
+{
+    <PUBLIC> type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER>
+        {jjtThis.identifier = identifier.image;}  <L_PAR> Parameters() <R_PAR>
+    <L_BRACKET>
+        (
+            LOOKAHEAD(2)
+            VarDeclaration()
+        )* #VarDeclarationsList(true)
+        (Statement())* #StatementList
+        <RETURN> Expression() #ReturnStatement <SEMICOLON> // A return statement has to be the last thing in a method declaration
+    <R_BRACKET>
+}
+
+void MainDeclaration() #MainMethod : {Token string, identifier;}
+{
+    <PUBLIC> <STATIC> <VOID> <MAIN> <L_PAR> (
+        (string=<IDENTIFIER> {if(!string.image.equals("String")) {
+        String msg = "Encountered \"" + string.image + "\" at line " + string.beginLine + ", column " + string.beginColumn + ".\n";
+        msg += "Was expecting: \"String\"";
+        throw new ParseException(msg);
+       }
+    }
+    <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
+            {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Parameter) #ParameterList <R_PAR>
+    <L_BRACKET>
+        (LOOKAHEAD(2) VarDeclaration())* #VarDeclarationsList(true)
+        (Statement())* #StatementList
+    <R_BRACKET>
+}
+
+void Parameters() #ParameterList : {}
+{
+    ( Parameter() ( <COMMA> Parameter())* )?
+}
+
+void Parameter() #Parameter : {Token identifier;String type;}
+{
+    type=Type() identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image; jjtThis.type=type;}
+}
+
+String Type() #void : {String type; Token identifier;}
+{
+    (<INT> {type = "int";} (<L_SBRACKET> <R_SBRACKET> {type = "array";} )?
+    | <BOOL> {type = "boolean";}
+    | identifier=<IDENTIFIER> {type = identifier.image;})
+    {return type;}
+}
+
+Statement Statement() #void : {Statement st;}
+{
+    (st = ScopedStatementList()
+    |   st = IfElseStmt()
+    |   st = WhileStmt()
+    |   (
+            LOOKAHEAD(2) st = Assignment()
+            | LOOKAHEAD(2) st = IdSub()
+            | st = ExprStatement()
+        ))
+    {return st;}
+}
+
+Statement ScopedStatementList() #ScopedStatementList : {}
+{
+    <L_BRACKET> (Statement())* <R_BRACKET>
+    {return jjtThis;}
+}
+
+Statement Assignment() #Assignment : {Expression varRef, value;}
+{
+    varRef=VarReference() <EQUAL> value=Expression() <SEMICOLON>
+    {
+        jjtThis.varReference = varRef;
+        jjtThis.value = value;
+        return jjtThis;
+    }
+}
+
+Statement IfElseStmt() #Branch : {Expression condition; Statement thenStatement, elseStatement;}
+{
+    <IF> <L_PAR> condition=Expression() <R_PAR>
+        thenStatement=Statement()
+    <ELSE>
+        elseStatement=Statement()
+    {
+        jjtThis.condition = condition;
+        jjtThis.thenStatement = thenStatement;
+        jjtThis.elseStatement = elseStatement;
+        return jjtThis;
+    }
+}
+
+Statement WhileStmt() #WhileLoop : {Expression condition = null; Statement body;}
+{
+    <WHILE>
+    try{ 
+        <L_PAR> condition = Expression() <R_PAR>
+    }
+    catch(ParseException e){
+        whileErrorRecovery(e);
+    }
+
+    body = Statement() {
+        jjtThis.condition = condition;
+        jjtThis.body = body;
+        return jjtThis;
+    }
+}
+
+JAVACODE
+void whileErrorRecovery(ParseException e) #void {
+    System.err.println("ParserException: " + e.getWhileMsg());
+
+    MyGrammar.foundError=true;
+    MyGrammar.numErrors++;
+    if(MyGrammar.numErrors >= MyGrammar.MAX_ERRORS) {
+        throw new ParseException("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
+    }
+    
+    Token t = getToken(0);
+    while(true) { /*t.kind != R_PAR && t.next.kind != L_BRACKET*/
+        if(t.kind == R_PAR && getToken(1).kind != R_PAR) {
+            break;
+        } else if ( getToken(1).kind == L_BRACKET ) {
+            break;
+        }
+
+        t = getNextToken();
+    }
+}
+
+
+Statement IdSub() #void : {Expression e1; Statement st;} {
+    e1=ArrayAccess() (
+        st = ArrayAssignment(e1)
+        | st = ArrayAccessExprStatement(e1)
+    )
+
+    {return st;}
+}
+
+Statement ArrayAssignment(Expression arrayRef) #ArrayAssignment(2) : {Expression value;}
+{
+    <EQUAL> value=Expression() <SEMICOLON>
+    {
+        jjtThis.arrayRef = arrayRef;
+        jjtThis.value = value;
+        return jjtThis;
+    }
+}
+
+Statement ArrayAccessExprStatement(Expression arrayRef) #ExprStatement: {Expression e = null;}
+{
+    (e = Expr2(arrayRef))? <SEMICOLON>
+    {jjtThis.expression = e == null ? arrayRef : e;}
+    {return jjtThis;}
+}
+
+Statement ExprStatement() #ExprStatement : {Expression e;}
+{
+    e = Expression() <SEMICOLON>
+    {jjtThis.expression = e;}
+    {return jjtThis;}
+}
+
+Expression ArrayAccess() #ArrayAccess : {Token identifier; Expression index, arrRef;}
+{
+    arrRef=VarReference() <L_SBRACKET> index = Expression() <R_SBRACKET>
+    {
+        jjtThis.arrayRef = arrRef;
+        jjtThis.index = index;
+    }
+    {return jjtThis;}
+}
+
+Expression Expression() #void : {Expression e, e2 = null;}
+{
+    e=Expr1() (LOOKAHEAD(2) e2=Expr2(e) )?
+    {
+        return e2 == null ? e : e2;
+    }
+}
+
+Expression Expr1() #void : {Token identifier, value; Expression e;} {
+    (e = Literal()
+    | e = VarReference()
+    | e =  SelfReference()
+    |   (<NEW>  (
+            e = ArrayCreation()
+            | e = ConstructorCall()
+        ))
+    |   e = Negation()
+    |   <L_PAR> e = Expression() <R_PAR>)
+
+    {return e;}
+}
+
+Expression Literal() #Literal : {Token value;}
+{
+    (value = <INTEGER_LITERAL> {jjtThis.type = "int"; jjtThis.val = Integer.parseInt(value.image);}
+    | <TRUE> {jjtThis.type = "boolean"; jjtThis.val = true;}
+    | <FALSE> {jjtThis.type = "boolean"; jjtThis.val = false;})
+
+    {return jjtThis;}
+}
+
+Expression VarReference() #VarReference : {Token id;}
+{
+    id=<IDENTIFIER>
+    {jjtThis.identifier = id.image; return jjtThis;}
+}
+
+Expression SelfReference() #SelfReference : {}
+{
+    <THIS>
+    {return jjtThis;}
+}
+
+Expression ArrayCreation() #ArrayCreation : {Expression e;}
+{
+    <INT> <L_SBRACKET> e=Expression() <R_SBRACKET> {jjtThis.size = e;}
+    {return jjtThis;}
+}
+
+Expression ConstructorCall() #ConstructorCall : {Token identifier;}
+{
+    identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;} <L_PAR> <R_PAR>
+    {return jjtThis;}
+}
+
+Expression Negation() #Negation : {Expression e;}
+{
+    <NOT> e=Expression()
+    {jjtThis.child = e; return jjtThis;}
+}
+
+// Equivalent to E'. Used to remove left recursion on Expression()
+Expression Expr2(Expression l) #void : {Token identifier; Expression e, e2 = null;}
+{
+    (e = And(l)
+    | e = ArrayAccessExpr(l)
+    |   <DOT> (
+                e = ArrayLength(l)
+                | e = FunctionCall(l)))
+    (LOOKAHEAD(2) e2=Expr2(e))?
+    // Maybe missing empty string??
+    {return e2 == null ? e : e2;}
+}
+
+Expression ArrayAccessExpr(Expression l) #ArrayAccess(2) : {Expression e;}
+{
+    <L_SBRACKET> e=Expression() <R_SBRACKET> {jjtThis.index = e; jjtThis.arrayRef = l;}
+    {return jjtThis;}
+}
+
+Expression ArrayLength(Expression l) #ArrayLength(1) : {}
+{
+    <LENGTH> {jjtThis.arrayRef = l;}
+    {return jjtThis;}
+}
+
+Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier; ASTArguments par = null;}
+{
+    identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
+                <L_PAR> par=Arguments() <R_PAR>
+    {
+        jjtThis.ownerRef = l;
+        jjtThis.parameters = par;
+    }
+    {return jjtThis;}
+}
+
+ASTArguments Arguments() #Arguments: {}
+{
+    (Expression() ( <COMMA> Expression() )*)?
+    {return jjtThis;}
+}
+
+Expression And(Expression l) #void : {Expression r;}
+{
+
+    (LOOKAHEAD(2) r = AndExpr(l) | r = LessThan(l)) (LOOKAHEAD(2) r=And(r))?
+
+    {return r;}
+}
+Expression AndExpr(Expression l) #And(2) : {Expression r;}
+{
+    <AND> r=ExpressionNoArt() (LOOKAHEAD(2) r=LessThan(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    {return jjtThis;}
+}
+
+Expression LessThan(Expression l) #void : {Expression r;}
+{
+
+    (LOOKAHEAD(2) r=LessThanExpr(l) | r=SumOrSub(l)) (LOOKAHEAD(2) r=LessThan(r))?
+    {return r;}
+}
+Expression LessThanExpr(Expression l) #LessThan(2) : {Expression r;}
+{
+    <LESS_THAN> r=ExpressionNoArt() (LOOKAHEAD(2) r=SumOrSub(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+    {return jjtThis;}
+}
+
+
+Expression SumOrSub(Expression l) #void : {Expression r;}
+{
+
+    (LOOKAHEAD(2) (
+        r=Sum(l)
+        | r=Sub(l)) | r=MulOrDiv(l)) (LOOKAHEAD(2) r=SumOrSub(r))?
+    {return r;}
+}
+Expression Sum(Expression l) #Sum(2) : {Expression r;}
+{
+    <PLUS> r=ExpressionNoArt() (LOOKAHEAD(2) r=MulOrDiv(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+Expression Sub(Expression l) #Sub(2) : {Expression r;}
+{
+    <MINUS> r=ExpressionNoArt() (LOOKAHEAD(2) r=MulOrDiv(r))? {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+
+Expression MulOrDiv(Expression l) #void : {Expression r;}
+{
+    (r=Mul(l)
+    | r=Div(l)) (LOOKAHEAD(2) r=MulOrDiv(r))?
+    {return r;}
+}
+Expression Mul(Expression l) #Mul(2) : {Expression r;}
+{
+    <MUL> r=ExpressionNoArt() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+Expression Div(Expression l) #Div(2) : {Expression r;}
+{
+    <DIV> r=ExpressionNoArt() {jjtThis.left = l; jjtThis.right = r; return jjtThis;}
+}
+
+Expression ExpressionNoArt() #void : {Expression e, e2 = null;}
+{
+    e=Expr1() (LOOKAHEAD(2) e2=Expr2NoArt(e) )?
+    {
+        return e2 == null ? e : e2;
+    }
+}
+
+Expression Expr2NoArt(Expression l) #void : {Token identifier; Expression e, e2 = null;}
+{
+    (e = ArrayAccessExpr(l)
+    |   <DOT> (
+                e = ArrayLength(l)
+                | e = FunctionCall(l)))
+    (LOOKAHEAD(2) e2=Expr2(e))?
+    // Maybe missing empty string??
+    {return e2 == null ? e : e2;}
+}
