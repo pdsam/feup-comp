@@ -5,43 +5,48 @@ import java.util.HashMap;
 
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
+import symbolTable.descriptor.VarDescriptor;
 
-public class  SymbolTableDoc extends SymbolTable {
+public class  SymbolTableDoc implements SymbolTable {
     private SymbolTable parent;
-    private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<String, ArrayList<MethodDescriptor>>();
+    private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
 
-    void setupParent(SymbolTable parent) {
+
+    @Override
+    public void setParent(SymbolTable parent) {
         this.parent = parent;
     }
 
-    MethodDescriptor method_lookup(String id, ArrayList<String> parameters) { // throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
-        if(overloads == null)
-            return null;
-        
+        if(overloads == null){
+            throw new UnknownDeclaration("Id doesn't correspond to a method");
+        }
+
         for(MethodDescriptor descriptor : overloads){
-            if(MethodDescriptor.getParameters().equals(parameters))
+            if(descriptor.getParameters().equals(parameters))
                 return descriptor;
         }
 
-        return null;
+        throw new UnknownDeclaration("Any of the methods with that id has that list of parameters");
+
     }
 
-    VarDescriptor variable_lookup(String id) { // throws UnknownDeclaration {
-        return null;
+    public VarDescriptor variable_lookup(String id) throws InvalidDescriptor { // throws UnknownDeclaration {
+        throw new InvalidDescriptor("Imports only contain methods descriptors");
     }
 
-    void put(Descriptor descriptor) { // throws AlreadyDeclared {
+    public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             String id = descriptor.getName();
             ArrayList<MethodDescriptor> overloads = imports.get(id);
 
-            if(overloads != null){
-                for(MethodDescriptor descriptor : overloads){
-                    if(MethodDescriptor.getParameters().equals(parameters))
-                        return; // lancar excecao
+            if(overloads != null){ //a method with that id exists already
+                for(MethodDescriptor methodDescriptor : overloads){
+                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
+                        throw new AlreadyDeclared();
                 }
 
                 overloads.add(mtd);
@@ -54,6 +59,6 @@ public class  SymbolTableDoc extends SymbolTable {
             return;
         }
 
-        //lanca excecao
+        throw new UnknownDeclaration("Invalid descriptor type");
     }
 }
