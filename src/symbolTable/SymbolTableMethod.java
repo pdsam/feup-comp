@@ -17,15 +17,23 @@ public class SymbolTableMethod implements SymbolTable {
         this.parent = parent;
     }
 
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws InvalidDescriptor {
-        throw new InvalidDescriptor("Methods only contain variable descriptors");
+    @Override
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
+        if(parent != null) return this.parent.method_lookup(id, parameters);
+
+        throw new UnknownDeclaration("Method not found because parent was null");
     }
 
-    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
+    @Override
+    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration, InvalidDescriptor {
         VarDescriptor varDescriptor = variables.get(id);
-        if(varDescriptor == null)
-            throw new UnknownDeclaration("Id passed doesn't match any variable");
-        return varDescriptor;
+
+        if(varDescriptor != null)
+            return varDescriptor;
+
+        if(parent != null) return this.parent.variable_lookup(id);
+
+        throw new UnknownDeclaration("Id passed doesn't match any variable");
     }
 
     public void put(Descriptor descriptor) throws AlreadyDeclared, InvalidDescriptor {

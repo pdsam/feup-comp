@@ -8,7 +8,7 @@ import symbolTable.descriptor.VarDescriptor;
 
 public interface SymbolTable {
     void setParent(SymbolTable parent);
-    MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration, InvalidDescriptor;
+    MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration;
     VarDescriptor variable_lookup(String id) throws UnknownDeclaration, InvalidDescriptor;
     void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration, InvalidDescriptor;
 }

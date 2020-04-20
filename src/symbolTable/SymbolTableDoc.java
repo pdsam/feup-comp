@@ -8,15 +8,15 @@ import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
 
 public class  SymbolTableDoc implements SymbolTable {
-    private SymbolTable parent;
+    private SymbolTable parent = null;
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
-
 
     @Override
     public void setParent(SymbolTable parent) {
         this.parent = parent;
     }
 
+    @Override
     public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
@@ -30,13 +30,14 @@ public class  SymbolTableDoc implements SymbolTable {
         }
 
         throw new UnknownDeclaration("Any of the methods with that id has that list of parameters");
-
     }
 
-    public VarDescriptor variable_lookup(String id) throws InvalidDescriptor { // throws UnknownDeclaration {
+    @Override
+    public VarDescriptor variable_lookup(String id) throws InvalidDescriptor {
         throw new InvalidDescriptor("Imports only contain methods descriptors");
     }
 
+    @Override
     public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
