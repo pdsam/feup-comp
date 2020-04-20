@@ -1,18 +1,19 @@
 package symbolTable.descriptor;
 
-public class VarDescriptor extends Descriptor {
+public class VarDescriptor implements Descriptor {
+    private final String name;
     private final String type;
     private int stackOffset;
     private String value;
 
     public VarDescriptor(String name, String type) {
-        super(name);
+        this.name = name;
         this.type = type;
         value = null;
     }
 
     public VarDescriptor(String name, String type, String value) {
-        super(name);
+        this.name = name;
         this.type = type;
         this.value = value;
     }
@@ -39,5 +40,10 @@ public class VarDescriptor extends Descriptor {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }
