@@ -9,7 +9,7 @@ import symbolTable.descriptor.VarDescriptor;
 
 public class  SymbolTableDoc implements SymbolTable {
     private SymbolTable parent;
-    private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<String, ArrayList<MethodDescriptor>>();
+    private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
 
 
     @Override
@@ -17,7 +17,7 @@ public class  SymbolTableDoc implements SymbolTable {
         this.parent = parent;
     }
 
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration { // throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
         if(overloads == null){
@@ -29,7 +29,8 @@ public class  SymbolTableDoc implements SymbolTable {
                 return descriptor;
         }
 
-        return null;
+        throw new UnknownDeclaration("Any of the methods with that id has that list of parameters");
+
     }
 
     public VarDescriptor variable_lookup(String id) throws InvalidDescriptor { // throws UnknownDeclaration {
@@ -42,7 +43,7 @@ public class  SymbolTableDoc implements SymbolTable {
             String id = descriptor.getName();
             ArrayList<MethodDescriptor> overloads = imports.get(id);
 
-            if(overloads != null){
+            if(overloads != null){ //a method with that id exists already
                 for(MethodDescriptor methodDescriptor : overloads){
                     if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
                         throw new AlreadyDeclared();

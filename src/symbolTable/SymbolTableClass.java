@@ -17,7 +17,7 @@ public class SymbolTableClass implements SymbolTable {
         this.parent = parent;
     }
 
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters){
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = methods_table.get(id);
 
         if(overloads == null)
@@ -28,7 +28,7 @@ public class SymbolTableClass implements SymbolTable {
                 return descriptor;
         }
 
-        return null;
+        throw new UnknownDeclaration("Any of the methods with that id has that list of parameters");
     }
 
     public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {

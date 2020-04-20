@@ -11,15 +11,14 @@ import java.util.HashMap;
 public class SymbolTableMethod implements SymbolTable {
     private SymbolTable parent;
     private HashMap<String, VarDescriptor> variables = new HashMap<>();
-    
 
     @Override
     public void setParent(SymbolTable parent) {
         this.parent = parent;
     }
 
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters){
-        return null;
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws InvalidDescriptor {
+        throw new InvalidDescriptor("Methods only contain variable descriptors");
     }
 
     public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
@@ -34,6 +33,7 @@ public class SymbolTableMethod implements SymbolTable {
             if(variables.put(descriptor.getName(), (VarDescriptor) descriptor) != null){
                 throw new AlreadyDeclared("Variable already");
             }
+            return;
         }
 
         throw new InvalidDescriptor("Methods can only have var descriptions");
