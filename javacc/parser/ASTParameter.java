@@ -4,8 +4,8 @@ package parser;
 
 public
 class ASTParameter extends SimpleNode {
-  protected String type;
-  protected String identifier;
+  public String type;
+  public String identifier;
 
   public ASTParameter(int id) {
     super(id);

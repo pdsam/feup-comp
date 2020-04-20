@@ -104,7 +104,7 @@ TOKEN :
 }
 
 // Production definition
-SimpleNode Program() #Document : {}
+ASTDocument Program() #Document : {}
 {
     (LOOKAHEAD(2) ImportDeclaration())* #ImportList
     ClassDeclaration() <EOF> { return jjtThis; }
@@ -273,7 +273,7 @@ void whileErrorRecovery(ParseException e) #void {
 }
 
 
-Statement IdSub() #void : {Expression e1; Statement st;} {
+Statement IdSub() #void : {ASTArrayAccess e1; Statement st;} {
     e1=ArrayAccess() (
         st = ArrayAssignment(e1)
         | st = ArrayAccessExprStatement(e1)
@@ -282,7 +282,7 @@ Statement IdSub() #void : {Expression e1; Statement st;} {
     {return st;}
 }
 
-Statement ArrayAssignment(Expression arrayRef) #ArrayAssignment(2) : {Expression value;}
+Statement ArrayAssignment(ASTArrayAccess arrayRef) #ArrayAssignment(2) : {Expression value;}
 {
     <EQUAL> value=Expression() <SEMICOLON>
     {
@@ -306,7 +306,7 @@ Statement ExprStatement() #ExprStatement : {Expression e;}
     {return jjtThis;}
 }
 
-Expression ArrayAccess() #ArrayAccess : {Token identifier; Expression index, arrRef;}
+ASTArrayAccess ArrayAccess() #ArrayAccess : {Token identifier; Expression index, arrRef;}
 {
     arrRef=VarReference() <L_SBRACKET> index = Expression() <R_SBRACKET>
     {
@@ -338,13 +338,11 @@ Expression Expr1() #void : {Token identifier, value; Expression e;} {
     {return e;}
 }
 
-Expression Literal() #Literal : {Token value;}
+Expression Literal() #void : {Token value;}
 {
-    (value = <INTEGER_LITERAL> {jjtThis.type = "int"; jjtThis.val = Integer.parseInt(value.image);}
-    | <TRUE> {jjtThis.type = "boolean"; jjtThis.val = true;}
-    | <FALSE> {jjtThis.type = "boolean"; jjtThis.val = false;})
-
-    {return jjtThis;}
+    (value = <INTEGER_LITERAL> {jjtThis.val = Integer.parseInt(value.image); return jjtThis;} #IntegerLiteral
+    | <TRUE> {jjtThis.val = true; return jjtThis;} #BooleanLiteral
+    | <FALSE> {jjtThis.val = false; return jjtThis;} #BooleanLiteral)
 }
 
 Expression VarReference() #VarReference : {Token id;}
@@ -402,13 +400,13 @@ Expression ArrayLength(Expression l) #ArrayLength(1) : {}
     {return jjtThis;}
 }
 
-Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier; ASTArguments par = null;}
+Expression FunctionCall(Expression l) #FunctionCall(2) : {Token identifier; ASTArguments arg = null;}
 {
     identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;}
-                <L_PAR> par=Arguments() <R_PAR>
+                <L_PAR> arg=Arguments() <R_PAR>
     {
         jjtThis.ownerRef = l;
-        jjtThis.parameters = par;
+        jjtThis.arguments = arg;
     }
     {return jjtThis;}
 }

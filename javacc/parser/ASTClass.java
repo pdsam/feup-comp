@@ -6,8 +6,8 @@ import symbolTable.*;
 
 public
 class ASTClass extends SimpleNode {
-  protected String identifier;
-  protected String parent = null;
+  public String identifier;
+  public String parent = null;
   protected StClass symbol_table = new StClass();
   
   public ASTClass(int id) {

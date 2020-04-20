@@ -6,8 +6,8 @@ import symbolTable.*;
 
 public
 class ASTMethod extends SimpleNode {
-  protected String identifier;
-  protected String type;
+  public String identifier;
+  public String type;
   protected StMethod symbol_table = new StMethod();
 
   public ASTMethod(int id) {

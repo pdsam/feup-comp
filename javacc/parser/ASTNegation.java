@@ -8,10 +8,12 @@ class ASTNegation extends Expression {
 
   public ASTNegation(int id) {
     super(id);
+    this.type = "boolean";
   }
 
   public ASTNegation(MyGrammar p, int id) {
     super(p, id);
+    this.type = "boolean";
   }
 
   public void  dump(String prefix) {

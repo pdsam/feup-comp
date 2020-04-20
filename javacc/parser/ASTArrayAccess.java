@@ -4,15 +4,17 @@ package parser;
 
 public
 class ASTArrayAccess extends Expression {
-  protected Expression arrayRef;
-  protected Expression index;
+  public Expression arrayRef;
+  public Expression index;
 
   public ASTArrayAccess(int id) {
     super(id);
+    this.type = "int";
   }
 
   public ASTArrayAccess(MyGrammar p, int id) {
     super(p, id);
+    this.type = "int";
   }
 
   @Override

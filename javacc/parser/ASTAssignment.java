@@ -4,8 +4,8 @@ package parser;
 
 public
 class ASTAssignment extends Statement {
-  protected Expression varReference;
-  protected Expression value;
+  public Expression varReference;
+  public Expression value;
 
   public ASTAssignment(int id) {
     super(id);

@@ -1,8 +1,8 @@
 package parser;
 
 public abstract class BinOpExpression extends Expression {
-    protected Expression right;
-    protected Expression left;
+    public Expression right;
+    public Expression left;
 
     public BinOpExpression(int id) {
         super(id);

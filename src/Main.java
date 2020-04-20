@@ -1,11 +1,15 @@
+import generation.JasminGeneratorVisitor;
+import parser.ASTDocument;
 import parser.MyGrammar;
 import parser.ParseException;
 import parser.SimpleNode;
 
-import java.io.InputStream;
-import java.io.FileInputStream;
+import java.io.*;
 
 // Java code invoking the parser
+//TODO set type of function
+//TODO set type of self reference
+//TODO set type of var reference
 public class Main{
 	public static int MAX_ERRORS = 10;
 	public static int numErrors = 0;
@@ -31,10 +35,25 @@ public class Main{
 		MyGrammar.numErrors = 0;
 		MyGrammar.foundError = false;
 		MyGrammar parser = new MyGrammar(file);
-		SimpleNode root = parser.Program();
+		ASTDocument root = parser.Program();
 		if(MyGrammar.foundError) {
 			throw new ParseException(Integer.toString(MyGrammar.numErrors)  + " error(s) were found during parsing. Fix them and try again.");
 		}
 		root.dump(">");
+
+		try {
+			File generatedCodeFile = new File("prog.jsm");
+			if (!generatedCodeFile.exists()) {
+				generatedCodeFile.createNewFile();
+			}
+			FileOutputStream out = new FileOutputStream(generatedCodeFile);
+			PrintWriter writer = new PrintWriter(out);
+			JasminGeneratorVisitor generator = new JasminGeneratorVisitor(writer);
+			root.jjtAccept(generator, null);
+			writer.flush();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
