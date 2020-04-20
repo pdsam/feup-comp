@@ -16,12 +16,19 @@ abstract class SymbolTable {
         this.parent = parent;
     }
 
-   // public abstract Descriptor method_lookup(String id);
+    public Descriptor lookup(String id) {
+        Descriptor descriptor = variables_lookup(id);
+        if( descriptor != null)
+            return descriptor;
+        return method_lookup(id);
+    }
 
-   // public abstract void put_method(String id, MethodDescriptor descriptor);
+    public abstract Descriptor method_lookup(String id);
 
-   // public abstract Descriptor variables_lookup(String id);
+    public abstract void put_method(String id, MethodDescriptor descriptor);
 
-  //  public abstract void put_variables(String id, VarDescriptor descriptor);
+    public abstract Descriptor variables_lookup(String id);
+
+    public abstract void put_variables(String id, VarDescriptor descriptor);
 
 }

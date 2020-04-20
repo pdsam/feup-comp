@@ -1,6 +1,8 @@
 package symbolTable;
 
 import javacc.SimpleNode;
+import sun.security.krb5.internal.crypto.Des;
+
 import java.util.HashMap;
 
 public class StClass extends SymbolTable {
@@ -30,7 +32,5 @@ public class StClass extends SymbolTable {
     public void put_variables(String id, VarDescriptor descriptor){
         this.fields_table.put(id, descriptor);
     }
-
-
     
 }
