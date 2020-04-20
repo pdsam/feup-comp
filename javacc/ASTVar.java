@@ -20,11 +20,7 @@ class ASTVar extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=f4007b07e33e21399e121c30aa957674 (do not edit this line) */

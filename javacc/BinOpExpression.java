@@ -18,11 +18,6 @@ public abstract class BinOpExpression extends Expression {
 
     @Override
     public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-        visitor.visit(this, data);
-
-        left.jjtAccept(visitor, data);
-        right.jjtAccept(visitor, data);
-
-        return data;
+        return visitor.visit(this, data);
     }
 }

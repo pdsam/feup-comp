@@ -19,11 +19,7 @@ class ASTNegation extends Expression {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    child.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=48b7763635cf5b147f70ac01b5969500 (do not edit this line) */

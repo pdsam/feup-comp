@@ -16,13 +16,7 @@ class ASTMainMethod extends ASTMethod {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    children[0].jjtAccept(visitor, data); //Arguments
-    children[1].jjtAccept(visitor, data); //Var declaration
-    children[2].jjtAccept(visitor, data); //Statements
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=eaba5dd4ffdd5af0c1e9268123cbd273 (do not edit this line) */

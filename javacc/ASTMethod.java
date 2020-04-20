@@ -29,14 +29,7 @@ class ASTMethod extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    children[0].jjtAccept(visitor, data); //Arguments
-    children[1].jjtAccept(visitor, data); //Var declaration
-    children[2].jjtAccept(visitor, data); //Statements
-    children[3].jjtAccept(visitor, data); //Return
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=e520198b9ad9d425775d48b35053f06f (do not edit this line) */

@@ -13,11 +13,7 @@ class ASTImportList extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    childrenAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=33f733f9c9d0f3c6a7b0669236e00916 (do not edit this line) */

@@ -14,12 +14,7 @@ class ASTDiv extends BinOpExpression {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    left.jjtAccept(visitor, data);
-    right.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=b61b5577a877251ec1d392b9477044b5 (do not edit this line) */

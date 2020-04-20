@@ -24,11 +24,7 @@ class ASTAssignment extends Statement {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    varReference.jjtAccept(visitor, data);
-    value.jjtAccept(visitor, data);
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=62e1e838c675001b7573c6604b2957d0 (do not edit this line) */

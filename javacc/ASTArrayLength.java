@@ -21,10 +21,7 @@ class ASTArrayLength extends Expression {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    arrayRef.jjtAccept(visitor, data);
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=1f8775333fd9ffeb990d54271f0f6278 (do not edit this line) */

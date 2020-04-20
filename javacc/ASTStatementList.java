@@ -13,11 +13,7 @@ class ASTStatementList extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    childrenAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=be726a777693971c70aa66b3285a4aef (do not edit this line) */

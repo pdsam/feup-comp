@@ -21,11 +21,7 @@ class ASTArrayCreation extends Expression {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    size.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=a55d11e209245c684a60771f3bcb4b0b (do not edit this line) */

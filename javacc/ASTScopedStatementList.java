@@ -12,11 +12,7 @@ class ASTScopedStatementList extends Statement {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    childrenAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=7280cde7b7b6bfdf79f4dfa881713faa (do not edit this line) */

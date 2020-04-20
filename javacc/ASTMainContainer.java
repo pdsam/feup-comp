@@ -13,9 +13,7 @@ class ASTMainContainer extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    childrenAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=fb085d7218f1a07edc710dca82ded227 (do not edit this line) */

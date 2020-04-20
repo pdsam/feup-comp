@@ -18,4 +18,9 @@ public class Statement extends SimpleNode {
             }
         }
     }
+
+    @Override
+    public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

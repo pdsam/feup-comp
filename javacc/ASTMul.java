@@ -14,12 +14,7 @@ class ASTMul extends BinOpExpression {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    left.jjtAccept(visitor, data);
-    right.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=06343e5bb98c3dccb24a6cb9c40c953b (do not edit this line) */

@@ -20,9 +20,7 @@ class ASTParameter extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=c430fbd62544d7d522d0a25eec5becdf (do not edit this line) */

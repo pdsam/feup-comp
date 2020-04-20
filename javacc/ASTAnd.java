@@ -14,12 +14,7 @@ class ASTAnd extends BinOpExpression {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    left.jjtAccept(visitor, data);
-    right.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=6d17c8b9226d3f3e295ca5d1059b16bf (do not edit this line) */

@@ -13,11 +13,7 @@ class ASTMethodList extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    childrenAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=c330d1c636b0d9b7425dac8e55d99ca6 (do not edit this line) */

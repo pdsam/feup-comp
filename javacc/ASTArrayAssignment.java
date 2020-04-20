@@ -24,12 +24,7 @@ public class ASTArrayAssignment extends Statement {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    arrayRef.jjtAccept(visitor, data);
-    value.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=5abeb09cb988ad85b4f2f3f7e6845ab2 (do not edit this line) */

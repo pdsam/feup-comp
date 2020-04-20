@@ -19,9 +19,7 @@ class ASTConstructorCall extends Expression {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=b08e45add43ed768d356944cbfdc00cb (do not edit this line) */

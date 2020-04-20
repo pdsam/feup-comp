@@ -21,7 +21,7 @@ class ASTImport extends SimpleNode {
   }
 
 
-  /** Accept the visitor. **/
+  @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }

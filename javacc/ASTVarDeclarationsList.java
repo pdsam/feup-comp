@@ -13,11 +13,7 @@ class ASTVarDeclarationsList extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    childrenAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=9606e1eace05b34ca82e42129e400a66 (do not edit this line) */

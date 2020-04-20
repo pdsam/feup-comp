@@ -13,12 +13,7 @@ class ASTDocument extends SimpleNode {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    children[0].jjtAccept(visitor, data); //Imports
-    children[1].jjtAccept(visitor, data); //Class declaration
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=371d209ba49e7dd487b59a18ad511b9e (do not edit this line) */

@@ -24,12 +24,7 @@ class ASTWhileLoop extends Statement {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    condition.jjtAccept(visitor, data);
-    body.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=3c1356b15eb614280454e4920a4588d9 (do not edit this line) */

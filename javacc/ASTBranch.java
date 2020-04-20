@@ -27,13 +27,7 @@ class ASTBranch extends Statement {
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {
-    visitor.visit(this, data);
-
-    condition.jjtAccept(visitor, data);
-    thenStatement.jjtAccept(visitor, data);
-    elseStatement.jjtAccept(visitor, data);
-
-    return data;
+    return visitor.visit(this, data);
   }
 }
 /* JavaCC - OriginalChecksum=82bf9e9154f4c386dcef3ed1b685eed3 (do not edit this line) */
