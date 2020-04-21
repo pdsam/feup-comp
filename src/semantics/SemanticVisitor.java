@@ -4,6 +4,9 @@ import parser.*;
 import symbolTable.*;
 import symbolTable.descriptor.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(SimpleNode node, Object data) {
@@ -45,8 +48,37 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTClass node, Object data) {
         SymbolTableClass st = node.getStClass();
         st.setParent((SymbolTableDoc)data);
-        node.childrenAccept(this,st);
+
+        // Grand children are the methods declared inside the class
+        for(Node child : node.children){
+            if(child instanceof ASTParameterList)
+                continue;
+
+            SimpleNode simpleChild = (SimpleNode) child;
+            for(Node grandChild : simpleChild.children){
+                try {
+                    registerMethod((ASTMethod) grandChild, st);
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+            }
+        }
+
+        node.childrenAccept(this, st);
         return null;
+    }
+
+    private void registerMethod(ASTMethod node, SymbolTable table) throws UnknownDeclaration, AlreadyDeclared {
+        MethodDescriptor desc = new MethodDescriptor(node.identifier, node.type, node.isStatic);
+        SimpleNode paramList = (SimpleNode) node.children[0]; // parameter list is the first child of the method node
+        List<String> parameters = new ArrayList<>();
+
+        for(int i = 0; i < paramList.children.length; i++){
+            ASTParameter param = (ASTParameter) paramList.children[i];
+            parameters.add(param.type);
+        }
+
+        table.put(desc);
     }
 
     @Override

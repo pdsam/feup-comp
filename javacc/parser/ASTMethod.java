@@ -6,6 +6,7 @@ import symbolTable.SymbolTableMethod;
 
 public
 class ASTMethod extends SimpleNode {
+  public boolean isStatic = false;
   public String identifier;
   public String type;
   protected SymbolTableMethod symbol_table = new SymbolTableMethod();

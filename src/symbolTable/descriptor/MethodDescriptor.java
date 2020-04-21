@@ -32,6 +32,8 @@ public class MethodDescriptor implements Descriptor {
 
     public List<String> getParameters() { return parameters; }
 
+    public void setParameters(List<String> parameters) { this.parameters = parameters; }
+
     @Override
     public String getName() {
         return name;
