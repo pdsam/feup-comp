@@ -2,13 +2,13 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
-import symbolTable.*;
+import symbolTable.SymbolTableMethod;
 
 public
 class ASTMethod extends SimpleNode {
   public String identifier;
   public String type;
-  protected StMethod symbol_table = new StMethod();
+  protected SymbolTableMethod symbol_table = new SymbolTableMethod();
 
   public ASTMethod(int id) {
     super(id);
@@ -31,6 +31,8 @@ class ASTMethod extends SimpleNode {
       }
     }
   }
+
+  public SymbolTableMethod getStMethod() { return symbol_table; }
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {

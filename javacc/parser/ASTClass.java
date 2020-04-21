@@ -2,13 +2,13 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
-import symbolTable.*;
+import symbolTable.SymbolTableClass;
 
 public
 class ASTClass extends SimpleNode {
   public String identifier;
   public String parent = null;
-  protected StClass symbol_table = new StClass();
+  protected SymbolTableClass symbol_table = new SymbolTableClass();
   
   public ASTClass(int id) {
     super(id);
@@ -33,6 +33,10 @@ class ASTClass extends SimpleNode {
         }
       }
     }
+  }
+
+  public SymbolTableClass getStClass(){
+    return this.symbol_table;
   }
 
   @Override
