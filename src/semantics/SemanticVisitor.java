@@ -18,6 +18,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
+    // Receives SymbolTableDoc as argument
     public Object visit(ASTImportList node, Object data) {
         node.childrenAccept(this, data);
 
@@ -25,6 +26,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
+    // Receives SymbolTableDoc as argument
     public Object visit(ASTImport node, Object data) {
         SymbolTableDoc st = (SymbolTableDoc) data;
         MethodDescriptor des = new MethodDescriptor(node.methodName,node.returnType,node.parameters,node.className,node.isStatic);
@@ -39,6 +41,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
+    // Receives SymbolTableDoc as argument
     public Object visit(ASTClass node, Object data) {
         SymbolTableClass st = node.getStClass();
         st.setParent((SymbolTableDoc)data);
@@ -47,24 +50,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    public Object visit(ASTVarDeclarationsList node, Object data) {
-        node.childrenAccept(this,data);
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTMethodList node, Object data) {
-        node.childrenAccept(this,data);
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTMainContainer node, Object data) {
-        node.childrenAccept(this,data);
-        return null;
-    }
-
-    @Override
+    // Receives SymbolTableClass or SymbolTableMethod as argument
     public Object visit(ASTVar node, Object data) {
         VarDescriptor var = new VarDescriptor(node.identifier, node.type);
         try{
@@ -79,30 +65,66 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
+    public Object visit(ASTVarReference node, Object data) {
+        SymbolTable st = (SymbolTable) data;
+        VarDescriptor var;
+
+        try {
+            var = st.variable_lookup(node.identifier);
+        } catch (UnknownDeclaration unknownDeclaration) {
+            System.err.println(unknownDeclaration.getMessage());
+        }
+
+        return null; //Eventally retrn type
+    }
+
+    @Override
+    // Receives SymbolTableClass as argument
     public Object visit(ASTMethod node, Object data) {
         SymbolTable st = node.getStMethod();
-        st.setParent((SymbolTableClass)data);
-
-        
-
-        
-
-
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTStatementList node, Object data) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTReturnStatement node, Object data) {
+        st.setParent((SymbolTable)data);
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTMainMethod node, Object data) {
+        SymbolTable st = node.getStMethod();
+        st.setParent((SymbolTable)data);
+        node.childrenAccept(this, data);
+        return null;
+    }
+
+    @Override
+    // Receives SymbolTableClass as argument
+    public Object visit(ASTMainContainer node, Object data) {
+        node.childrenAccept(this,data);
+        return null;
+    }
+
+    @Override
+    // Receives SymbolTableClass as argument
+    public Object visit(ASTVarDeclarationsList node, Object data) {
+        node.childrenAccept(this,data);
+        return null;
+    }
+
+    @Override
+    // Receives SymbolTableClass as argument
+    public Object visit(ASTMethodList node, Object data) {
+        node.childrenAccept(this,data);
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTStatementList node, Object data) {
+        node.childrenAccept(this, data);
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTReturnStatement node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
@@ -113,6 +135,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTParameterList node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
@@ -158,11 +181,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBooleanLiteral node, Object data) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTVarReference node, Object data) {
         return null;
     }
 
