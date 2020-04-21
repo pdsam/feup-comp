@@ -60,17 +60,34 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMainContainer node, Object data) {
+        node.childrenAccept(this,data);
         return null;
     }
 
     @Override
     public Object visit(ASTVar node, Object data) {
+        VarDescriptor var = new VarDescriptor(node.identifier, node.type);
+        try{
+            SymbolTable st=(SymbolTable)data;
+            st.put(var);
+        }
+        catch(Exception e){
+            System.out.println("handle erros at ASTVAR");
+        }
+
         return null;
     }
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        node.getStMethod().setParent((SymbolTableClass)data);
+        SymbolTable st = node.getStMethod();
+        st.setParent((SymbolTableClass)data);
+
+        
+
+        
+
+
         return null;
     }
 
