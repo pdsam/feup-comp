@@ -16,6 +16,10 @@ class ASTIntegerLiteral extends Expression {
     this.type = "int";
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(prefix + "Integer [ " + val + " ]");
+  }
 
   /** Accept the visitor. **/
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {

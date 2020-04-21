@@ -20,7 +20,6 @@ class ASTAssignment extends Statement {
     System.out.println(toString(prefix));
     System.out.printf("%s Variable:\n", prefix);
     varReference.dump(prefix + "  ");
-    System.out.printf("%s Value:\n", prefix);
     value.dump(prefix + "  ");
   }
 

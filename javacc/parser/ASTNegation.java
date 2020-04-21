@@ -18,7 +18,7 @@ class ASTNegation extends Expression {
 
   public void  dump(String prefix) {
     System.out.println(toString(prefix));
-    child.dump(prefix + " ");
+    child.dump(prefix + "  ");
   }
 
   @Override

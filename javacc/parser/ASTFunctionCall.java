@@ -22,8 +22,7 @@ class ASTFunctionCall extends Expression {
     System.out.printf("%s Function name: %s\n", prefix, identifier);
     System.out.printf("%s Owner Reference:\n", prefix);
     ownerRef.dump(prefix+"  ");
-
-    arguments.dump(prefix + " ");
+    arguments.dump(prefix + "  ");
   }
 
   @Override

@@ -1,0 +1,18 @@
+class Precedence {
+    public static void main(String[] args) {
+        int a;
+        boolean b;
+        Precedence p;
+
+        p = new Precedence();
+
+        a = 8/2+4*5/2-2;
+        b = a < 3 / 2 && true;
+        a = p.add(a+b);
+    }
+
+    public int add(int a, int b) {
+        return a + b;
+
+    }
+}
