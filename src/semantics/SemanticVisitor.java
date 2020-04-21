@@ -1,5 +1,8 @@
 package semantics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import parser.*;
 import symbolTable.*;
 import symbolTable.descriptor.*;
@@ -82,11 +85,16 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTMethod node, Object data) {
         SymbolTable st = node.getStMethod();
         st.setParent((SymbolTableClass)data);
+        ASTParameterList para = node.getChildren()[0];
+        List<String> args = new ArrayList<>();
+        for(ASTParameter i : para.getChildren()){
+            args.add(i.type);
+        }
 
         
 
         
-
+        st.put(new MethodDescriptor(node.identifier,node.type,args,));
 
         return null;
     }
