@@ -50,11 +50,24 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
+    public Object visit(ASTParameter node, Object data) {
+        VarDescriptor var = new VarDescriptor(node.identifier, node.type);
+        SymbolTable st = (SymbolTable) data;
+        try{
+            st.put(var);
+        }
+        catch(Exception e){
+            System.out.println("handle erros at ASTVAR");
+        }
+        return null;
+    }
+
+    @Override
     // Receives SymbolTableClass or SymbolTableMethod as argument
     public Object visit(ASTVar node, Object data) {
         VarDescriptor var = new VarDescriptor(node.identifier, node.type);
+        SymbolTable st = (SymbolTable) data;
         try{
-            SymbolTable st=(SymbolTable)data;
             st.put(var);
         }
         catch(Exception e){
@@ -129,11 +142,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    public Object visit(ASTParameter node, Object data) {
-        return null;
-    }
-
-    @Override
     public Object visit(ASTParameterList node, Object data) {
         node.childrenAccept(this, data);
         return null;
@@ -141,11 +149,14 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTScopedStatementList node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
+        //TODO: check if types match
+        node.childrenAccept(this, data);
         return null;
     }
 
