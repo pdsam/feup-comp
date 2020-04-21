@@ -1,4 +1,10 @@
+import List.size() int;
+import static io.printLn(int);
+
 class Precedence {
+    int d;
+    int e;
+
     public static void main(String[] args) {
         int a;
         boolean b;
@@ -6,13 +12,20 @@ class Precedence {
 
         p = new Precedence();
 
-        a = 8/2+4*5/2-2;
+        a = 8 / 2 + 4 * 5 / 2 - 2;
         b = a < 3 / 2 && true;
-        a = p.add(a+b);
+        a = p.add(d + e);
     }
 
     public int add(int a, int b) {
         return a + b;
+    }
 
+    public int add(int a, int b, int c) {
+        return a + b + c;
+    }
+
+    public int size() {
+        return e;
     }
 }
