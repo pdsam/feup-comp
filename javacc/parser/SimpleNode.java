@@ -59,7 +59,7 @@ class SimpleNode implements Node {
 
   /** Accept the visitor. **/
   public Object childrenAccept(MyGrammarVisitor visitor, Object data)
-{
+  {
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {
         children[i].jjtAccept(visitor, data);

@@ -11,7 +11,7 @@ public class ASTImport extends SimpleNode {
   public String methodName = null;
   public String returnType = "void";
 
-  public List<String> parameters = new ArrayList<>();
+  public List<String> parameters = new ArrayList<String>();
 
   public ASTImport(int id) {
     super(id);
