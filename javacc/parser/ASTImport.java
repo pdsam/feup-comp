@@ -34,8 +34,9 @@ public class ASTImport extends SimpleNode {
       msg += "." + methodName + "(";
 
     if(!parameters.isEmpty()){
-      for(String param : parameters)
-        msg += param;
+      msg += parameters.get(0);
+      for(int i = 1; i < parameters.size(); i++)
+        msg += ", " + parameters.get(i);
     }
 
     msg += ") -> " + returnType;

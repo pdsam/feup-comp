@@ -18,7 +18,6 @@ class ASTAssignment extends Statement {
   @Override
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-    System.out.printf("%s Variable:\n", prefix);
     varReference.dump(prefix + "  ");
     value.dump(prefix + "  ");
   }
