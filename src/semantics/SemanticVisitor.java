@@ -40,16 +40,21 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTClass node, Object data) {
+        SymbolTableClass st = node.getStClass();
+        st.setParent((SymbolTableDoc)data);
+        node.childrenAccept(this,st);
         return null;
     }
 
     @Override
     public Object visit(ASTVarDeclarationsList node, Object data) {
+        node.childrenAccept(this,data);
         return null;
     }
 
     @Override
     public Object visit(ASTMethodList node, Object data) {
+        node.childrenAccept(this,data);
         return null;
     }
 
@@ -65,6 +70,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
+        node.getStMethod().setParent((SymbolTableClass)data);
         return null;
     }
 
