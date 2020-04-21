@@ -27,29 +27,24 @@ public class SymbolTableClass implements SymbolTable {
             }
         }
 
-        if(parent != null) {
-            System.out.println("Passing to parent...");
-            return this.parent.method_lookup(id, parameters);
-        }
+        if(parent != null) return this.parent.method_lookup(id, parameters);
 
-        throw new UnknownDeclaration("Any of the methods with that id has that list of parameters");
+        throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
     }
 
     @Override
-    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration, InvalidDescriptor {
+    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
         VarDescriptor varDescriptor = fields_table.get(id);
+
         if(varDescriptor != null)
             return varDescriptor;
 
-        if(parent != null) {
-            System.out.println("Passing to parent...");
-            return this.parent.variable_lookup(id);
-        }
+        if(parent != null) return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclaration("Id passed doesn't match any variable");
+        throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
     }
 
-    public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
+    public void put(Descriptor descriptor) throws AlreadyDeclared {
         String id = descriptor.getName();
 
         if(descriptor instanceof MethodDescriptor) {
@@ -59,7 +54,7 @@ public class SymbolTableClass implements SymbolTable {
             if(overloads != null){
                 for(MethodDescriptor methodDescriptor : overloads){
                     if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
-                        throw new AlreadyDeclared("Function with the same name and arguments already exits");
+                        throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
                 }
 
                 overloads.add(mtd);
@@ -68,16 +63,10 @@ public class SymbolTableClass implements SymbolTable {
                 entry.add(mtd);
                 methods_table.put(id, entry);
             }
-
-            return;
         } else if(descriptor instanceof VarDescriptor) {
             if(fields_table.put(id, (VarDescriptor) descriptor) != null) {
-                throw new AlreadyDeclared("Variable already declared");
+                throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
             }
-
-            return;
         }
-
-        throw new UnknownDeclaration("Invalid descriptor type");
     }
 }

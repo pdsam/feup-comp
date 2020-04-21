@@ -20,21 +20,19 @@ public class  SymbolTableDoc implements SymbolTable {
     public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
-        if(overloads == null){
-            throw new UnknownDeclaration("Id doesn't correspond to a method");
+        if(overloads == null) {
+            for (MethodDescriptor descriptor : overloads) {
+                if (descriptor.getParameters().equals(parameters))
+                    return descriptor;
+            }
         }
 
-        for(MethodDescriptor descriptor : overloads){
-            if(descriptor.getParameters().equals(parameters))
-                return descriptor;
-        }
-
-        throw new UnknownDeclaration("Any of the methods with that id has that list of parameters");
+        throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
     }
 
     @Override
     public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
-        throw new UnknownDeclaration("Variable \'" + id + "\' not defined");
+        throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
     }
 
     @Override
@@ -47,7 +45,7 @@ public class  SymbolTableDoc implements SymbolTable {
             if(overloads != null){ //a method with that id exists already
                 for(MethodDescriptor methodDescriptor : overloads){
                     if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
-                        throw new AlreadyDeclared();
+                        throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
                 }
 
                 overloads.add(mtd);
@@ -60,6 +58,6 @@ public class  SymbolTableDoc implements SymbolTable {
             return;
         }
 
-        throw new UnknownDeclaration("Document can only have methods descriptors");
+        throw new UnknownDeclaration("Variables cannot be defined outside a class or method.");
     }
 }

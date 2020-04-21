@@ -7,7 +7,6 @@ import symbolTable.descriptor.VarDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class SymbolTableMethod implements SymbolTable {
     private SymbolTable parent;
     private HashMap<String, VarDescriptor> variables = new HashMap<>();
@@ -19,38 +18,33 @@ public class SymbolTableMethod implements SymbolTable {
 
     @Override
     public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
-        if(parent != null){
-            System.out.println("Passing to parent...");
-            return this.parent.method_lookup(id, parameters);
-        }
+        if(parent != null) return this.parent.method_lookup(id, parameters);
 
-        throw new UnknownDeclaration("Method not found because parent was null");
+        throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
     }
 
     @Override
-    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration, InvalidDescriptor {
+    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
         VarDescriptor varDescriptor = variables.get(id);
 
         if(varDescriptor != null)
             return varDescriptor;
 
-        if(parent != null) {
-            System.out.println("Passing to parent...");
-            return this.parent.variable_lookup(id);
-        }
+        if(parent != null) return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclaration("Id passed doesn't match any variable");
+        throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
     }
 
     @Override
-    public void put(Descriptor descriptor) throws AlreadyDeclared, InvalidDescriptor {
+    public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
         if(descriptor instanceof VarDescriptor) {
-            if(variables.put(descriptor.getName(), (VarDescriptor) descriptor) != null){
-                throw new AlreadyDeclared("Variable \'" + descriptor.getName() + "\' already defined");
+            String id = descriptor.getName();
+            if(variables.put(id, (VarDescriptor) descriptor) != null){
+                throw new AlreadyDeclared("Variable \'" + id + "\' already defined");
             }
             return;
         }
 
-        throw new InvalidDescriptor("Methods can only have var descriptions");
+        throw new UnknownDeclaration("Methods cannot be defined inside other methods.");
     }
 }
