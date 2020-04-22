@@ -64,9 +64,10 @@ public class SymbolTableClass implements SymbolTable {
                 methods_table.put(id, entry);
             }
         } else if(descriptor instanceof VarDescriptor) {
-            if(fields_table.put(id, (VarDescriptor) descriptor) != null) {
+            if(fields_table.get(id) == null)
+                fields_table.put(id, (VarDescriptor) descriptor);
+            else
                 throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
-            }
         }
     }
 }
