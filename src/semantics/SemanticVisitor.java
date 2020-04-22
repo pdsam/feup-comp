@@ -55,11 +55,14 @@ public class SemanticVisitor implements MyGrammarVisitor {
                 continue;
 
             SimpleNode simpleChild = (SimpleNode) child;
-            for(Node grandChild : simpleChild.children){
-                try {
-                    registerMethod((ASTMethod) grandChild, st);
-                } catch (Exception e) {
-                    e.getMessage();
+            if( simpleChild.children != null) {
+
+                for(Node grandChild : simpleChild.children){
+                    try {
+                        registerMethod((ASTMethod) grandChild, st);
+                    } catch (Exception e) {
+                        e.getMessage();
+                    }
                 }
             }
         }
@@ -194,26 +197,40 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBranch node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTExprStatement node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
+        ASTVarReference var = (ASTVarReference) node.arrayRef;
+        SymbolTable st = (SymbolTable) data;
+
+        try {
+            st.variable_lookup(var.identifier);
+        } catch (UnknownDeclaration unknownDeclaration) {
+            System.err.println(unknownDeclaration.getMessage());
+        }
+
+        node.childrenAccept(this, data);
         return null;
     }
 

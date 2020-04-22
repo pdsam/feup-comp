@@ -9,12 +9,14 @@ class Precedence {
         int a;
         boolean b;
         Precedence p;
+        int[] arr;
 
         p = new Precedence();
 
         a = 8 / 2 + 4 * 5 / 2 - 2;
         b = a < 3 / 2 && true;
         a = p.add(d + e);
+        arr[0] = 1;
     }
 
     public int add(int a, int b) {
