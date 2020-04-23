@@ -45,6 +45,7 @@ public class MethodDescriptor implements Descriptor {
                 "name='" + name + '\'' +
                 ", returnType='" + returnType + '\'' +
                 ", parameters=" + parameters +
+                ", className='" + className + '\'' +
                 ", isStatic=" + isStatic +
                 '}';
     }

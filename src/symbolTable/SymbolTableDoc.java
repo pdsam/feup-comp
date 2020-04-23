@@ -21,7 +21,7 @@ public class  SymbolTableDoc implements SymbolTable {
     public MethodDescriptor method_lookup(String id, List<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
-        if(overloads == null) {
+        if(overloads != null) {
             for (MethodDescriptor descriptor : overloads) {
                 if (descriptor.getParameters().equals(parameters))
                     return descriptor;
