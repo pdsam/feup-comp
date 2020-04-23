@@ -115,17 +115,51 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTVarReference node, Object data) {
         SymbolTable st = (SymbolTable) data;
-        VarDescriptor var;
+        VarDescriptor var = null;
 
         try {
             var = st.variable_lookup(node.identifier);
-            System.out.println(var.getName() + " is of type: " + var.getType());
-            node.type = var.getType();
-        } catch (UnknownDeclaration unknownDeclaration) {
-            System.err.println(unknownDeclaration.getMessage());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
 
-        return null; //Eventally retrn type
+        if(var == null)
+            node.type = "null";
+        else
+            node.type = var.getType();
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTFunctionCall node, Object data) {
+        node.childrenAccept(this, data);
+        SymbolTable st = (SymbolTable) data;
+        MethodDescriptor var = null;
+
+        try {
+            var = st.method_lookup(node.identifier, node.arguments.list);
+            System.out.println(node.identifier + ": ");
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        if(var == null)
+            node.type = "null";
+        else
+            node.type = var.getReturnType();
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTArguments node, Object data) {
+        node.childrenAccept(this, data);
+
+        for(Node child : node.children) {
+            Expression exp = (Expression) child;
+            node.list.add(exp.type);
+        }
+
+        return null;
     }
 
     @Override
@@ -267,16 +301,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    public Object visit(ASTFunctionCall node, Object data) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTArguments node, Object data) {
-        return null;
-    }
-
-    @Override
     public Object visit(ASTNegation node, Object data) {
         node.childrenAccept(this, data);
 
@@ -290,30 +314,29 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     private void checkOperandsTypes(BinOpExpression expr, String type) {
-        if(!expr.left.type.equals(type)) {
-            System.err.println("Left side of && operator must be of type boolean.");
-            //TODO: numerrors++
-        } else if(!expr.right.type.equals(type)) {
-            System.err.println("Right side of && operator must be of type boolean.");
-            //TODO: numerrors++
-        }
+        System.out.println("Left type: " + expr.left.type);
+//        if(!expr.left.type.equals(type)) {
+//            System.err.println("Left side of && operator must be of type boolean.");
+//            //TODO: numerrors++
+//        } else if(!expr.right.type.equals(type)) {
+//            System.err.println("Right side of && operator must be of type boolean.");
+//            //TODO: numerrors++
+//        }
     }
 
     @Override
     public Object visit(ASTAnd node, Object data) {
-        node.childrenAccept(this, data);
-
-        checkOperandsTypes(node, "boolean");
-
-        node.type = "boolean";
+//        node.childrenAccept(this, data);
+//        checkOperandsTypes(node, "boolean");
+//        node.type = "boolean";
         return null;
     }
 
     @Override
     public Object visit(ASTLessThan node, Object data) {
-        node.childrenAccept(this, data);
-        checkOperandsTypes(node, "int");
-        node.type = "boolean";
+//        node.childrenAccept(this, data);
+//        checkOperandsTypes(node, "int");
+//        node.type = "boolean";
         return null;
     }
 
@@ -327,9 +350,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTSub node, Object data) {
-        node.childrenAccept(this, data);
-        checkOperandsTypes(node, "int");
-        node.type = "int";
+//        node.childrenAccept(this, data);
+//        checkOperandsTypes(node, "int");
+//        node.type = "int";
         return null;
     }
 
@@ -343,9 +366,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTDiv node, Object data) {
-        node.childrenAccept(this, data);
-        checkOperandsTypes(node, "int");
-        node.type = "int";
+//        node.childrenAccept(this, data);
+//        checkOperandsTypes(node, "int");
+//        node.type = "int";
         return null;
     }
 }
