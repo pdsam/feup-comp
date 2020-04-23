@@ -119,6 +119,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         try {
             var = st.variable_lookup(node.identifier);
+            System.out.println(var.getName() + " is of type: " + var.getType());
+            node.type = var.getType();
         } catch (UnknownDeclaration unknownDeclaration) {
             System.err.println(unknownDeclaration.getMessage());
         }
@@ -260,11 +262,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    public Object visit(ASTNegation node, Object data) {
-        return null;
-    }
-
-    @Override
     public Object visit(ASTArrayLength node, Object data) {
         return null;
     }
@@ -280,32 +277,75 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
+    public Object visit(ASTNegation node, Object data) {
+        node.childrenAccept(this, data);
+
+        if(node.child.type != "boolean") {
+            System.err.println("! operator must be applied to a boolean expression.");
+            //TODO: numerrors++
+        }
+
+        node.type = "boolean";
+        return null;
+    }
+
+    private void checkOperandsTypes(BinOpExpression expr, String type) {
+        if(!expr.left.type.equals(type)) {
+            System.err.println("Left side of && operator must be of type boolean.");
+            //TODO: numerrors++
+        } else if(!expr.right.type.equals(type)) {
+            System.err.println("Right side of && operator must be of type boolean.");
+            //TODO: numerrors++
+        }
+    }
+
+    @Override
     public Object visit(ASTAnd node, Object data) {
+        node.childrenAccept(this, data);
+
+        checkOperandsTypes(node, "boolean");
+
+        node.type = "boolean";
         return null;
     }
 
     @Override
     public Object visit(ASTLessThan node, Object data) {
+        node.childrenAccept(this, data);
+        checkOperandsTypes(node, "int");
+        node.type = "boolean";
         return null;
     }
 
     @Override
     public Object visit(ASTSum node, Object data) {
+        node.childrenAccept(this, data);
+        checkOperandsTypes(node, "int");
+        node.type = "int";
         return null;
     }
 
     @Override
     public Object visit(ASTSub node, Object data) {
+        node.childrenAccept(this, data);
+        checkOperandsTypes(node, "int");
+        node.type = "int";
         return null;
     }
 
     @Override
     public Object visit(ASTMul node, Object data) {
+        node.childrenAccept(this, data);
+        checkOperandsTypes(node, "int");
+        node.type = "int";
         return null;
     }
 
     @Override
     public Object visit(ASTDiv node, Object data) {
+        node.childrenAccept(this, data);
+        checkOperandsTypes(node, "int");
+        node.type = "int";
         return null;
     }
 }
