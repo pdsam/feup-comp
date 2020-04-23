@@ -32,12 +32,26 @@ public class SemanticVisitor implements MyGrammarVisitor {
     // Receives SymbolTableDoc as argument
     public Object visit(ASTImport node, Object data) {
         SymbolTableDoc st = (SymbolTableDoc) data;
-        MethodDescriptor des = new MethodDescriptor(node.methodName,node.returnType,node.parameters,node.className,node.isStatic);
+        List<String> params = new ArrayList<>();
+
+        if(node.parameters != null) {
+            for(String param : node.parameters) {
+                if(!param.equals("void"))
+                    params.add(param);
+            }
+        }
+
+        MethodDescriptor desc = new MethodDescriptor(node.methodName,node.returnType,params,node.className,node.isStatic);
+
+        if(desc.getName() == null)
+            return null;
 
         try{
-            st.put(des);
+            st.put(desc);
+
+            System.out.println("Registering " + node.methodName + ": " + desc);
         } catch(Exception e){
-            System.out.println("do stuff at ASTIMPORT");
+            System.err.println(e.getMessage());
         }
 
         return null;
@@ -55,8 +69,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
                 continue;
 
             SimpleNode simpleChild = (SimpleNode) child;
-            if( simpleChild.children != null) {
-
+            if(simpleChild.children != null) {
                 for(Node grandChild : simpleChild.children){
                     try {
                         registerMethod((ASTMethod) grandChild, st);
@@ -81,6 +94,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             parameters.add(param.type);
         }
 
+        desc.setParameters(parameters);
         table.put(desc);
     }
 
@@ -92,7 +106,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             st.put(var);
         }
         catch(Exception e){
-            System.out.println("handle erros at ASTVAR");
+            System.err.println(e.getMessage());
         }
         return null;
     }
@@ -106,7 +120,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             st.put(var);
         }
         catch(Exception e){
-            System.out.println("handle erros at ASTVAR");
+            System.err.println(e.getMessage());
         }
 
         return null;
@@ -138,21 +152,27 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         try {
             var = st.method_lookup(node.identifier, node.arguments.list);
-            System.out.println(node.identifier + ": ");
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 
-        if(var == null)
+        if(var == null) {
+            System.out.println(node.identifier + ": null");
             node.type = "null";
-        else
+        }
+        else {
             node.type = var.getReturnType();
+            System.out.println(node.identifier + ": " + var);
+        }
         return null;
     }
 
     @Override
     public Object visit(ASTArguments node, Object data) {
         node.childrenAccept(this, data);
+
+        if(node.children == null)
+            return null;
 
         for(Node child : node.children) {
             Expression exp = (Expression) child;
