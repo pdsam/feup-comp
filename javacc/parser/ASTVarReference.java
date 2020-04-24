@@ -4,7 +4,7 @@ package parser;
 
 public
 class ASTVarReference extends Expression {
-  protected String identifier;
+  public String identifier;
 
   public ASTVarReference(int id) {
     super(id);

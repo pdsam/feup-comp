@@ -165,7 +165,7 @@ void MainDeclaration() #MainMethod : {Token string, identifier;}
        }
     }
     <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
-            {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Parameter) #ParameterList <R_PAR>
+            {jjtThis.identifier = identifier.image; jjtThis.type="String[]";})#Parameter) #ParameterList <R_PAR>
     <L_BRACKET>
         (LOOKAHEAD(2) VarDeclaration())* #VarDeclarationsList(true)
         (Statement())* #StatementList

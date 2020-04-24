@@ -8,12 +8,14 @@ class ASTMainMethod extends ASTMethod {
     super(id);
     this.type = "void";
     this.identifier = "main";
+    this.isStatic = true;
   }
 
   public ASTMainMethod(MyGrammar p, int id) {
     super(p, id);
     this.type = "void";
     this.identifier = "main";
+    this.isStatic = true;
   }
 
   @Override

@@ -21,6 +21,28 @@ public class ASTImport extends SimpleNode {
     super(p, id);
   }
 
+  @Override
+  public void dump(String prefix) {
+    String msg = "Import: ";
+
+    if(isStatic)
+      msg += "static ";
+
+    msg += className;
+
+    if(methodName != null)
+      msg += "." + methodName + "(";
+
+    if(!parameters.isEmpty()){
+      msg += parameters.get(0);
+      for(int i = 1; i < parameters.size(); i++)
+        msg += ", " + parameters.get(i);
+    }
+
+    msg += ") -> " + returnType;
+
+    System.out.println(prefix + msg);
+  }
 
   @Override
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {

@@ -2,6 +2,7 @@ package symbolTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
@@ -17,7 +18,7 @@ public class SymbolTableClass implements SymbolTable {
         this.parent = parent;
     }
 
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, List<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = methods_table.get(id);
 
         if(overloads != null){
@@ -64,9 +65,10 @@ public class SymbolTableClass implements SymbolTable {
                 methods_table.put(id, entry);
             }
         } else if(descriptor instanceof VarDescriptor) {
-            if(fields_table.put(id, (VarDescriptor) descriptor) != null) {
+            if(fields_table.get(id) == null)
+                fields_table.put(id, (VarDescriptor) descriptor);
+            else
                 throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
-            }
         }
     }
 }

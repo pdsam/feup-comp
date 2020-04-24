@@ -6,12 +6,10 @@ public
 class ASTAnd extends BinOpExpression {
   public ASTAnd(int id) {
     super(id);
-    this.type = "boolean";
   }
 
   public ASTAnd(MyGrammar p, int id) {
     super(p, id);
-    this.type = "boolean";
   }
 
   @Override

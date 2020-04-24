@@ -4,8 +4,8 @@ import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SymbolTableMethod implements SymbolTable {
     private SymbolTable parent;
@@ -17,7 +17,7 @@ public class SymbolTableMethod implements SymbolTable {
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, List<String> parameters) throws UnknownDeclaration {
         if(parent != null) return this.parent.method_lookup(id, parameters);
 
         throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
@@ -39,9 +39,10 @@ public class SymbolTableMethod implements SymbolTable {
     public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
         if(descriptor instanceof VarDescriptor) {
             String id = descriptor.getName();
-            if(variables.put(id, (VarDescriptor) descriptor) != null){
-                throw new AlreadyDeclared("Variable \'" + id + "\' already defined");
-            }
+            if(variables.get(id) == null)
+                variables.put(id, (VarDescriptor) descriptor);
+            else
+                throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
             return;
         }
 

@@ -3,6 +3,7 @@ import parser.ASTDocument;
 import parser.MyGrammar;
 import parser.ParseException;
 import parser.SimpleNode;
+import semantics.SemanticVisitor;
 
 import java.io.*;
 
@@ -40,6 +41,7 @@ public class Main{
 			throw new ParseException(Integer.toString(MyGrammar.numErrors)  + " error(s) were found during parsing. Fix them and try again.");
 		}
 		root.dump(">");
+		root.jjtAccept(new SemanticVisitor(), null);
 
 		try {
 			File generatedCodeFile = new File("prog.jsm");

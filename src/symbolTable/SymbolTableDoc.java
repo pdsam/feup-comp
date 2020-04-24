@@ -2,6 +2,7 @@ package symbolTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
@@ -17,10 +18,10 @@ public class  SymbolTableDoc implements SymbolTable {
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, List<String> parameters) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
-        if(overloads == null) {
+        if(overloads != null) {
             for (MethodDescriptor descriptor : overloads) {
                 if (descriptor.getParameters().equals(parameters))
                     return descriptor;

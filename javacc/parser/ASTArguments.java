@@ -2,14 +2,32 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public
 class ASTArguments extends SimpleNode {
+  public List<String> list = new ArrayList<>();
+
   public ASTArguments(int id) {
     super(id);
   }
 
   public ASTArguments(MyGrammar p, int id) {
     super(p, id);
+  }
+
+  @Override
+  public void dump(String prefix) {
+    if (children != null) {
+      System.out.println(toString(prefix));
+      for (int i = 0; i < children.length; ++i) {
+        SimpleNode n = (SimpleNode)children[i];
+        if (n != null) {
+          n.dump(prefix + "  ");
+        }
+      }
+    }
   }
 
   @Override
