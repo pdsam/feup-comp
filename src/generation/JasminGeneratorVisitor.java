@@ -97,7 +97,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        //TODO check if static method
         writer.printf(".method public %s(", node.identifier);
         SimpleNode params = (SimpleNode) node.children[0];
         params.childrenAccept(this, data);
@@ -289,15 +288,26 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTFunctionCall node, Object data) {
         //TODO check if static method call
-        node.ownerRef.jjtAccept(this, data);
-        node.arguments.childrenAccept(this, data);
-        /*
-        * TODO get descriptor of method to extract parameter info and
-        * return type
-        */
-        writer.printf("invokevirtual %s/%s(", node.ownerRef.type, node.identifier);
-
-        writer.printf(")%s\n", getTypeString("void"));
+        if (node.desc.isStatic()) {
+            node.arguments.childrenAccept(this, data);
+            writer.printf("invokestatic %s/%s(", node.desc.getClassName(), node.desc.getName());
+            for (String par: node.desc.getParameters()) {
+                writer.print(getTypeString(par));
+            }
+            writer.printf(")%s\n", getTypeString(node.desc.getReturnType()));
+        } else {
+            node.ownerRef.jjtAccept(this, data);
+            node.arguments.childrenAccept(this, data);
+            /*
+             * TODO get descriptor of method to extract parameter info and
+             * return type
+             */
+            writer.printf("invokevirtual %s/%s(", node.desc.getClassName(), node.desc.getName());
+            for (String par: node.desc.getParameters()) {
+                writer.print(getTypeString(par));
+            }
+            writer.printf(")%s\n", getTypeString("void"));
+        }
         return null;
     }
 
