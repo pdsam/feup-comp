@@ -2,11 +2,14 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
+import symbolTable.descriptor.MethodDescriptor;
+
 public
 class ASTFunctionCall extends Expression {
   public Expression ownerRef;
   public String identifier;
   public ASTArguments arguments;
+  public MethodDescriptor desc;
 
   public ASTFunctionCall(int id) {
     super(id);

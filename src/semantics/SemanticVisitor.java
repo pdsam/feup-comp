@@ -161,8 +161,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         if(var == null)
             node.type = "null";
-        else
+        else {
             node.type = var.getType();
+            node.desc = var;
+        }
         return null;
     }
 
@@ -184,6 +186,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
         else {
             node.type = var.getReturnType();
+            node.desc = var;
 //            System.out.println(node.identifier + ": " + var);
         }
         return null;
