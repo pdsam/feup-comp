@@ -12,12 +12,10 @@ class ASTClass extends SimpleNode {
   
   public ASTClass(int id) {
     super(id);
-    this.symbol_table.setClassName(identifier);
   }
 
   public ASTClass(MyGrammar p, int id) {
     super(p, id);
-    this.symbol_table.setClassName(identifier);
   }
 
   @Override
