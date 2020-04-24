@@ -6,10 +6,12 @@ public
 class ASTSum extends BinOpExpression {
   public ASTSum(int id) {
     super(id);
+    this.type = "int";
   }
 
   public ASTSum(MyGrammar p, int id) {
     super(p, id);
+    this.type = "int";
   }
 
   @Override

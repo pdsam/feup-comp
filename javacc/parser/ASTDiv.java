@@ -6,10 +6,12 @@ public
 class ASTDiv extends BinOpExpression {
   public ASTDiv(int id) {
     super(id);
+    this.type = "int";
   }
 
   public ASTDiv(MyGrammar p, int id) {
     super(p, id);
+    this.type = "int";
   }
 
   @Override

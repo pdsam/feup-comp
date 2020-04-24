@@ -6,10 +6,12 @@ public
 class ASTSub extends BinOpExpression {
   public ASTSub(int id) {
     super(id);
+    this.type = "int";
   }
 
   public ASTSub(MyGrammar p, int id) {
     super(p, id);
+    this.type = "int";
   }
 
   @Override

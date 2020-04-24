@@ -22,7 +22,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             case "array":
                 return "[I";
             default:
-                return String.format("L%s;", type); //TODO get proper class signature
+                return String.format("L%s;", type);
         }
     }
 
@@ -33,7 +33,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTDocument node, Object data) {
-        System.out.println("document");
         ((SimpleNode) node.children[0]).childrenAccept(this, data);
         node.children[1].jjtAccept(this, data);
         return null;
@@ -51,7 +50,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTClass node, Object data) {
-        System.out.println("class");
         writer.printf(".class public %s\n", node.identifier);
         String parent;
         if (node.parent == null) {
@@ -99,16 +97,17 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        System.out.println("method");
+        //TODO check if static method
         writer.printf(".method public %s(", node.identifier);
         SimpleNode params = (SimpleNode) node.children[0];
         params.childrenAccept(this, data);
         writer.printf(")%s\n", getTypeString(node.type));
         writer.println(".limit stack 99\n.limit locals 99\n");
 
-        node.children[2].jjtAccept(this, data); //Generate code for statements
+        Context context = new Context(node.getStMethod());
+        node.children[2].jjtAccept(this, context); //Generate code for statements
 
-        node.children[3].jjtAccept(this, data); //Generate code for return statement
+        node.children[3].jjtAccept(this, context); //Generate code for return statement
 
         writer.println(".end method\n");
         return null;
@@ -122,14 +121,13 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTReturnStatement node, Object data) {
-        //TODO hope every type is set
-        /*Expression retExpr = (Expression) node.children[0];
+        Expression retExpr = (Expression) node.children[0];
         retExpr.jjtAccept(this, data);
         if (retExpr.type.equals("int") || retExpr.type.equals("boolean")) {
             writer.println("ireturn");
         } else {
             writer.println("areturn");
-        }*/
+        }
         return null;
     }
 
@@ -138,7 +136,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         writer.println(".method public static main([Ljava/lang/String;)V");
         writer.println(".limit stack 99\n.limit locals 99\n");
 
-        writer.println(".end method\n");
+        node.children[2].jjtAccept(this, data);
+
+
+        writer.println("return\n.end method\n");
         return null;
     }
 
@@ -162,19 +163,18 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        //TODO hope every type is set
-        /*
         //TODO instructions to store in class field
 
         //into local variable
         node.varReference.jjtAccept(this, data);
         node.value.jjtAccept(this, data);
+        //TODO get variable indexes
         int temp = 0;
         if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
             writer.printf("istore %d\n", temp);
         } else {
             writer.printf("astore %d\n", temp);
-        }*/
+        }
         return null;
     }
 
@@ -213,8 +213,16 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTIntegerLiteral node, Object data) {
-        writer.printf("ldc %d\n", node.val);
-
+        int val = node.val;
+        if (val >= 0 && val <= 5) {
+            writer.printf("iconst_%d\n", val);
+        } else if (val <= 127) {
+            writer.printf("bipush %d\n", val);
+        } else if (val <= 32767) {
+            writer.printf("sipush %d\n", val);
+        } else {
+            writer.printf("ldc %d\n", node.val);
+        }
         return null;
     }
 
@@ -226,13 +234,18 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
-        //TODO
+        /*
+         *  TODO
+         *  Remember optimized aload_<B> 0<=B<=3
+         */
+        writer.printf("var %s\n", node.identifier);
+
         return null;
     }
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
-        //TODO
+        writer.printf("aload_0\n");
         return null;
     }
 
@@ -253,13 +266,23 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTNegation node, Object data) {
-        //TODO
+        node.child.jjtAccept(this, data);
+        Context context = (Context) data;
+        String successLabel = context.generateLabel();
+        String endLabel = context.generateLabel();
+        writer.printf("ifgt %s\n", successLabel);
+        writer.printf("iconst_1\n");
+        writer.printf("goto %s\n", endLabel);
+        writer.printf("%s:\n", successLabel);
+        writer.printf("iconst_0\n");
+        writer.printf("%s:\n", endLabel);
         return null;
     }
 
     @Override
     public Object visit(ASTArrayLength node, Object data) {
-        //TODO
+        node.arrayRef.jjtAccept(this, data);
+        writer.println("arraylength");
         return null;
     }
 
@@ -285,15 +308,39 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAnd node, Object data) {
-        //TODO get left and right into the stack
-        //TODO write and instruction
+        Context context = (Context) data;
+        String successLabel = context.generateLabel();
+        String failLabel = context.generateLabel();
+        String endLabel = context.generateLabel();
+
+        node.left.jjtAccept(this, data);
+        writer.printf("ifle %s\n", failLabel);
+        node.right.jjtAccept(this, data);
+        writer.printf("ifgt %s\n", successLabel);
+        writer.printf("%s:\n", failLabel);
+        writer.printf("iconst_0\n");
+        writer.printf("goto %s\n", endLabel);
+        writer.printf("%s:\n", successLabel);
+        writer.printf("iconst_1\n");
+        writer.printf("%s:\n", endLabel);
         return null;
     }
 
     @Override
     public Object visit(ASTLessThan node, Object data) {
-        //TODO get left and right into the stack
-        //TODO write less than instruction
+        node.left.jjtAccept(this, data);
+        node.right.jjtAccept(this, data);
+
+        Context context = (Context) data;
+        String lessLabel = context.generateLabel();
+        String endLabel = context.generateLabel();
+
+        writer.printf("if_cmplt %s\n",  lessLabel);
+        writer.printf("iconst_0\n");
+        writer.printf("goto %s\n", endLabel);
+        writer.printf("%s:\n", lessLabel);
+        writer.printf("iconst_1\n");
+        writer.printf("%s:\n", endLabel);
         return null;
     }
 

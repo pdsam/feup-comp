@@ -13,6 +13,7 @@ class ASTArrayCreation extends Expression {
 
   public ASTArrayCreation(MyGrammar p, int id) {
     super(p, id);
+    this.type = "array";
   }
 
   @Override

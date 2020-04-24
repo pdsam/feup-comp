@@ -365,7 +365,7 @@ Expression ArrayCreation() #ArrayCreation : {Expression e;}
 
 Expression ConstructorCall() #ConstructorCall : {Token identifier;}
 {
-    identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;} <L_PAR> <R_PAR>
+    identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image; jjtThis.type = identifier.image;} <L_PAR> <R_PAR>
     {return jjtThis;}
 }
 

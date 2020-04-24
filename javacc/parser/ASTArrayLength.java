@@ -4,7 +4,7 @@ package parser;
 
 public
 class ASTArrayLength extends Expression {
-  protected Expression arrayRef;
+  public Expression arrayRef;
 
   public ASTArrayLength(int id) {
     super(id);
@@ -13,6 +13,7 @@ class ASTArrayLength extends Expression {
 
   public ASTArrayLength(MyGrammar p, int id) {
     super(p, id);
+    this.type = "int";
   }
 
   @Override
