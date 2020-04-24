@@ -10,6 +10,7 @@ import symbolTable.descriptor.VarDescriptor;
 
 public class SymbolTableClass implements SymbolTable {
     private SymbolTable parent = null;
+    private String className;
     private HashMap<String, VarDescriptor> fields_table = new HashMap<>();
     private HashMap<String, ArrayList<MethodDescriptor>> methods_table = new HashMap<>();
 
@@ -65,10 +66,17 @@ public class SymbolTableClass implements SymbolTable {
                 methods_table.put(id, entry);
             }
         } else if(descriptor instanceof VarDescriptor) {
-            if(fields_table.get(id) == null)
+            if(fields_table.get(id) == null) {
+                ((VarDescriptor) descriptor).setField(true);
+                ((VarDescriptor) descriptor).setClassName(className);
+
                 fields_table.put(id, (VarDescriptor) descriptor);
-            else
+            } else
                 throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
         }
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 }

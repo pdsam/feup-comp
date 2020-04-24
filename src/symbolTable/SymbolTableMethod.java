@@ -39,10 +39,12 @@ public class SymbolTableMethod implements SymbolTable {
     public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
         if(descriptor instanceof VarDescriptor) {
             String id = descriptor.getName();
-            if(variables.get(id) == null)
+            if(variables.get(id) == null) {
+                ((VarDescriptor) descriptor).setField(false);
                 variables.put(id, (VarDescriptor) descriptor);
-            else
+            } else {
                 throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
+            }
             return;
         }
 
