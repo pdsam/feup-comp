@@ -39,6 +39,14 @@ public class MethodDescriptor implements Descriptor {
         return name;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
     @Override
     public String toString() {
         return "MethodDescriptor{" +
