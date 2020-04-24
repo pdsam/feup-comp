@@ -71,6 +71,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTableDoc parentST = (SymbolTableDoc) data;
         SymbolTableClass st = node.getStClass();
         st.setParent(parentST);
+        st.setClassName(node.identifier);
 
         try {
             //Registering this own class
