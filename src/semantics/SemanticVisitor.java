@@ -41,7 +41,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             }
         }
 
-        VarDescriptor var = new VarDescriptor(node.className, "class");
+        VarDescriptor var = new VarDescriptor(node.className, node.className);
         MethodDescriptor mtd = new MethodDescriptor(node.methodName,node.returnType,params,node.className,node.isStatic);
 
         // If the import is only of a class then there is no method to register
@@ -75,7 +75,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         try {
             //Registering this own class
-            VarDescriptor var = new VarDescriptor(node.identifier, "class");
+            VarDescriptor var = new VarDescriptor(node.identifier, node.identifier);
 //            System.out.println("Registering document class: " + var);
             parentST.put(var);
         } catch(Exception e){
@@ -176,7 +176,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         MethodDescriptor var = null;
 
         try {
-            var = st.method_lookup(node.identifier, node.arguments.list);
+            var = st.method_lookup(node.identifier, node.arguments.list, node.ownerRef.type);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -274,10 +274,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTAssignment node, Object data) {
         //TODO: check if types match
         node.childrenAccept(this, data);
-        ASTVarReference var = node.jjtGetChild(0);
-        Expression exp = node.jjtGetChild(1);
+        ASTVarReference var = (ASTVarReference) node.jjtGetChild(0);
+        Expression exp = (Expression) node.jjtGetChild(1);
 
-        if(var.desc.getType().equals(exp.type)){
+        if(var.type.equals(exp.type)){
             //TODO handle errors
         }
 
@@ -337,6 +337,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
+        node.type = "this";
         return null;
     }
 

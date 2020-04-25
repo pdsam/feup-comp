@@ -19,7 +19,7 @@ public class  SymbolTableDoc implements SymbolTable {
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters, String className) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
         if(overloads != null) {
