@@ -17,17 +17,17 @@ public class SymbolTableClass implements SymbolTable {
         this.parent = parent;
     }
 
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters, String className) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = methods_table.get(id);
 
         if(overloads != null){
             for(MethodDescriptor descriptor : overloads){
-                if(descriptor.getParameters().equals(parameters))
+                if(descriptor.getParameters().equals(parameters) && descriptor.getClassName().equals(className) )
                     return descriptor;
             }
         }
 
-        if(parent != null) return this.parent.method_lookup(id, parameters);
+        if(parent != null) return this.parent.method_lookup(id, parameters, className);
 
         throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
     }

@@ -37,6 +37,10 @@ public class MethodDescriptor implements Descriptor {
         return name;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
     @Override
     public String toString() {
         return "MethodDescriptor{" +
@@ -46,5 +50,7 @@ public class MethodDescriptor implements Descriptor {
                 ", isStatic=" + isStatic +
                 '}';
     }
+
+
 }
 
