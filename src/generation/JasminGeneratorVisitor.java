@@ -1,6 +1,7 @@
 package generation;
 
 import parser.*;
+import symbolTable.descriptor.VarDescriptor;
 
 import java.io.PrintWriter;
 
@@ -163,17 +164,21 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTAssignment node, Object data) {
         //TODO instructions to store in class field
+        ASTVarReference ref = (ASTVarReference) node.varReference;
+        VarDescriptor desc = (VarDescriptor) ref.desc;
+        node.value.jjtAccept(this, data);
+        if (desc.isField()) {
+            writer.println("aload_0");
+            writer.printf("putfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
+        } else {
+            if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
+                writer.printf("istore %d\n", desc.getStackOffset());
+            } else {
+                writer.printf("astore %d\n", desc.getStackOffset());
+            }
+        }
 
         //into local variable
-        node.varReference.jjtAccept(this, data);
-        node.value.jjtAccept(this, data);
-        //TODO get variable indexes
-        int temp = 0;
-        if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
-            writer.printf("istore %d\n", temp);
-        } else {
-            writer.printf("astore %d\n", temp);
-        }
         return null;
     }
 
@@ -237,7 +242,19 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
          *  TODO
          *  Remember optimized aload_<B> 0<=B<=3
          */
-        writer.printf("var %s\n", node.identifier);
+        VarDescriptor desc = (VarDescriptor) node.desc;
+        if (desc.isField()) {
+            writer.println("aload_0");
+            writer.printf("getfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
+        } else {
+            if (desc.getType().equals("int") || desc.getType().equals("boolean")) {
+                int off = desc.getStackOffset();
+                writer.printf("iload%s%d\n", off >= 3 ? "_" : " ", off);
+            } else {
+                int off = desc.getStackOffset();
+                writer.printf("aload%s%d\n", off >= 3 ? "_" : " ", off);
+            }
+        }
 
         return null;
     }
