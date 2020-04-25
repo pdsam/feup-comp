@@ -30,7 +30,7 @@ public class  SymbolTableDoc implements SymbolTable {
             }
         }
 
-        if(parent != null) return this.parent.method_lookup(id, parameters);
+        if(parent != null) return this.parent.method_lookup(id, parameters,className);
 
         throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
     }

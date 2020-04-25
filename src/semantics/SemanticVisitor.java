@@ -274,6 +274,15 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTAssignment node, Object data) {
         //TODO: check if types match
         node.childrenAccept(this, data);
+        ASTVarReference var = node.jjtGetChild(0);
+        Expression exp = node.jjtGetChild(1);
+
+        if(var.desc.getType().equals(exp.type)){
+            //TODO handle errors
+        }
+
+
+
         return null;
     }
 
