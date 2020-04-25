@@ -19,12 +19,13 @@ public class  SymbolTableDoc implements SymbolTable {
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, List<String> parameters) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters, String className) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
         if(overloads != null) {
             for (MethodDescriptor descriptor : overloads) {
-                if (descriptor.getParameters().equals(parameters))
+                if (descriptor.getParameters().equals(parameters) &&
+                        descriptor.getClassName().equals(className))
                     return descriptor;
             }
         }
@@ -55,12 +56,15 @@ public class  SymbolTableDoc implements SymbolTable {
 
             if(overloads != null){ //a method with that id exists already
                 for(MethodDescriptor methodDescriptor : overloads){
-                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
+                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ) &&
+                        methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()) ) {
                         throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
+                    }
+
                 }
 
                 overloads.add(mtd);
-            }else{
+            } else {
                 ArrayList<MethodDescriptor> entry = new ArrayList<>();
                 entry.add(mtd);
                 imports.put(id, entry);

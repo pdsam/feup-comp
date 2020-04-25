@@ -17,8 +17,8 @@ public class SymbolTableMethod implements SymbolTable {
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, List<String> parameters) throws UnknownDeclaration {
-        if(parent != null) return this.parent.method_lookup(id, parameters);
+    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters, String className) throws UnknownDeclaration {
+        if(parent != null) return this.parent.method_lookup(id, parameters, className);
 
         throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
     }
