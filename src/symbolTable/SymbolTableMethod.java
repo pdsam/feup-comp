@@ -3,6 +3,7 @@ package symbolTable;
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
+import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.List;

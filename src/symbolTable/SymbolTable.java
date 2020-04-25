@@ -4,7 +4,7 @@ import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public interface SymbolTable {
     void setParent(SymbolTable parent);
