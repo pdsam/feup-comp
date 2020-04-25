@@ -84,7 +84,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         // Grand children are the methods declared inside the class
         for(Node child : node.children){
-            if(child instanceof ASTParameterList)
+            if(child instanceof ASTVarDeclarationsList)
                 continue;
 
             SimpleNode simpleChild = (SimpleNode) child;
