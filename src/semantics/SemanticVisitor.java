@@ -11,7 +11,6 @@ import java.util.List;
 
 public class SemanticVisitor implements MyGrammarVisitor {
     private void logError(SimpleNode node, String msg) {
-        //TODO: print line and column
         System.err.println("Error at line: "+node.line+", column: " +node.column+". "+ msg);
         this.increment();
     }
@@ -396,7 +395,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         if(node.child.type != "boolean") {
             logError(node, "! operator must be applied to a boolean expression.");
-            //TODO: numerrors++
         }
 
         node.type = "boolean";
@@ -408,10 +406,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
 //        System.out.println("Right type: " + expr.right.type);
         if(!expr.left.type.equals(type)) {
             logError(expr, "Left side of && operator must be of type boolean.");
-            //TODO: numerrors++
         } else if(!expr.right.type.equals(type)) {
             logError(expr, "Right side of && operator must be of type boolean.");
-            //TODO: numerrors++
         }
     }
 
