@@ -33,8 +33,11 @@ public class  SymbolTableDoc implements SymbolTable {
     }
 
     @Override
-    public boolean isValidType(String type) {
-        return validTypes.contains(type) || classes.containsKey(type);
+    public boolean isValidType(String type) throws InvalidType {
+        if (validTypes.contains(type) || classes.containsKey(type))
+            return true;
+
+        throw new InvalidType();
     }
 
     @Override

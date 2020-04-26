@@ -28,10 +28,10 @@ public class SymbolTableClass implements SymbolTable {
     }
 
     @Override
-    public boolean isValidType(String type) {
+    public boolean isValidType(String type) throws InvalidType {
         if(parent != null) return parent.isValidType(type);
 
-        return false;
+        throw new InvalidType();
     }
 
     @Override
