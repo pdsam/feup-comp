@@ -19,7 +19,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         numerrors++;
         if(numerrors > 10){
             System.out.println("Max number of errors reached, Semantic analyser exiting.");
-            System.exit(0); 
+            //System.exit(1); 
         }
     }
 
