@@ -76,6 +76,9 @@ public class SymbolTableClass implements SymbolTable {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = methods_table.get(id);
 
+            if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
+                throw new UnknownTypeException();
+
             if(overloads != null){
                 for(MethodDescriptor methodDescriptor : overloads){
                     if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters()) &&

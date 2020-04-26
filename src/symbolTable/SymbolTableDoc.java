@@ -10,6 +10,7 @@ import symbolTable.descriptor.VarDescriptor;
 import symbolTable.exception.AlreadyDeclaredException;
 import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownDeclarationException;
+import symbolTable.exception.UnknownTypeException;
 
 public class  SymbolTableDoc implements SymbolTable {
     private SymbolTable parent = null;
@@ -75,6 +76,9 @@ public class  SymbolTableDoc implements SymbolTable {
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = imports.get(id);
+
+            if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
+                throw new UnknownTypeException();
 
             if(overloads != null){ //a method with that id exists already
                 for(MethodDescriptor methodDescriptor : overloads){

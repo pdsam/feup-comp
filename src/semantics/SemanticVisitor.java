@@ -312,18 +312,21 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBranch node, Object data) {
+        //TODO: check if condition is boolean
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
+        //TODO: check if condition is boolean
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
+        //TODO: check if value being assigned is int
         node.childrenAccept(this, data);
         return null;
     }
@@ -336,6 +339,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
+        //TODO: check if index is int
         ASTVarReference var = (ASTVarReference) node.arrayRef;
         SymbolTable st = (SymbolTable) data;
 
