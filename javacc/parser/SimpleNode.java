@@ -10,6 +10,10 @@ class SimpleNode implements Node {
   public int id;
   protected Object value;
   protected MyGrammar parser;
+  public int line = -1;
+  public int column = -1;
+
+
 
   public SimpleNode(int i) {
     id = i;

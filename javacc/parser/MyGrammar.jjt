@@ -2,6 +2,7 @@ options {
   LOOKAHEAD = 1;
   MULTI = true;
   VISITOR = true;
+  NODE_SCOPE_HOOK=true;
 }
 
 PARSER_BEGIN(MyGrammar)
@@ -15,6 +16,13 @@ PARSER_BEGIN(MyGrammar)
         public static int MAX_ERRORS = 10;
         public static int numErrors = 0;
         public static boolean foundError = false;
+
+        void jjtreeOpenNodeScope(Node n) {
+		((SimpleNode)n).line = getToken(1).beginLine ;
+		((SimpleNode)n).column = getToken(1).beginColumn;
+	}
+        void jjtreeCloseNodeScope(Node n) {
+        }
 
         public static void main(String[] args) throws ParseException {
             if(args.length < 1) {
