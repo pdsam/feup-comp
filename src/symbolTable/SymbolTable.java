@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface SymbolTable {
     void setParent(SymbolTable parent);
+    boolean isValidType(String type);
     MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws UnknownDeclaration;
     VarDescriptor variable_lookup(String id) throws UnknownDeclaration;
     void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration;

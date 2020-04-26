@@ -12,6 +12,7 @@ public class  SymbolTableDoc implements SymbolTable {
     private SymbolTable parent = null;
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
     private HashMap<String, VarDescriptor> classes = new HashMap<>();
+    private ArrayList<String> validTypes = new ArrayList<>(List.of("int", "boolean", "array"));
 
     public ArrayList<MethodDescriptor> getClassMethods(String className) {
         ArrayList<MethodDescriptor> descriptors = new ArrayList<>();
@@ -29,6 +30,11 @@ public class  SymbolTableDoc implements SymbolTable {
     @Override
     public void setParent(SymbolTable parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public boolean isValidType(String type) {
+        return validTypes.contains(type) || classes.containsKey(type);
     }
 
     @Override

@@ -28,6 +28,13 @@ public class SymbolTableClass implements SymbolTable {
     }
 
     @Override
+    public boolean isValidType(String type) {
+        if(parent != null) return parent.isValidType(type);
+
+        return false;
+    }
+
+    @Override
     public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws UnknownDeclaration {
         ArrayList<MethodDescriptor> overloads = methods_table.get(id);
         if(className.equals(this.className))
