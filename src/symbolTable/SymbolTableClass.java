@@ -8,6 +8,10 @@ import java.util.Map;
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.exception.AlreadyDeclaredException;
+import symbolTable.exception.SemanticException;
+import symbolTable.exception.UnknownTypeException;
+import symbolTable.exception.UnknownDeclarationException;
 
 public class SymbolTableClass implements SymbolTable {
     private SymbolTable parent = null;
@@ -28,14 +32,14 @@ public class SymbolTableClass implements SymbolTable {
     }
 
     @Override
-    public boolean isValidType(String type) throws InvalidType {
+    public boolean isValidType(String type) {
         if(parent != null) return parent.isValidType(type);
 
-        throw new InvalidType();
+        return false;
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
         ArrayList<MethodDescriptor> overloads = methods_table.get(id);
         if(className.equals(this.className))
             className = "this"; //Every method from this class is registered with 'this'
@@ -49,11 +53,11 @@ public class SymbolTableClass implements SymbolTable {
 
         if(parent != null) return this.parent.method_lookup(id, parameters, className);
 
-        throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
     }
 
     @Override
-    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
+    public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = fields_table.get(id);
 
         if(varDescriptor != null)
@@ -61,11 +65,11 @@ public class SymbolTableClass implements SymbolTable {
 
         if(parent != null) return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Variable \'" + id + "\' not defined.");
     }
 
     @Override
-    public void put(Descriptor descriptor) throws AlreadyDeclared {
+    public void put(Descriptor descriptor) throws SemanticException {
         String id = descriptor.getName();
 
         if(descriptor instanceof MethodDescriptor) {
@@ -76,7 +80,7 @@ public class SymbolTableClass implements SymbolTable {
                 for(MethodDescriptor methodDescriptor : overloads){
                     if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters()) &&
                             methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()))
-                        throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
+                        throw new AlreadyDeclaredException("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
                 }
 
                 overloads.add(mtd);
@@ -86,13 +90,18 @@ public class SymbolTableClass implements SymbolTable {
                 methods_table.put(id, entry);
             }
         } else if(descriptor instanceof VarDescriptor) {
+            VarDescriptor var = (VarDescriptor) descriptor;
+
+            if(!isValidType(var.getType()))
+                throw new UnknownTypeException();
+
             if(fields_table.get(id) == null) {
-                ((VarDescriptor) descriptor).setField(true);
-                ((VarDescriptor) descriptor).setClassName(className);
+                var.setField(true);
+                var.setClassName(className);
 
                 fields_table.put(id, (VarDescriptor) descriptor);
             } else
-                throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
+                throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
         }
     }
 

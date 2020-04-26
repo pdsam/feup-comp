@@ -7,6 +7,9 @@ import java.util.List;
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.exception.AlreadyDeclaredException;
+import symbolTable.exception.SemanticException;
+import symbolTable.exception.UnknownDeclarationException;
 
 public class  SymbolTableDoc implements SymbolTable {
     private SymbolTable parent = null;
@@ -33,15 +36,12 @@ public class  SymbolTableDoc implements SymbolTable {
     }
 
     @Override
-    public boolean isValidType(String type) throws InvalidType {
-        if (validTypes.contains(type) || classes.containsKey(type))
-            return true;
-
-        throw new InvalidType();
+    public boolean isValidType(String type) {
+        return validTypes.contains(type) || classes.containsKey(type);
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
         if(overloads != null) {
@@ -54,11 +54,11 @@ public class  SymbolTableDoc implements SymbolTable {
 
         if(parent != null) return this.parent.method_lookup(id, parameters,className);
 
-        throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
     }
 
     @Override
-    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
+    public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = classes.get(id);
 
         if(varDescriptor != null)
@@ -66,11 +66,11 @@ public class  SymbolTableDoc implements SymbolTable {
 
         if(parent != null) return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Variable \'" + id + "\' not defined.");
     }
 
     @Override
-    public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
+    public void put(Descriptor descriptor) throws SemanticException {
         String id = descriptor.getName();
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
@@ -80,7 +80,7 @@ public class  SymbolTableDoc implements SymbolTable {
                 for(MethodDescriptor methodDescriptor : overloads){
                     if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ) &&
                         methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()) ) {
-                        throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
+                        throw new AlreadyDeclaredException("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
                     }
 
                 }
@@ -100,6 +100,6 @@ public class  SymbolTableDoc implements SymbolTable {
             return;
         }
 
-        throw new UnknownDeclaration("Variables cannot be defined outside a class or method.");
+        throw new UnknownDeclarationException("Variables cannot be defined outside a class or method.");
     }
 }
