@@ -13,6 +13,19 @@ public class  SymbolTableDoc implements SymbolTable {
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
     private HashMap<String, VarDescriptor> classes = new HashMap<>();
 
+    public ArrayList<MethodDescriptor> getClassMethods(String className) {
+        ArrayList<MethodDescriptor> descriptors = new ArrayList<>();
+
+        for(HashMap.Entry<String, ArrayList<MethodDescriptor>> entry : imports.entrySet()){
+            for(MethodDescriptor method : entry.getValue()) {
+                if(method.getClassName().equals(className))
+                    descriptors.add(method);
+            }
+        }
+
+        return descriptors;
+    }
+
     @Override
     public void setParent(SymbolTable parent) {
         this.parent = parent;

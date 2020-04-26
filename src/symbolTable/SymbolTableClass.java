@@ -3,6 +3,7 @@ package symbolTable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
@@ -11,8 +12,15 @@ import symbolTable.descriptor.VarDescriptor;
 public class SymbolTableClass implements SymbolTable {
     private SymbolTable parent = null;
     private String className;
+    private String superClass;
     private HashMap<String, VarDescriptor> fields_table = new HashMap<>();
     private HashMap<String, ArrayList<MethodDescriptor>> methods_table = new HashMap<>();
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public void setSuperClass(String className) { this.superClass = className; }
 
     @Override
     public void setParent(SymbolTable parent) {
@@ -46,6 +54,7 @@ public class SymbolTableClass implements SymbolTable {
         throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
     }
 
+    @Override
     public void put(Descriptor descriptor) throws AlreadyDeclared {
         String id = descriptor.getName();
 
@@ -55,7 +64,8 @@ public class SymbolTableClass implements SymbolTable {
 
             if(overloads != null){
                 for(MethodDescriptor methodDescriptor : overloads){
-                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
+                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters()) &&
+                            methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()))
                         throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
                 }
 
@@ -76,7 +86,24 @@ public class SymbolTableClass implements SymbolTable {
         }
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    @Override
+    public String toString() {
+        String result = "SymbolTableClass{ className='" + className + "', superClass='" + superClass + '\'';
+
+        result += ", fields=[ \n";
+        for(Map.Entry<String, VarDescriptor> entry : fields_table.entrySet()) {
+            result += entry.getKey() + ": " + entry.getValue() + "\n";
+        }
+
+        result += "], methods=[ \n";
+        for(Map.Entry<String, ArrayList<MethodDescriptor>> entry : methods_table.entrySet()) {
+            for(MethodDescriptor mtd : entry.getValue()){
+                result += entry.getKey() + ": " + mtd + "\n";
+            }
+        }
+
+        result += "]}";
+
+        return result;
     }
 }

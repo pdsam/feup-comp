@@ -91,7 +91,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             if(simpleChild.children != null) {
                 for(Node grandChild : simpleChild.children){
                     try {
-                        registerMethod((ASTMethod) grandChild, st);
+                        registerMethodNode((ASTMethod) grandChild, st);
                     } catch (Exception e) {
                        System.err.println(e.getMessage());
                     }
@@ -99,21 +99,34 @@ public class SemanticVisitor implements MyGrammarVisitor {
             }
         }
 
+        // Register methods if this class extends another
+        if(node.parent != null) {
+            st.setSuperClass(node.parent);
+            for(MethodDescriptor mtd : parentST.getClassMethods(node.parent)){
+                try {
+                    // Every method inside the class is referenced to 'this'
+                    mtd.setClassName("this");
+                    st.put(mtd);
+                } catch (Exception ignore) {
+                    //There will be an exception if the method is already declared
+                    //which means that the class is overriding the methods of the superclass
+                }
+            }
+        }
+
+        System.out.println("Class ST: " + st);
         node.childrenAccept(this, st);
         return null;
     }
 
-    private void registerMethod(ASTMethod node, SymbolTable classTable) throws UnknownDeclaration, AlreadyDeclared {
-//        SymbolTable methodTable = node.getStMethod();
+    private void registerMethodNode(ASTMethod node, SymbolTable classTable) throws UnknownDeclaration, AlreadyDeclared {
         MethodDescriptor desc = new MethodDescriptor(node.identifier, node.type, node.isStatic);
-        SimpleNode paramList = (SimpleNode) node.children[0]; // parameter list is the first child of the method node
+        SimpleNode paramList = (SimpleNode) node.jjtGetChild(0); // parameter list is the first child of the method node
         List<String> parameters = new ArrayList<>();
 
         for(int i = 0; i < paramList.children.length; i++){
             ASTParameter param = (ASTParameter) paramList.children[i];
-//            VarDescriptor paramDesc = new VarDescriptor(param.identifier, param.type);
             parameters.add(param.type);
-//            methodTable.put(paramDesc);
         }
 
         desc.setParameters(parameters);
@@ -163,6 +176,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         if(var == null) {
             node.type = "null";
         } else {
+            System.out.println("Referencing " + node.identifier + ": " + var);
             node.type = var.getType();
             node.desc = var;
         }
