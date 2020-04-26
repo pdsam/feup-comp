@@ -12,7 +12,16 @@ import java.util.List;
 public class SemanticVisitor implements MyGrammarVisitor {
     private void logError(SimpleNode node, String msg) {
         //TODO: print line and column
-        System.err.println(msg);
+        System.err.println("Error at line: "+node.line+", column: " +node.column+". "+ msg);
+        this.increment();
+    }
+    private int numerrors = 0;
+    private void increment(){
+        numerrors++;
+        if(numerrors > 10){
+            System.out.println("Max number of errors reached, Semantic analyser exiting.");
+            System.exit(0); 
+        }
     }
 
     @Override
