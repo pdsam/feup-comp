@@ -5,6 +5,7 @@ import symbolTable.*;
 import symbolTable.descriptor.*;
 import symbolTable.exception.AlreadyDeclaredException;
 import symbolTable.exception.UnknownDeclarationException;
+import symbolTable.exception.UnknownTypeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,29 +51,33 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTableDoc st = (SymbolTableDoc) data;
         List<String> params = new ArrayList<>();
 
-        if(node.parameters != null) {
-            for(String param : node.parameters) {
-                if(!param.equals("void"))
+        if (node.parameters != null) {
+            for (String param : node.parameters) {
+                if (!param.equals("void"))
                     params.add(param);
             }
         }
 
         VarDescriptor var = new VarDescriptor(node.className, node.className);
-        MethodDescriptor mtd = new MethodDescriptor(node.methodName,node.returnType,params,node.className,node.isStatic);
+        MethodDescriptor mtd = new MethodDescriptor(node.methodName, node.returnType, params, node.className, node.isStatic);
 
         // If the import is only of a class then there is no method to register
         //then the visitor stops here
-        if(mtd.getName() == null)
+        if (mtd.getName() == null)
             return null;
 
-        try{
+        try {
             st.put(mtd);
 //            System.out.println("Registering " + node.methodName + ": " + mtd);
-        } catch(Exception e){
+        } catch(UnknownTypeException e) {
+            logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
+        } catch (Exception e) {
             logError(node, e.getMessage());
         }
 
         try {
+            // The following line register a new class as a valid type
+            //so no type checking is done whatsoever
             st.put(var);
 //            System.out.println("Registering " + node.methodName + " class: " + var);
         } catch(Exception e){
@@ -90,11 +95,13 @@ public class SemanticVisitor implements MyGrammarVisitor {
         st.setParent(parentST);
         st.setClassName(node.identifier);
 
+        VarDescriptor var = new VarDescriptor(node.identifier, node.identifier);
         try {
-            //Registering this own class
-            VarDescriptor var = new VarDescriptor(node.identifier, node.identifier);
 //            System.out.println("Registering document class: " + var);
+            //Registering this own class
             parentST.put(var);
+        } catch(UnknownTypeException e) {
+            logError(node, e.getMessage() + " '" + var.getType() + "' as return for field " + var.getName());
         } catch(Exception e){
             logError(node, e.getMessage());
         }
@@ -122,6 +129,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             for(MethodDescriptor mtd : parentST.getClassMethods(node.parent)){
                 try {
                     // Every method inside the class is referenced to 'this'
+                    //and they have already been
                     mtd.setClassName("this");
                     st.put(mtd);
                 } catch (Exception ignore) {
@@ -137,7 +145,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     private void registerMethodNode(ASTMethod node, SymbolTable classTable) throws UnknownDeclarationException, AlreadyDeclaredException {
-        MethodDescriptor desc = new MethodDescriptor(node.identifier, node.type, node.isStatic);
+        MethodDescriptor mtd = new MethodDescriptor(node.identifier, node.type, node.isStatic);
         SimpleNode paramList = (SimpleNode) node.jjtGetChild(0); // parameter list is the first child of the method node
         List<String> parameters = new ArrayList<>();
 
@@ -146,9 +154,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
             parameters.add(param.type);
         }
 
-        desc.setParameters(parameters);
+        mtd.setParameters(parameters);
         try {
-            classTable.put(desc);
+            classTable.put(mtd);
+        } catch(UnknownTypeException e) {
+            logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
         } catch (symbolTable.exception.SemanticException e) {
             e.printStackTrace();
         }
@@ -162,8 +172,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
         try{
 //            System.out.println("Registering parameter " + node.identifier + ": " + var);
             st.put(var);
-        }
-        catch(Exception e){
+        } catch(UnknownTypeException e) {
+            logError(node, e.getMessage() + " '" + var.getType() + "' as return for parameter " + var.getName());
+        } catch(Exception e){
             logError(node, e.getMessage());
         }
         return null;
@@ -176,8 +187,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTable st = (SymbolTable) data;
         try{
             st.put(var);
-        }
-        catch(Exception e){
+        } catch(UnknownTypeException e) {
+            logError(node, e.getMessage() + " '" + var.getType() + "' as return for variable " + var.getName());
+        } catch(Exception e){
             logError(node, e.getMessage());
         }
 

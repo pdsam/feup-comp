@@ -16,7 +16,7 @@ public class  SymbolTableDoc implements SymbolTable {
     private SymbolTable parent = null;
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
     private HashMap<String, VarDescriptor> classes = new HashMap<>();
-    private ArrayList<String> validTypes = new ArrayList<>(List.of("int", "boolean", "array"));
+    private ArrayList<String> validTypes = new ArrayList<>(List.of("int", "boolean", "array", "String[]"));
 
     public ArrayList<MethodDescriptor> getClassMethods(String className) {
         ArrayList<MethodDescriptor> descriptors = new ArrayList<>();
