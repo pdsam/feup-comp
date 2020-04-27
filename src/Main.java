@@ -23,7 +23,7 @@ public class Main{
 
 		ASTDocument root = syntacticAnalysis(args[0]);
 
-		root.dump(">");
+		//root.dump(">");
 
 		semanticAnalysis(root);
 

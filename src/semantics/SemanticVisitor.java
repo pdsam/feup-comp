@@ -427,6 +427,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTArrayLength node, Object data) {
         node.type = "int";
+        node.arrayRef.jjtAccept(this, data);
+        if (!node.arrayRef.type.equals("array")) {
+            logError(node, String.format("Not an array."));
+        }
         return null;
     }
 
