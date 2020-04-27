@@ -4,9 +4,9 @@ package parser;
 
 public
 class ASTBranch extends Statement {
-  protected Expression condition;
-  protected Statement thenStatement;
-  protected Statement elseStatement;
+  public Expression condition;
+  public Statement thenStatement;
+  public Statement elseStatement;
 
   public ASTBranch(int id) {
     super(id);
