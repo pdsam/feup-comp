@@ -1,6 +1,7 @@
 package symbolTable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class  SymbolTableDoc implements SymbolTable {
     private SymbolTable parent = null;
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
     private HashMap<String, VarDescriptor> classes = new HashMap<>();
-    private ArrayList<String> validTypes = new ArrayList<>(List.of("int", "boolean", "array", "String[]"));
+    private ArrayList<String> validTypes = new ArrayList<>(Arrays.asList("int", "boolean", "array", "String[]"));
 
     public ArrayList<MethodDescriptor> getClassMethods(String className) {
         ArrayList<MethodDescriptor> descriptors = new ArrayList<>();
@@ -121,7 +122,6 @@ public class  SymbolTableDoc implements SymbolTable {
                 imports.put(id, entry);
             }
 
-            return;
         } else if(descriptor instanceof VarDescriptor) {
 
             if(debug) {
@@ -131,9 +131,7 @@ public class  SymbolTableDoc implements SymbolTable {
             if(classes.get(id) == null)
                 classes.put(id, (VarDescriptor) descriptor);
 
-            return;
         }
 
-        throw new UnknownDeclarationException("Variables cannot be defined outside a class or method.");
     }
 }

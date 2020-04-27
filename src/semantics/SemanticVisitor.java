@@ -4,13 +4,13 @@ import parser.*;
 import symbolTable.*;
 import symbolTable.descriptor.*;
 import symbolTable.exception.AlreadyDeclaredException;
-import symbolTable.exception.UnknownDeclarationException;
 import symbolTable.exception.UnknownTypeException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SemanticVisitor implements MyGrammarVisitor {
+    public static int numErrors = 0;
     private boolean debug = false;
 
     private void logError(SimpleNode node, String msg) {
@@ -22,12 +22,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
         System.err.println("Warning at line: "+node.line+", column: " +node.column+". "+ msg);
     }
 
-    private int numerrors = 0;
     private void increment(){
-        numerrors++;
-        if(numerrors > 10){
+        numErrors++;
+        if(numErrors > 10){
             System.out.println("Max number of errors reached, Semantic analyser exiting.");
-            //System.exit(1); 
+            System.exit(1);
         }
     }
 
@@ -44,7 +43,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableDoc as argument
     public Object visit(ASTImportList node, Object data) {
         node.childrenAccept(this, data);
 
@@ -52,8 +50,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableDoc as argument
-    //TODO: check valid types
     public Object visit(ASTImport node, Object data) {
         SymbolTableDoc st = (SymbolTableDoc) data;
         List<String> params = new ArrayList<>();
@@ -73,10 +69,14 @@ public class SemanticVisitor implements MyGrammarVisitor {
         if (mtd.getName() == null)
             return null;
 
+        // Registering a method
         try {
             st.put(mtd);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
+        } catch (AlreadyDeclaredException e) {
+            //When there is a duplicate import only a warning is generated
+            logWarning(node, e.getMessage());
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
@@ -93,7 +93,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableDoc as argument
     public Object visit(ASTClass node, Object data) {
         SymbolTableDoc parentST = (SymbolTableDoc) data;
         SymbolTableClass st = node.getStClass();
@@ -106,6 +105,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         try {
             parentST.put(var);
         } catch(Exception e){
+            System.err.println("Error when registering this class");
             logError(node, e.getMessage());
         }
 
@@ -117,11 +117,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             SimpleNode simpleChild = (SimpleNode) child;
             if(simpleChild.children != null) {
                 for(Node grandChild : simpleChild.children){
-                    try {
-                        registerMethodNode((ASTMethod) grandChild, st);
-                    } catch (Exception e) {
-                        logError(node, e.getMessage());
-                    }
+                    registerMethodNode((ASTMethod) grandChild, st);
                 }
             }
         }
@@ -136,34 +132,35 @@ public class SemanticVisitor implements MyGrammarVisitor {
                     mtd.setClassName("this");
                     st.put(mtd);
                 } catch (Exception ignore) {
+                    System.err.println("Error when ignoring");
                     //There will be an exception if the method is already declared
                     //which means that the class is overriding the methods of the superclass
                 }
             }
         }
 
-//        System.out.println("Class ST: " + st);
         node.childrenAccept(this, st);
         return null;
     }
 
-    private void registerMethodNode(ASTMethod node, SymbolTable classTable) throws UnknownDeclarationException, AlreadyDeclaredException {
+    private void registerMethodNode(ASTMethod node, SymbolTable classTable) {
         MethodDescriptor mtd = new MethodDescriptor(node.identifier, node.type, node.isStatic);
         SimpleNode paramList = (SimpleNode) node.jjtGetChild(0); // parameter list is the first child of the method node
         List<String> parameters = new ArrayList<>();
 
-        for(int i = 0; i < paramList.children.length; i++){
-            ASTParameter param = (ASTParameter) paramList.children[i];
+        for(int i = 0; i < paramList.jjtGetNumChildren(); i++){
+            ASTParameter param = (ASTParameter) paramList.jjtGetChild(i);
             parameters.add(param.type);
         }
 
         mtd.setParameters(parameters);
         try {
             classTable.put(mtd);
-        } catch(UnknownTypeException e) {
+        }  catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
-        } catch (symbolTable.exception.SemanticException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Error when registering a method");
+            logError(node, e.getMessage());
         }
     }
 
@@ -183,7 +180,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableClass or SymbolTableMethod as argument
     public Object visit(ASTVar node, Object data) {
         VarDescriptor var = new VarDescriptor(node.identifier, node.type);
         SymbolTable st = (SymbolTable) data;
@@ -212,7 +208,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         if(var == null) {
             node.type = "null";
         } else {
-//            System.out.println("Referencing " + node.identifier + ": " + var);
             node.type = var.getType();
             node.desc = var;
         }
@@ -259,7 +254,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableClass as argument
     public Object visit(ASTMethod node, Object data) {
         SymbolTable st = node.getStMethod();
         st.setParent((SymbolTable)data);
@@ -276,21 +270,18 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableClass as argument
     public Object visit(ASTMainContainer node, Object data) {
         node.childrenAccept(this,data);
         return null;
     }
 
     @Override
-    // Receives SymbolTableClass as argument
     public Object visit(ASTVarDeclarationsList node, Object data) {
         node.childrenAccept(this,data);
         return null;
     }
 
     @Override
-    // Receives SymbolTableClass as argument
     public Object visit(ASTMethodList node, Object data) {
         node.childrenAccept(this,data);
         return null;
@@ -325,8 +316,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         node.childrenAccept(this, data);
 
         if(!node.varReference.type.equals(node.value.type)){
-            ASTVarReference var = (ASTVarReference) node.varReference;
-            logError(node, "Types do not match: " + var.identifier + " is of type " + var.type);
+            logError(node, "Types do not match: was expecting '" + node.varReference.type + "' but got '" + node.value.type + '\'');
         }
 
         return null;
@@ -334,15 +324,24 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBranch node, Object data) {
-        //TODO: check if condition is boolean
         node.childrenAccept(this, data);
+        if(!node.condition.type.equals("boolean")) {
+            logError(node, "If condition must evaluate to boolean");
+        }
+
+        //TODO: check if variables are initialized inside one of the statements
         return null;
     }
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
-        //TODO: check if condition is boolean
         node.childrenAccept(this, data);
+
+        if(!node.condition.type.equals("boolean")) {
+            logError(node, "While condition must evaluate to boolean");
+        }
+
+        //TODO: check if variables are initialized inside the statement
         return null;
     }
 
@@ -361,17 +360,25 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
-        //TODO: check if index is int
-        ASTVarReference var = (ASTVarReference) node.arrayRef;
+        node.childrenAccept(this, data);
+        ASTVarReference arr = (ASTVarReference) node.arrayRef;
         SymbolTable st = (SymbolTable) data;
 
+        // Check if the variable is of type int[] or String[] (for main parameter)
+        if(!arr.type.equals("array") && !arr.type.equals("String[]")) {
+            logError(node, "Variable '" + arr.identifier + "' is not an array");
+        }
+
+        if(!node.index.type.equals("int")) {
+            logError(node, "Index expression is not of type int");
+        }
+
         try {
-            st.variable_lookup(var.identifier);
+            st.variable_lookup(arr.identifier);
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
 
-        node.childrenAccept(this, data);
         return null;
     }
 
@@ -393,11 +400,27 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayCreation node, Object data) {
+        node.childrenAccept(this, data);
+
+        if(!node.size.type.equals("int")){
+            logError(node, "Array size must be of type int");
+        }
+
+        node.type = "array";
         return null;
     }
 
     @Override
     public Object visit(ASTConstructorCall node, Object data) {
+        SymbolTable st = (SymbolTable) data;
+
+        try {
+            st.variable_lookup(node.identifier);
+        } catch (Exception e) {
+            logError(node, "Unknown class '" + node.identifier + '\'');
+        }
+
+        node.type = node.identifier;
         return null;
     }
 
