@@ -17,6 +17,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
         System.err.println("Error at line: "+node.line+", column: " +node.column+". "+ msg);
         this.increment();
     }
+
+    private void logWarning(SimpleNode node, String msg) {
+        System.err.println("Warning at line: "+node.line+", column: " +node.column+". "+ msg);
+    }
+
     private int numerrors = 0;
     private void increment(){
         numerrors++;
