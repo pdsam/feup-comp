@@ -4,14 +4,13 @@ import parser.*;
 import symbolTable.*;
 import symbolTable.descriptor.*;
 import symbolTable.exception.AlreadyDeclaredException;
-import symbolTable.exception.SemanticException;
-import symbolTable.exception.UnknownDeclarationException;
 import symbolTable.exception.UnknownTypeException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SemanticVisitor implements MyGrammarVisitor {
+    public static int numErrors = 0;
     private boolean debug = false;
 
     private void logError(SimpleNode node, String msg) {
@@ -23,12 +22,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
         System.err.println("Warning at line: "+node.line+", column: " +node.column+". "+ msg);
     }
 
-    private int numerrors = 0;
     private void increment(){
-        numerrors++;
-        if(numerrors > 10){
+        numErrors++;
+        if(numErrors > 10){
             System.out.println("Max number of errors reached, Semantic analyser exiting.");
-            //System.exit(1); 
+            System.exit(1);
         }
     }
 
@@ -45,7 +43,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableDoc as argument
     public Object visit(ASTImportList node, Object data) {
         node.childrenAccept(this, data);
 
@@ -53,8 +50,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    // Receives SymbolTableDoc as argument
-    //TODO: check valid types
     public Object visit(ASTImport node, Object data) {
         SymbolTableDoc st = (SymbolTableDoc) data;
         List<String> params = new ArrayList<>();
@@ -74,10 +69,14 @@ public class SemanticVisitor implements MyGrammarVisitor {
         if (mtd.getName() == null)
             return null;
 
+        // Registering a method
         try {
             st.put(mtd);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
+        } catch (AlreadyDeclaredException e) {
+            //When there is a duplicate import only a warning is generated
+            logWarning(node, e.getMessage());
         } catch (Exception e) {
             logError(node, e.getMessage());
         }

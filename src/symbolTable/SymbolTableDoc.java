@@ -121,7 +121,6 @@ public class  SymbolTableDoc implements SymbolTable {
                 imports.put(id, entry);
             }
 
-            return;
         } else if(descriptor instanceof VarDescriptor) {
 
             if(debug) {
@@ -131,9 +130,7 @@ public class  SymbolTableDoc implements SymbolTable {
             if(classes.get(id) == null)
                 classes.put(id, (VarDescriptor) descriptor);
 
-            return;
         }
 
-        throw new UnknownDeclarationException("Variables cannot be defined outside a class or method.");
     }
 }
