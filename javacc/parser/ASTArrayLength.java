@@ -4,7 +4,7 @@ package parser;
 
 public
 class ASTArrayLength extends Expression {
-  protected Expression arrayRef;
+  public Expression arrayRef;
 
   public ASTArrayLength(int id) {
     super(id);

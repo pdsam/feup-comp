@@ -313,11 +313,25 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
+        SymbolTable st = (SymbolTable) data;
+        ASTVarReference varRef = (ASTVarReference) node.varReference;
+        VarDescriptor var = null;
+
         node.childrenAccept(this, data);
 
-        if(!node.varReference.type.equals(node.value.type)){
-            logError(node, "Types do not match: was expecting '" + node.varReference.type + "' but got '" + node.value.type + '\'');
+        if(!varRef.type.equals(node.value.type)){
+            logError(node, "Types do not match: was expecting '" + varRef.type + "' but got '" + node.value.type + '\'');
         }
+
+        try {
+            var = st.variable_lookup(varRef.identifier);
+        } catch (Exception e) {
+            // All errors are already logged in ASTVarReference visitor
+            //so here we jsut ignore them
+        }
+
+        if(var != null)
+            var.initialize();
 
         return null;
     }
@@ -349,6 +363,13 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTArrayAssignment node, Object data) {
         //TODO: check if value being assigned is int
         node.childrenAccept(this, data);
+
+        if(node.arrayRef.type.equals("array") && !node.value.type.equals("int")) {
+            logError(node,"Types do not match: was expecting 'int' but got '" + node.value.type + '\'');
+        } else if (node.arrayRef.type.equals("String[]") && !node.value.type.equals("String")) {
+            logError(node,"Types do not match: was expecting 'String' but got '" + node.value.type + '\'');
+        }
+
         return null;
     }
 
@@ -384,16 +405,19 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTIntegerLiteral node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTBooleanLiteral node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
+        node.childrenAccept(this, data);
         node.type = "this";
         return null;
     }
@@ -426,6 +450,12 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayLength node, Object data) {
+        node.childrenAccept(this, data);
+
+        if(!node.arrayRef.type.equals("array") && !node.arrayRef.type.equals("String[]")) {
+            logError(node, "Length property does not exist for type " + node.arrayRef.type);
+        }
+
         node.type = "int";
         return null;
     }
@@ -443,9 +473,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     private void checkOperandsTypes(BinOpExpression expr, String type) {
-//        System.out.println("Left type: " + expr.left.type);
-//        System.out.println("Right type: " + expr.right.type);
-
         if(!expr.left.type.equals(type)) {
             logError(expr, "Left side of && operator must be of type boolean.");
         } else if(!expr.right.type.equals(type)) {
