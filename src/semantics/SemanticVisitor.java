@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SemanticVisitor implements MyGrammarVisitor {
+    private boolean debug = false;
+
     private void logError(SimpleNode node, String msg) {
         System.err.println("Error at line: "+node.line+", column: " +node.column+". "+ msg);
         this.increment();
@@ -68,7 +70,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         try {
             st.put(mtd);
-//            System.out.println("Registering " + node.methodName + ": " + mtd);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
         } catch (Exception e) {
@@ -79,7 +80,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
             // The following line register a new class as a valid type
             //so no type checking is done whatsoever
             st.put(var);
-//            System.out.println("Registering " + node.methodName + " class: " + var);
         } catch(Exception e){
             logError(node, e.getMessage());
         }
@@ -95,13 +95,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
         st.setParent(parentST);
         st.setClassName(node.identifier);
 
+        //Registering this own class, which means there is a new type
+        //so no type checking is needed
         VarDescriptor var = new VarDescriptor(node.identifier, node.identifier);
         try {
-//            System.out.println("Registering document class: " + var);
-            //Registering this own class
             parentST.put(var);
-        } catch(UnknownTypeException e) {
-            logError(node, e.getMessage() + " '" + var.getType() + "' as return for field " + var.getName());
         } catch(Exception e){
             logError(node, e.getMessage());
         }
@@ -117,7 +115,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
                     try {
                         registerMethodNode((ASTMethod) grandChild, st);
                     } catch (Exception e) {
-                       logError(node, e.getMessage());
+                        logError(node, e.getMessage());
                     }
                 }
             }
@@ -129,7 +127,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             for(MethodDescriptor mtd : parentST.getClassMethods(node.parent)){
                 try {
                     // Every method inside the class is referenced to 'this'
-                    //and they have already been
+                    //and they have already been type checked
                     mtd.setClassName("this");
                     st.put(mtd);
                 } catch (Exception ignore) {
@@ -170,7 +168,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTable st = (SymbolTable) data;
 
         try{
-//            System.out.println("Registering parameter " + node.identifier + ": " + var);
             st.put(var);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + var.getType() + "' as return for parameter " + var.getName());
@@ -236,7 +233,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         else {
             node.type = var.getReturnType();
             node.desc = var;
-//            System.out.println(node.identifier + ": " + var);
+
         }
         return null;
     }
@@ -420,6 +417,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     private void checkOperandsTypes(BinOpExpression expr, String type) {
 //        System.out.println("Left type: " + expr.left.type);
 //        System.out.println("Right type: " + expr.right.type);
+
         if(!expr.left.type.equals(type)) {
             logError(expr, "Left side of && operator must be of type boolean.");
         } else if(!expr.right.type.equals(type)) {

@@ -23,8 +23,12 @@ public class  SymbolTableDoc implements SymbolTable {
 
         for(HashMap.Entry<String, ArrayList<MethodDescriptor>> entry : imports.entrySet()){
             for(MethodDescriptor method : entry.getValue()) {
-                if(method.getClassName().equals(className))
+                if(method.getClassName().equals(className)) {
+                    if(debug) {
+                        System.out.println("Adding method to descriptor");
+                    }
                     descriptors.add(method);
+                }
             }
         }
 
@@ -38,6 +42,14 @@ public class  SymbolTableDoc implements SymbolTable {
 
     @Override
     public boolean isValidType(String type) {
+        if(debug) {
+            if (validTypes.contains(type) || classes.containsKey(type)) {
+                System.out.println("Type is valid");
+            } else {
+                System.out.println("Type is invalid");
+            }
+        }
+
         return validTypes.contains(type) || classes.containsKey(type);
     }
 
@@ -48,8 +60,13 @@ public class  SymbolTableDoc implements SymbolTable {
         if(overloads != null) {
             for (MethodDescriptor descriptor : overloads) {
                 if (descriptor.getParameters().equals(parameters) &&
-                        descriptor.getClassName().equals(className))
+                        descriptor.getClassName().equals(className)) {
+                    if(debug) {
+                        System.out.println("method_lookup: " + descriptor);
+                    }
                     return descriptor;
+                }
+
             }
         }
 
@@ -62,8 +79,12 @@ public class  SymbolTableDoc implements SymbolTable {
     public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = classes.get(id);
 
-        if(varDescriptor != null)
+        if(varDescriptor != null) {
+            if(debug) {
+                System.out.println("Var found: " + varDescriptor);
+            }
             return varDescriptor;
+        }
 
         if(parent != null) return this.parent.variable_lookup(id);
 
@@ -76,6 +97,10 @@ public class  SymbolTableDoc implements SymbolTable {
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = imports.get(id);
+
+            if(debug) {
+                System.out.println("Registering " + id + " : " + ((MethodDescriptor) descriptor).getClassName());
+            }
 
             if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
                 throw new UnknownTypeException();
@@ -98,6 +123,11 @@ public class  SymbolTableDoc implements SymbolTable {
 
             return;
         } else if(descriptor instanceof VarDescriptor) {
+
+            if(debug) {
+                System.out.println("Registering document class: " + descriptor);
+            }
+
             if(classes.get(id) == null)
                 classes.put(id, (VarDescriptor) descriptor);
 
