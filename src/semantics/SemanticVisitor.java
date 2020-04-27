@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SemanticVisitor implements MyGrammarVisitor {
+    private boolean debug = false;
+
     private void logError(SimpleNode node, String msg) {
         System.err.println("Error at line: "+node.line+", column: " +node.column+". "+ msg);
         this.increment();
@@ -67,14 +69,14 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         try{
             st.put(mtd);
-//            System.out.println("Registering " + node.methodName + ": " + mtd);
+
         } catch(Exception e){
             logError(node, e.getMessage());
         }
 
         try {
             st.put(var);
-//            System.out.println("Registering " + node.methodName + " class: " + var);
+
         } catch(Exception e){
             logError(node, e.getMessage());
         }
@@ -93,7 +95,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         try {
             //Registering this own class
             VarDescriptor var = new VarDescriptor(node.identifier, node.identifier);
-//            System.out.println("Registering document class: " + var);
             parentST.put(var);
         } catch(Exception e){
             logError(node, e.getMessage());
@@ -160,7 +161,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTable st = (SymbolTable) data;
 
         try{
-//            System.out.println("Registering parameter " + node.identifier + ": " + var);
             st.put(var);
         }
         catch(Exception e){
@@ -224,7 +224,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         else {
             node.type = var.getReturnType();
             node.desc = var;
-//            System.out.println(node.identifier + ": " + var);
+
         }
         return null;
     }
@@ -408,6 +408,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     private void checkOperandsTypes(BinOpExpression expr, String type) {
 //        System.out.println("Left type: " + expr.left.type);
 //        System.out.println("Right type: " + expr.right.type);
+
         if(!expr.left.type.equals(type)) {
             logError(expr, "Left side of && operator must be of type boolean.");
         } else if(!expr.right.type.equals(type)) {

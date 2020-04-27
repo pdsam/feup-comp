@@ -8,6 +8,8 @@ import symbolTable.exception.SemanticException;
 import java.util.List;
 
 public interface SymbolTable {
+
+    boolean debug = false;
     void setParent(SymbolTable parent);
     boolean isValidType(String type);
     MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException;

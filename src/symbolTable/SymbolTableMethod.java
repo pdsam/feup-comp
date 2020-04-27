@@ -38,8 +38,12 @@ public class SymbolTableMethod implements SymbolTable {
     public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = variables.get(id);
 
-        if(varDescriptor != null)
+        if(varDescriptor != null) {
+            if(debug) {
+                System.out.println("Var found: " + varDescriptor);
+            }
             return varDescriptor;
+        }
 
         if(parent != null) return this.parent.variable_lookup(id);
 
@@ -51,6 +55,10 @@ public class SymbolTableMethod implements SymbolTable {
         if(descriptor instanceof VarDescriptor) {
             String id = descriptor.getName();
             VarDescriptor var = (VarDescriptor) descriptor;
+
+            if(debug) {
+                System.out.println("Registering " + id + " class: " + ((VarDescriptor) descriptor).getClassName());
+            }
 
             if(!isValidType(var.getType()))
                 throw new UnknownTypeException();

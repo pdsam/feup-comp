@@ -46,12 +46,17 @@ public class SymbolTableClass implements SymbolTable {
 
         if(overloads != null){
             for(MethodDescriptor descriptor : overloads){
-                if(descriptor.getParameters().equals(parameters) && descriptor.getClassName().equals(className) )
+                if(descriptor.getParameters().equals(parameters) && descriptor.getClassName().equals(className) ){
+                    if(debug) {
+                        System.out.println("method found : " + descriptor);
+                    }
                     return descriptor;
+                }
             }
         }
 
-        if(parent != null) return this.parent.method_lookup(id, parameters, className);
+        if(parent != null)
+            return this.parent.method_lookup(id, parameters, className);
 
         throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
     }
@@ -60,8 +65,12 @@ public class SymbolTableClass implements SymbolTable {
     public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = fields_table.get(id);
 
-        if(varDescriptor != null)
+        if(varDescriptor != null) {
+            if(debug) {
+                System.out.println("Var found: " + varDescriptor);
+            }
             return varDescriptor;
+        }
 
         if(parent != null) return this.parent.variable_lookup(id);
 
@@ -72,7 +81,13 @@ public class SymbolTableClass implements SymbolTable {
     public void put(Descriptor descriptor) throws SemanticException {
         String id = descriptor.getName();
 
+
         if(descriptor instanceof MethodDescriptor) {
+
+            if(debug) {
+                System.out.println("Registering " + id + " : " + ((MethodDescriptor) descriptor).getClassName());
+            }
+
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = methods_table.get(id);
 
@@ -87,13 +102,17 @@ public class SymbolTableClass implements SymbolTable {
                 }
 
                 overloads.add(mtd);
-            }else{
+            } else {
                 ArrayList<MethodDescriptor> entry = new ArrayList<>();
                 entry.add(mtd);
                 methods_table.put(id, entry);
             }
         } else if(descriptor instanceof VarDescriptor) {
             VarDescriptor var = (VarDescriptor) descriptor;
+
+            if(debug) {
+                System.out.println("Registering " + id + " class: " + ((VarDescriptor) descriptor).getClassName());
+            }
 
             if(!isValidType(var.getType()))
                 throw new UnknownTypeException();
@@ -105,6 +124,10 @@ public class SymbolTableClass implements SymbolTable {
                 fields_table.put(id, (VarDescriptor) descriptor);
             } else
                 throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
+        }
+
+        if(debug ){
+            System.out.println("Descriptor isn't neither a var neither a method");
         }
     }
 
