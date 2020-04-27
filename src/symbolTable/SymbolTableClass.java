@@ -3,80 +3,152 @@ package symbolTable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.exception.AlreadyDeclaredException;
+import symbolTable.exception.SemanticException;
+import symbolTable.exception.UnknownTypeException;
+import symbolTable.exception.UnknownDeclarationException;
 
 public class SymbolTableClass implements SymbolTable {
     private SymbolTable parent = null;
     private String className;
+    private String superClass;
     private HashMap<String, VarDescriptor> fields_table = new HashMap<>();
     private HashMap<String, ArrayList<MethodDescriptor>> methods_table = new HashMap<>();
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public void setSuperClass(String className) { this.superClass = className; }
 
     @Override
     public void setParent(SymbolTable parent) {
         this.parent = parent;
     }
 
-    public MethodDescriptor method_lookup(String id, List<String> parameters) throws UnknownDeclaration {
-        ArrayList<MethodDescriptor> overloads = methods_table.get(id);
+    @Override
+    public boolean isValidType(String type) {
+        if(parent != null) return parent.isValidType(type);
 
-        if(overloads != null){
-            for(MethodDescriptor descriptor : overloads){
-                if(descriptor.getParameters().equals(parameters))
-                    return descriptor;
-            }
-        }
-
-        if(parent != null) return this.parent.method_lookup(id, parameters);
-
-        throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
+        return false;
     }
 
     @Override
-    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
+    public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
+        ArrayList<MethodDescriptor> overloads = methods_table.get(id);
+        if(className.equals(this.className))
+            className = "this"; //Every method from this class is registered with 'this'
+
+        if(overloads != null){
+            for(MethodDescriptor descriptor : overloads){
+                if(descriptor.getParameters().equals(parameters) && descriptor.getClassName().equals(className) ){
+                    if(debug) {
+                        System.out.println("method found : " + descriptor);
+                    }
+                    return descriptor;
+                }
+            }
+        }
+
+        if(parent != null)
+            return this.parent.method_lookup(id, parameters, className);
+
+        throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
+    }
+
+    @Override
+    public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = fields_table.get(id);
 
-        if(varDescriptor != null)
+        if(varDescriptor != null) {
+            if(debug) {
+                System.out.println("Var found: " + varDescriptor);
+            }
             return varDescriptor;
+        }
 
         if(parent != null) return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Variable \'" + id + "\' not defined.");
     }
 
-    public void put(Descriptor descriptor) throws AlreadyDeclared {
+    @Override
+    public void put(Descriptor descriptor) throws SemanticException {
         String id = descriptor.getName();
 
+
         if(descriptor instanceof MethodDescriptor) {
+
+            if(debug) {
+                System.out.println("Registering " + id + " : " + ((MethodDescriptor) descriptor).getClassName());
+            }
+
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = methods_table.get(id);
 
+            if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
+                throw new UnknownTypeException();
+
             if(overloads != null){
                 for(MethodDescriptor methodDescriptor : overloads){
-                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
-                        throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
+                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters()) &&
+                            methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()))
+                        throw new AlreadyDeclaredException("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
                 }
 
                 overloads.add(mtd);
-            }else{
+            } else {
                 ArrayList<MethodDescriptor> entry = new ArrayList<>();
                 entry.add(mtd);
                 methods_table.put(id, entry);
             }
         } else if(descriptor instanceof VarDescriptor) {
+            VarDescriptor var = (VarDescriptor) descriptor;
+
+            if(debug) {
+                System.out.println("Registering " + id + " class: " + ((VarDescriptor) descriptor).getClassName());
+            }
+
+            if(!isValidType(var.getType()))
+                throw new UnknownTypeException();
+
             if(fields_table.get(id) == null) {
-                ((VarDescriptor) descriptor).setField(true);
-                ((VarDescriptor) descriptor).setClassName(className);
+                var.setField(true);
+                var.setClassName(className);
 
                 fields_table.put(id, (VarDescriptor) descriptor);
             } else
-                throw new AlreadyDeclared("Variable \'" + id + "\' already declared.");
+                throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
+        }
+
+        if(debug ){
+            System.out.println("Descriptor isn't neither a var neither a method");
         }
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    @Override
+    public String toString() {
+        String result = "SymbolTableClass{ className='" + className + "', superClass='" + superClass + '\'';
+
+        result += ", fields=[ \n";
+        for(Map.Entry<String, VarDescriptor> entry : fields_table.entrySet()) {
+            result += entry.getKey() + ": " + entry.getValue() + "\n";
+        }
+
+        result += "], methods=[ \n";
+        for(Map.Entry<String, ArrayList<MethodDescriptor>> entry : methods_table.entrySet()) {
+            for(MethodDescriptor mtd : entry.getValue()){
+                result += entry.getKey() + ": " + mtd + "\n";
+            }
+        }
+
+        result += "]}";
+
+        return result;
     }
 }

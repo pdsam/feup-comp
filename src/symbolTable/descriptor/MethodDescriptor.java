@@ -7,7 +7,7 @@ public class MethodDescriptor implements Descriptor {
     private final String name;
     private final String returnType;
     private List<String> parameters;
-    private final String className;
+    private String className;
     private boolean isStatic;
 
     public MethodDescriptor(String name, String returnType, boolean isStatic) {
@@ -34,6 +34,8 @@ public class MethodDescriptor implements Descriptor {
 
     public void setParameters(List<String> parameters) { this.parameters = parameters; }
 
+    public void setClassName(String className) { this.className = className; }
+
     @Override
     public String getName() {
         return name;
@@ -57,5 +59,7 @@ public class MethodDescriptor implements Descriptor {
                 ", isStatic=" + isStatic +
                 '}';
     }
+
+
 }
 
