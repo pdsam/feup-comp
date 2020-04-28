@@ -3,17 +3,12 @@ import parser.ASTDocument;
 import parser.MyGrammar;
 import parser.ParseException;
 import semantics.SemanticVisitor;
-import symbolTable.SymbolTable;
 import symbolTable.exception.SemanticException;
 
 import java.io.*;
 
-// Java code invoking the parser
-//TODO set type of function
-//TODO set type of self reference
-//TODO set type of var reference
 public class Main{
-	private static boolean debug = true;
+	private static boolean debug = false;
 
 	public static void main(String[] args) throws ParseException, SemanticException {
 		if(args.length < 1) {
