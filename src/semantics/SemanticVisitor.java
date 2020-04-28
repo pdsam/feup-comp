@@ -204,6 +204,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
         if(var == null) {
             node.type = "null";
         } else {
+            if (((SymbolTableMethod) st).isStaticContext() && var.isField()) {
+                logError(node, String.format("%s is non static variable in static context.", node.identifier));
+            }
+
             node.type = var.getType();
             node.desc = var;
         }
@@ -251,16 +255,18 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        SymbolTable st = node.getStMethod();
+        SymbolTableMethod st = node.getStMethod();
         st.setParent((SymbolTable)data);
+        st.setStaticContext(node.isStatic);
         node.childrenAccept(this, st);
         return null;
     }
 
     @Override
     public Object visit(ASTMainMethod node, Object data) {
-        SymbolTable st = node.getStMethod();
+        SymbolTableMethod st = node.getStMethod();
         st.setParent((SymbolTable)data);
+        st.setStaticContext(true);
         node.childrenAccept(this, st);
         return null;
     }
@@ -414,6 +420,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTSelfReference node, Object data) {
         SymbolTableMethod st = (SymbolTableMethod) data;
+        if (st.isStaticContext()) {
+            logError(node, "Cannot use non static variable in static context.");
+        }
 
         node.childrenAccept(this, data);
 

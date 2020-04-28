@@ -11,9 +11,21 @@ import symbolTable.exception.UnknownDeclarationException;
 import java.util.HashMap;
 import java.util.List;
 
+//TODO access string array in main arguments
 public class SymbolTableMethod implements SymbolTable {
     private SymbolTable parent;
     private HashMap<String, VarDescriptor> variables = new HashMap<>();
+    private boolean isStaticContext;
+    private int currentVarIndex;
+
+    public void setStaticContext(boolean staticContext) {
+        isStaticContext = staticContext;
+        currentVarIndex = isStaticContext ? 0 : 1;
+    }
+
+    public boolean isStaticContext() {
+        return isStaticContext;
+    }
 
     @Override
     public void setParent(SymbolTable parent) {
@@ -73,6 +85,8 @@ public class SymbolTableMethod implements SymbolTable {
 
             if(variables.get(id) == null) {
                 var.setField(false);
+                var.setStackOffset(currentVarIndex);
+                currentVarIndex++;
                 variables.put(id, (VarDescriptor) descriptor);
             } else {
                 throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
