@@ -49,11 +49,13 @@ public class SymbolTableMethod implements SymbolTable {
 
     @Override
     public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
-        if(parent != null) return this.parent.method_lookup(id, parameters, className);
+        if(parent != null) 
+            return this.parent.method_lookup(id, parameters, className);
 
         throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
     }
 
+    // Lookup bottom up traverses the hierarchy until it finds the descriptor
     @Override
     public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = variables.get(id);
@@ -65,7 +67,9 @@ public class SymbolTableMethod implements SymbolTable {
             return varDescriptor;
         }
 
-        if(parent != null) return this.parent.variable_lookup(id);
+        // Variables is not in this scope, iteratively looks in the ancestors
+        if(parent != null) 
+            return this.parent.variable_lookup(id);
 
         throw new UnknownDeclarationException("Variable \'" + id + "\' not defined.");
     }
@@ -88,7 +92,9 @@ public class SymbolTableMethod implements SymbolTable {
                 var.setStackOffset(currentVarIndex);
                 currentVarIndex++;
                 variables.put(id, (VarDescriptor) descriptor);
+
             } else {
+
                 throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
             }
             return;

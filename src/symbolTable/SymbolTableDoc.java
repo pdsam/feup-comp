@@ -74,6 +74,8 @@ public class SymbolTableDoc implements SymbolTable {
 
         if(overloads != null) {
             for (MethodDescriptor descriptor : overloads) {
+                //checks if the number and type of arguments matches 
+                //and confirms if the class used to invoke the method is the same as the descriptor class
                 if (descriptor.getParameters().equals(parameters) &&
                         descriptor.getClassName().equals(className)) {
                     if(debug) {
@@ -101,7 +103,8 @@ public class SymbolTableDoc implements SymbolTable {
             return varDescriptor;
         }
 
-        if(parent != null) return this.parent.variable_lookup(id);
+        if(parent != null) 
+            return this.parent.variable_lookup(id);
 
         throw new UnknownDeclarationException("Variable '" + id + "' not defined.");
     }
@@ -121,7 +124,8 @@ public class SymbolTableDoc implements SymbolTable {
                 throw new UnknownTypeException();
 
             if(overloads != null){ //a method with that id exists already
-                for(MethodDescriptor methodDescriptor : overloads){
+                for(MethodDescriptor methodDescriptor : overloads){ 
+                    //check if a function in that scope and with the same parameters (in number and type of arguments) exists
                     if(methodDescriptor.getParameters().equals(mtd.getParameters() ) &&
                         methodDescriptor.getClassName().equals(mtd.getClassName()) ) {
                         throw new AlreadyDeclaredException("Method '" + id + "' already defined.\nConflict: " + methodDescriptor);
