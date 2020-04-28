@@ -4,9 +4,9 @@ package parser;
 
 public
 class ASTBranch extends Statement {
-  protected Expression condition;
-  protected Statement thenStatement;
-  protected Statement elseStatement;
+  public Expression condition;
+  public Statement thenStatement;
+  public Statement elseStatement;
 
   public ASTBranch(int id) {
     super(id);
@@ -19,11 +19,11 @@ class ASTBranch extends Statement {
   @Override
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-    System.out.printf("%s Condition:\n", prefix);
+    System.out.printf("%s  Condition:\n", prefix);
     condition.dump(prefix + "  ");
-    System.out.printf("%s Then:\n", prefix);
+    System.out.printf("%s  Then:\n", prefix);
     thenStatement.dump(prefix + "  ");
-    System.out.printf("%s Else:\n", prefix);
+    System.out.printf("%s  Else:\n", prefix);
     elseStatement.dump(prefix + "  ");
   }
 

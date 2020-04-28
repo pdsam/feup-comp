@@ -4,8 +4,8 @@ package parser;
 
 public
 class ASTVar extends SimpleNode {
-  protected String type;
-  protected String identifier;
+  public String type;
+  public String identifier;
 
   public ASTVar(int id) {
     super(id);

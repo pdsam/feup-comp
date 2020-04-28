@@ -2,11 +2,14 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package parser;
 
+import symbolTable.descriptor.MethodDescriptor;
+
 public
 class ASTFunctionCall extends Expression {
   public Expression ownerRef;
   public String identifier;
   public ASTArguments arguments;
+  public MethodDescriptor desc;
 
   public ASTFunctionCall(int id) {
     super(id);
@@ -19,11 +22,9 @@ class ASTFunctionCall extends Expression {
   @Override
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-    System.out.printf("%s Function name: %s\n", prefix, identifier);
-    System.out.printf("%s Owner Reference:\n", prefix);
-    ownerRef.dump(prefix+"  ");
-
-    arguments.dump(prefix + " ");
+    ownerRef.dump(prefix + "  Owner: ");
+    System.out.printf("%s  Function name: %s\n", prefix, identifier);
+    arguments.dump(prefix + "  ");
   }
 
   @Override

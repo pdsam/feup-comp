@@ -2,6 +2,7 @@ options {
   LOOKAHEAD = 1;
   MULTI = true;
   VISITOR = true;
+  NODE_SCOPE_HOOK=true;
 }
 
 PARSER_BEGIN(MyGrammar)
@@ -14,33 +15,13 @@ PARSER_BEGIN(MyGrammar)
     public class MyGrammar{
         public static int MAX_ERRORS = 10;
         public static int numErrors = 0;
-        public static boolean foundError = false;
 
-        public static void main(String[] args) throws ParseException {
-            if(args.length < 1) {
-                System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
-                return;
-            } else if (!args[0].matches("(.*).jmm")) {
-                System.out.println("Invalid file type: only .jmm files are accepted");
-                return;
-            }
-            InputStream file = null;
+        void jjtreeOpenNodeScope(Node n) {
+		    ((SimpleNode)n).line = getToken(1).beginLine ;
+		    ((SimpleNode)n).column = getToken(1).beginColumn;
+	    }
 
-            try {
-                file = new FileInputStream(args[0]);
-            } catch(Exception e) {
-                System.out.println(e.getMessage());
-                return;
-            }
-
-            MyGrammar.numErrors = 0;
-            MyGrammar.foundError = false;
-            MyGrammar parser = new MyGrammar(file);
-            SimpleNode root = parser.Program();
-            if(MyGrammar.foundError) {
-                throw new ParseException(Integer.toString(MyGrammar.numErrors) + " error(s) were found during parsing. Fix them and try again.");
-            }
-            root.dump(">");
+        void jjtreeCloseNodeScope(Node n) {
         }
     }
 PARSER_END(MyGrammar)
@@ -165,7 +146,7 @@ void MainDeclaration() #MainMethod : {Token string, identifier;}
        }
     }
     <L_SBRACKET> <R_SBRACKET> identifier=<IDENTIFIER>
-            {jjtThis.identifier = identifier.image; jjtThis.type="String";})#Parameter) #ParameterList <R_PAR>
+            {jjtThis.identifier = identifier.image; jjtThis.type="String[]";})#Parameter) #ParameterList <R_PAR>
     <L_BRACKET>
         (LOOKAHEAD(2) VarDeclaration())* #VarDeclarationsList(true)
         (Statement())* #StatementList
@@ -254,7 +235,6 @@ JAVACODE
 void whileErrorRecovery(ParseException e) #void {
     System.err.println("ParserException: " + e.getWhileMsg());
 
-    MyGrammar.foundError=true;
     MyGrammar.numErrors++;
     if(MyGrammar.numErrors >= MyGrammar.MAX_ERRORS) {
         throw new ParseException("Max number of errors (" + Integer.toString(MyGrammar.MAX_ERRORS) + ") reached. Exiting...");
