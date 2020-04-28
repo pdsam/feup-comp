@@ -15,13 +15,16 @@ import symbolTable.exception.UnknownDeclarationException;
 
 public class SymbolTableClass implements SymbolTable {
     private SymbolTable parent = null;
-    private String className;
     private String superClass;
     private HashMap<String, VarDescriptor> fields_table = new HashMap<>();
     private HashMap<String, ArrayList<MethodDescriptor>> methods_table = new HashMap<>();
 
-    public void setClassName(String className) {
-        this.className = className;
+    @Override
+    public String getClassName() {
+        if(parent != null)
+            return parent.getClassName();
+
+        return null;
     }
 
     public void setSuperClass(String className) { this.superClass = className; }
@@ -41,14 +44,12 @@ public class SymbolTableClass implements SymbolTable {
     @Override
     public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
         ArrayList<MethodDescriptor> overloads = methods_table.get(id);
-        if(className.equals(this.className))
-            className = "this"; //Every method from this class is registered with 'this'
 
         if(overloads != null){
             for(MethodDescriptor descriptor : overloads){
                 if(descriptor.getParameters().equals(parameters) && descriptor.getClassName().equals(className) ){
                     if(debug) {
-                        System.out.println("method found : " + descriptor);
+                        System.out.println("Method found: " + descriptor);
                     }
                     return descriptor;
                 }
@@ -58,7 +59,7 @@ public class SymbolTableClass implements SymbolTable {
         if(parent != null)
             return this.parent.method_lookup(id, parameters, className);
 
-        throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Method '" + id + "' not defined.");
     }
 
     @Override
@@ -67,14 +68,14 @@ public class SymbolTableClass implements SymbolTable {
 
         if(varDescriptor != null) {
             if(debug) {
-                System.out.println("Var found: " + varDescriptor);
+                System.out.println("Variable found: " + varDescriptor);
             }
             return varDescriptor;
         }
 
         if(parent != null) return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclarationException("Variable \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Variable '" + id + "' not defined.");
     }
 
     @Override
@@ -83,13 +84,12 @@ public class SymbolTableClass implements SymbolTable {
 
 
         if(descriptor instanceof MethodDescriptor) {
-
-            if(debug) {
-                System.out.println("Registering " + id + " : " + ((MethodDescriptor) descriptor).getClassName());
-            }
-
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = methods_table.get(id);
+
+            if(debug) {
+                System.out.println("Registering method '" + id + "': " + mtd.getClassName());
+            }
 
             if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
                 throw new UnknownTypeException();
@@ -98,7 +98,7 @@ public class SymbolTableClass implements SymbolTable {
                 for(MethodDescriptor methodDescriptor : overloads){
                     if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters()) &&
                             methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()))
-                        throw new AlreadyDeclaredException("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
+                        throw new AlreadyDeclaredException("Method '" + id + "' already defined.\nConflict: " + methodDescriptor);
                 }
 
                 overloads.add(mtd);
@@ -111,7 +111,7 @@ public class SymbolTableClass implements SymbolTable {
             VarDescriptor var = (VarDescriptor) descriptor;
 
             if(debug) {
-                System.out.println("Registering " + id + " class: " + ((VarDescriptor) descriptor).getClassName());
+                System.out.println("Registering class field '" + id + "': " + descriptor);
             }
 
             if(!isValidType(var.getType()))
@@ -119,11 +119,10 @@ public class SymbolTableClass implements SymbolTable {
 
             if(fields_table.get(id) == null) {
                 var.setField(true);
-                var.setClassName(className);
-
+                var.setClassName(getClassName());
                 fields_table.put(id, (VarDescriptor) descriptor);
             } else
-                throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
+                throw new AlreadyDeclaredException("Variable '" + id + "' already declared.");
         }
 
         if(debug ){
@@ -133,22 +132,22 @@ public class SymbolTableClass implements SymbolTable {
 
     @Override
     public String toString() {
-        String result = "SymbolTableClass{ className='" + className + "', superClass='" + superClass + '\'';
+        StringBuilder result = new StringBuilder("SymbolTableClass{ superClass='" + superClass + '\'');
 
-        result += ", fields=[ \n";
+        result.append(", fields=[ \n");
         for(Map.Entry<String, VarDescriptor> entry : fields_table.entrySet()) {
-            result += entry.getKey() + ": " + entry.getValue() + "\n";
+            result.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
 
-        result += "], methods=[ \n";
+        result.append("], methods=[ \n");
         for(Map.Entry<String, ArrayList<MethodDescriptor>> entry : methods_table.entrySet()) {
             for(MethodDescriptor mtd : entry.getValue()){
-                result += entry.getKey() + ": " + mtd + "\n";
+                result.append(entry.getKey()).append(": ").append(mtd).append("\n");
             }
         }
 
-        result += "]}";
+        result.append("]}");
 
-        return result;
+        return result.toString();
     }
 }

@@ -3,6 +3,7 @@ import parser.ASTDocument;
 import parser.MyGrammar;
 import parser.ParseException;
 import semantics.SemanticVisitor;
+import symbolTable.SymbolTable;
 import symbolTable.exception.SemanticException;
 
 import java.io.*;
@@ -12,6 +13,8 @@ import java.io.*;
 //TODO set type of self reference
 //TODO set type of var reference
 public class Main{
+	private static boolean debug = true;
+
 	public static void main(String[] args) throws ParseException, SemanticException {
 		if(args.length < 1) {
 			System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
@@ -23,7 +26,8 @@ public class Main{
 
 		ASTDocument root = syntacticAnalysis(args[0]);
 
-		//root.dump(">");
+		if(debug)
+			root.dump(">");
 
 		semanticAnalysis(root);
 

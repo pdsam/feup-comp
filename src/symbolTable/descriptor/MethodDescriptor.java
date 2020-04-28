@@ -18,6 +18,10 @@ public class MethodDescriptor implements Descriptor {
         this(name, returnType, parameters, "this", isStatic);
     }
 
+    public MethodDescriptor(String name, String returnType, String className, boolean isStatic) {
+        this(name, returnType, new ArrayList<>(), className, isStatic);
+    }
+
     public MethodDescriptor(String name, String returnType, List<String> parameters, String className, boolean isStatic) {
         this.name = name;
         this.returnType = returnType;

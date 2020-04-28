@@ -11,7 +11,6 @@ import java.util.List;
 
 public class SemanticVisitor implements MyGrammarVisitor {
     public static int numErrors = 0;
-    private boolean debug = false;
 
     private void logError(SimpleNode node, String msg) {
         System.err.println("Error at line: "+node.line+", column: " +node.column+". "+ msg);
@@ -96,8 +95,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTClass node, Object data) {
         SymbolTableDoc parentST = (SymbolTableDoc) data;
         SymbolTableClass st = node.getStClass();
+        parentST.setClassName(node.identifier);
         st.setParent(parentST);
-        st.setClassName(node.identifier);
 
         //Registering this own class, which means there is a new type
         //so no type checking is needed
@@ -105,7 +104,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         try {
             parentST.put(var);
         } catch(Exception e){
-            System.err.println("Error when registering this class");
             logError(node, e.getMessage());
         }
 
@@ -127,12 +125,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
             st.setSuperClass(node.parent);
             for(MethodDescriptor mtd : parentST.getClassMethods(node.parent)){
                 try {
-                    // Every method inside the class is referenced to 'this'
+                    // Every method inside the class is referenced to the class name
                     //and they have already been type checked
-                    mtd.setClassName("this");
+                    mtd.setClassName(node.identifier);
                     st.put(mtd);
                 } catch (Exception ignore) {
-                    System.err.println("Error when ignoring");
                     //There will be an exception if the method is already declared
                     //which means that the class is overriding the methods of the superclass
                 }
@@ -144,7 +141,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     }
 
     private void registerMethodNode(ASTMethod node, SymbolTable classTable) {
-        MethodDescriptor mtd = new MethodDescriptor(node.identifier, node.type, node.isStatic);
+        MethodDescriptor mtd = new MethodDescriptor(node.identifier, node.type, classTable.getClassName(), node.isStatic);
         SimpleNode paramList = (SimpleNode) node.jjtGetChild(0); // parameter list is the first child of the method node
         List<String> parameters = new ArrayList<>();
 
@@ -159,7 +156,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }  catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
         } catch (Exception e) {
-            System.err.println("Error when registering a method");
             logError(node, e.getMessage());
         }
     }
@@ -218,21 +214,21 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTFunctionCall node, Object data) {
         node.childrenAccept(this, data);
         SymbolTable st = (SymbolTable) data;
-        MethodDescriptor var = null;
+        MethodDescriptor mtd = null;
 
         try {
-            var = st.method_lookup(node.identifier, node.arguments.list, node.ownerRef.type);
+            mtd = st.method_lookup(node.identifier, node.arguments.list, node.ownerRef.type);
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
 
-        if(var == null) {
+        if(mtd == null) {
             System.out.println(node.identifier + ": null");
             node.type = "null";
         }
         else {
-            node.type = var.getReturnType();
-            node.desc = var;
+            node.type = mtd.getReturnType();
+            node.desc = mtd;
 
         }
         return null;
@@ -327,7 +323,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             var = st.variable_lookup(varRef.identifier);
         } catch (Exception e) {
             // All errors are already logged in ASTVarReference visitor
-            //so here we jsut ignore them
+            //so here we just ignore them
         }
 
         if(var != null)
@@ -417,8 +413,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
+        SymbolTableMethod st = (SymbolTableMethod) data;
+
         node.childrenAccept(this, data);
-        node.type = "this";
+
+        node.type = st.getClassName();
         return null;
     }
 
@@ -457,10 +456,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
 
         node.type = "int";
-        node.arrayRef.jjtAccept(this, data);
-        if (!node.arrayRef.type.equals("array")) {
-            logError(node, String.format("Not an array."));
-        }
+//        node.arrayRef.jjtAccept(this, data);
+//        if (!node.arrayRef.type.equals("array")) {
+//            logError(node, "Not an array.");
+//        }
         return null;
     }
 
