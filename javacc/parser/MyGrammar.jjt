@@ -351,7 +351,7 @@ Expression ConstructorCall() #ConstructorCall : {Token identifier;}
 
 Expression Negation() #Negation : {Expression e;}
 {
-    <NOT> e=Expression()
+    <NOT> e=ExpressionNoArt()
     {jjtThis.child = e; return jjtThis;}
 }
 
