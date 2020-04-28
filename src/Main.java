@@ -8,7 +8,7 @@ import symbolTable.exception.SemanticException;
 import java.io.*;
 
 public class Main{
-	private static boolean debug = false;
+	private static boolean debug = true;
 
 	public static void main(String[] args) throws ParseException, SemanticException {
 		if(args.length < 1) {
