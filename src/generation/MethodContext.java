@@ -2,11 +2,11 @@ package generation;
 
 import symbolTable.SymbolTable;
 
-public class Context {
+public class MethodContext {
     private int currentLabel;
     public SymbolTable st;
 
-    public Context(SymbolTable st) {
+    public MethodContext(SymbolTable st) {
         this.currentLabel = 0;
         this.st = st;
     }

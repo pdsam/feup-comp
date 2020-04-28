@@ -272,14 +272,14 @@ Statement ArrayAssignment(ASTArrayAccess arrayRef) #ArrayAssignment(2) : {Expres
     }
 }
 
-Statement ArrayAccessExprStatement(Expression arrayRef) #ExprStatement: {Expression e = null;}
+Statement ArrayAccessExprStatement(Expression arrayRef) #ExprStatement(1): {Expression e = null;}
 {
     (e = Expr2(arrayRef))? <SEMICOLON>
     {jjtThis.expression = e == null ? arrayRef : e;}
     {return jjtThis;}
 }
 
-Statement ExprStatement() #ExprStatement : {Expression e;}
+Statement ExprStatement() #ExprStatement(1) : {Expression e;}
 {
     e = Expression() <SEMICOLON>
     {jjtThis.expression = e;}

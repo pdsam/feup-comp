@@ -22,6 +22,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
                 return "Z";
             case "array":
                 return "[I";
+            case "String[]":
+                return "[Ljava/lang/String;";
+            case "String":
+                return "Ljava/lang/String;";
             default:
                 return String.format("L%s;", type);
         }
@@ -60,7 +64,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         }
         writer.printf(".super %s\n\n", parent);
 
-        node.children[0].jjtAccept(this, data); //Field declarations
+        node.children[0].jjtAccept(this, node.identifier); //Field declarations
 
         writer.println(".method public<init>()V");
         writer.println("aload_0");
@@ -76,6 +80,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarDeclarationsList node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
@@ -93,6 +98,9 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVar node, Object data) {
+        if (data != null) {
+            writer.printf(".field %s/%s %s\n", data, node.identifier, getTypeString(node.type));
+        }
         return null;
     }
 
@@ -104,7 +112,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         writer.printf(")%s\n", getTypeString(node.type));
         writer.println(".limit stack 99\n.limit locals 99\n");
 
-        Context context = new Context(node.getStMethod());
+        MethodContext context = new MethodContext(node.getStMethod());
         node.children[2].jjtAccept(this, context); //Generate code for statements
 
         node.children[3].jjtAccept(this, context); //Generate code for return statement
@@ -163,9 +171,8 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        //TODO instructions to store in class field
         ASTVarReference ref = (ASTVarReference) node.varReference;
-        VarDescriptor desc = (VarDescriptor) ref.desc;
+        VarDescriptor desc = ref.desc;
         node.value.jjtAccept(this, data);
         if (desc.isField()) {
             writer.println("aload_0");
@@ -177,8 +184,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
                 writer.printf("astore %d\n", desc.getStackOffset());
             }
         }
-
-        //into local variable
         return null;
     }
 
@@ -194,10 +199,17 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
-        node.arrayRef.arrayRef.jjtAccept(this, data);
-        node.arrayRef.index.jjtAccept(this, data);
-        node.value.jjtAccept(this, data);
-        writer.printf("iastore\n");
+        if (node.arrayRef.type.equals("array")) {
+            node.arrayRef.arrayRef.jjtAccept(this, data);
+            node.arrayRef.index.jjtAccept(this, data);
+            node.value.jjtAccept(this, data);
+            writer.printf("iastore\n");
+        } else if (node.arrayRef.type.equals("String[]")) {
+            node.arrayRef.arrayRef.jjtAccept(this, data);
+            node.arrayRef.index.jjtAccept(this, data);
+            node.value.jjtAccept(this, data);
+            writer.printf("aastore\n");
+        }
         return null;
     }
 
@@ -209,9 +221,17 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
-        node.arrayRef.jjtAccept(this, data);
-        node.index.jjtAccept(this, data);
-        writer.printf("iaload\n");
+        //TODO string array
+        System.out.println("hello");
+        if (node.arrayRef.type.equals("array")) {
+            node.arrayRef.jjtAccept(this, data);
+            node.index.jjtAccept(this, data);
+            writer.printf("iaload\n");
+        } else if (node.arrayRef.type.equals("String[]")) {
+            node.arrayRef.jjtAccept(this, data);
+            node.index.jjtAccept(this, data);
+            writer.printf("aaload\n");
+        }
         return null;
     }
 
@@ -238,10 +258,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
-        /*
-         *  TODO
-         *  Remember optimized aload_<B> 0<=B<=3
-         */
         VarDescriptor desc = (VarDescriptor) node.desc;
         if (desc.isField()) {
             writer.println("aload_0");
@@ -283,7 +299,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTNegation node, Object data) {
         node.child.jjtAccept(this, data);
-        Context context = (Context) data;
+        MethodContext context = (MethodContext) data;
         String successLabel = context.generateLabel();
         String endLabel = context.generateLabel();
         writer.printf("ifgt %s\n", successLabel);
@@ -323,7 +339,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             for (String par: node.desc.getParameters()) {
                 writer.print(getTypeString(par));
             }
-            writer.printf(")%s\n", getTypeString("void"));
+            writer.printf(")%s\n", getTypeString(node.desc.getReturnType()));
         }
         return null;
     }
@@ -335,7 +351,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAnd node, Object data) {
-        Context context = (Context) data;
+        MethodContext context = (MethodContext) data;
         String successLabel = context.generateLabel();
         String failLabel = context.generateLabel();
         String endLabel = context.generateLabel();
@@ -358,7 +374,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
 
-        Context context = (Context) data;
+        MethodContext context = (MethodContext) data;
         String lessLabel = context.generateLabel();
         String endLabel = context.generateLabel();
 

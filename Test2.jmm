@@ -1,0 +1,9 @@
+import static io.println(int);
+class Simple {
+	public static void main(String[] args) {
+	    args[1];
+	}
+	public int add(int a, int b){
+		return a+b;
+	}
+}
