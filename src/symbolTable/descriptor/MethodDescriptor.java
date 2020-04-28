@@ -7,7 +7,7 @@ public class MethodDescriptor implements Descriptor {
     private final String name;
     private final String returnType;
     private List<String> parameters;
-    private final String className;
+    private String className;
     private boolean isStatic;
 
     public MethodDescriptor(String name, String returnType, boolean isStatic) {
@@ -16,6 +16,10 @@ public class MethodDescriptor implements Descriptor {
 
     public MethodDescriptor(String name, String returnType, List<String> parameters, boolean isStatic) {
         this(name, returnType, parameters, "this", isStatic);
+    }
+
+    public MethodDescriptor(String name, String returnType, String className, boolean isStatic) {
+        this(name, returnType, new ArrayList<>(), className, isStatic);
     }
 
     public MethodDescriptor(String name, String returnType, List<String> parameters, String className, boolean isStatic) {
@@ -32,9 +36,21 @@ public class MethodDescriptor implements Descriptor {
 
     public List<String> getParameters() { return parameters; }
 
+    public void setParameters(List<String> parameters) { this.parameters = parameters; }
+
+    public void setClassName(String className) { this.className = className; }
+
     @Override
     public String getName() {
         return name;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 
     @Override
@@ -43,8 +59,11 @@ public class MethodDescriptor implements Descriptor {
                 "name='" + name + '\'' +
                 ", returnType='" + returnType + '\'' +
                 ", parameters=" + parameters +
+                ", className='" + className + '\'' +
                 ", isStatic=" + isStatic +
                 '}';
     }
+
+
 }
 

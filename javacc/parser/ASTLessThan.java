@@ -6,12 +6,10 @@ public
 class ASTLessThan extends BinOpExpression {
   public ASTLessThan(int id) {
     super(id);
-    this.type = "boolean";
   }
 
   public ASTLessThan(MyGrammar p, int id) {
     super(p, id);
-    this.type = "boolean";
   }
 
   @Override

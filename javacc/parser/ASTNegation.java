@@ -4,21 +4,19 @@ package parser;
 
 public
 class ASTNegation extends Expression {
-  protected Expression child;
+  public Expression child;
 
   public ASTNegation(int id) {
     super(id);
-    this.type = "boolean";
   }
 
   public ASTNegation(MyGrammar p, int id) {
     super(p, id);
-    this.type = "boolean";
   }
 
   public void  dump(String prefix) {
     System.out.println(toString(prefix));
-    child.dump(prefix + " ");
+    child.dump(prefix + "  ");
   }
 
   @Override

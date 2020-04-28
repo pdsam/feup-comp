@@ -6,6 +6,7 @@ import symbolTable.SymbolTableMethod;
 
 public
 class ASTMethod extends SimpleNode {
+  public boolean isStatic = false;
   public String identifier;
   public String type;
   protected SymbolTableMethod symbol_table = new SymbolTableMethod();
@@ -20,13 +21,13 @@ class ASTMethod extends SimpleNode {
 
   @Override
   public void dump(String prefix) {
-    System.out.printf("%s : %s -> %s\n", prefix, identifier, type);
+    System.out.printf("%sMethod: %s -> %s\n", prefix, identifier, type);
 
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {
         SimpleNode n = (SimpleNode)children[i];
         if (n != null) {
-          n.dump(prefix + " ");
+          n.dump(prefix + "  ");
         }
       }
     }

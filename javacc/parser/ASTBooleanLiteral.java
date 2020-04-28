@@ -16,6 +16,10 @@ class ASTBooleanLiteral extends Expression {
     this.type = "boolean";
   }
 
+  @Override
+  public void dump(String prefix) {
+    System.out.println(prefix + "Boolean [ " + val + " ]");
+  }
 
   /** Accept the visitor. **/
   public Object jjtAccept(MyGrammarVisitor visitor, Object data) {

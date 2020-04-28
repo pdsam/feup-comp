@@ -103,6 +103,7 @@ fabric.properties
 .mtj.tmp/
 
 # Package Files #
+*.jsm
 *.jar
 *.war
 *.nar

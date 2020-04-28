@@ -1,15 +1,49 @@
 package symbolTable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.exception.AlreadyDeclaredException;
+import symbolTable.exception.SemanticException;
+import symbolTable.exception.UnknownDeclarationException;
+import symbolTable.exception.UnknownTypeException;
 
-public class  SymbolTableDoc implements SymbolTable {
+public class SymbolTableDoc implements SymbolTable {
     private SymbolTable parent = null;
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
+    private HashMap<String, VarDescriptor> classes = new HashMap<>();
+    private ArrayList<String> validTypes = new ArrayList<>(Arrays.asList("int", "boolean", "array", "String[]"));
+    private String className;
+
+    public ArrayList<MethodDescriptor> getClassMethods(String className) {
+        ArrayList<MethodDescriptor> descriptors = new ArrayList<>();
+
+        for(HashMap.Entry<String, ArrayList<MethodDescriptor>> entry : imports.entrySet()){
+            for(MethodDescriptor method : entry.getValue()) {
+                if(method.getClassName().equals(className)) {
+                    if(debug) {
+                        System.out.println("Adding method to descriptor");
+                    }
+                    descriptors.add(method);
+                }
+            }
+        }
+
+        return descriptors;
+    }
+
+    public void setClassName(String className) {
+        if(debug) {
+            System.out.println("Registering document class: " + className);
+        }
+
+        this.className = className;
+    }
 
     @Override
     public void setParent(SymbolTable parent) {
@@ -17,47 +51,100 @@ public class  SymbolTableDoc implements SymbolTable {
     }
 
     @Override
-    public MethodDescriptor method_lookup(String id, ArrayList<String> parameters) throws UnknownDeclaration {
+    public String getClassName() {
+        return className;
+    }
+
+    @Override
+    public boolean isValidType(String type) {
+//        if(debug) {
+//            if (validTypes.contains(type) || classes.containsKey(type)) {
+//                System.out.println("Type is valid");
+//            } else {
+//                System.out.println("Type is invalid");
+//            }
+//        }
+
+        return validTypes.contains(type) || classes.containsKey(type);
+    }
+
+    @Override
+    public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
-        if(overloads == null) {
+        if(overloads != null) {
             for (MethodDescriptor descriptor : overloads) {
-                if (descriptor.getParameters().equals(parameters))
+                if (descriptor.getParameters().equals(parameters) &&
+                        descriptor.getClassName().equals(className)) {
+                    if(debug) {
+                        System.out.println("Method '" + id + "' found: " + descriptor);
+                    }
                     return descriptor;
+                }
+
             }
         }
 
-        throw new UnknownDeclaration("Method \'" + id + "\' not defined.");
+        if(parent != null) return this.parent.method_lookup(id, parameters,className);
+
+        throw new UnknownDeclarationException("Method '" + id + "' not defined.");
     }
 
     @Override
-    public VarDescriptor variable_lookup(String id) throws UnknownDeclaration {
-        throw new UnknownDeclaration("Variable \'" + id + "\' not defined.");
+    public VarDescriptor variable_lookup(String id) throws SemanticException {
+        VarDescriptor varDescriptor = classes.get(id);
+
+        if(varDescriptor != null) {
+            if(debug) {
+                System.out.println("Variable '" + id + "' found: " + varDescriptor);
+            }
+            return varDescriptor;
+        }
+
+        if(parent != null) return this.parent.variable_lookup(id);
+
+        throw new UnknownDeclarationException("Variable '" + id + "' not defined.");
     }
 
     @Override
-    public void put(Descriptor descriptor) throws AlreadyDeclared, UnknownDeclaration {
+    public void put(Descriptor descriptor) throws SemanticException {
+        String id = descriptor.getName();
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
-            String id = descriptor.getName();
             ArrayList<MethodDescriptor> overloads = imports.get(id);
+
+            if(debug) {
+                System.out.println("Registering import method '" + id + "': " + mtd.getClassName());
+            }
+
+            if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
+                throw new UnknownTypeException();
 
             if(overloads != null){ //a method with that id exists already
                 for(MethodDescriptor methodDescriptor : overloads){
-                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ))
-                        throw new AlreadyDeclared("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
+                    if(methodDescriptor.getParameters().equals(mtd.getParameters() ) &&
+                        methodDescriptor.getClassName().equals(mtd.getClassName()) ) {
+                        throw new AlreadyDeclaredException("Method '" + id + "' already defined.\nConflict: " + methodDescriptor);
+                    }
+
                 }
 
                 overloads.add(mtd);
-            }else{
+            } else {
                 ArrayList<MethodDescriptor> entry = new ArrayList<>();
                 entry.add(mtd);
                 imports.put(id, entry);
             }
 
-            return;
+        } else if(descriptor instanceof VarDescriptor) {
+            VarDescriptor var = (VarDescriptor) descriptor;
+
+            if(debug) {
+                System.out.println("Registering class '" + id + "': " + var);
+            }
+
+            classes.putIfAbsent(id, var);
         }
 
-        throw new UnknownDeclaration("Variables cannot be defined outside a class or method.");
     }
 }

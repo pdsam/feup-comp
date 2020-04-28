@@ -1,9 +1,12 @@
 /*  REASON:
     Type "miss" is missing.
 */
+import Miss.missing() int;
 
 class T {
     public static void main(String[] a) { 
         Miss m;
+        a.missing();
+        m.missing();
     }
 }

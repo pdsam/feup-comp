@@ -4,8 +4,8 @@ package parser;
 
 public
 class ASTWhileLoop extends Statement {
-  protected Expression condition;
-  protected Statement body;
+  public Expression condition;
+  public Statement body;
 
   public ASTWhileLoop(int id) {
     super(id);

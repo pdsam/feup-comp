@@ -6,12 +6,10 @@ public
 class ASTMul extends BinOpExpression {
   public ASTMul(int id) {
     super(id);
-    this.type = "int";
   }
 
   public ASTMul(MyGrammar p, int id) {
     super(p, id);
-    this.type = "int";
   }
 
   @Override

@@ -10,6 +10,10 @@ class SimpleNode implements Node {
   public int id;
   protected Object value;
   protected MyGrammar parser;
+  public int line = -1;
+  public int column = -1;
+
+
 
   public SimpleNode(int i) {
     id = i;
@@ -88,7 +92,7 @@ class SimpleNode implements Node {
       for (int i = 0; i < children.length; ++i) {
         SimpleNode n = (SimpleNode)children[i];
         if (n != null) {
-          n.dump(prefix + " ");
+          n.dump(prefix + "  ");
         }
       }
     }

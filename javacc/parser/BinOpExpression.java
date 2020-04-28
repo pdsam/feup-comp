@@ -14,8 +14,8 @@ public abstract class BinOpExpression extends Expression {
 
     public void dump(String prefix) {
         System.out.println(toString(prefix));
-        left.dump(prefix + " ");
-        right.dump(prefix + " ");
+        left.dump(prefix + "  ");
+        right.dump(prefix + "  ");
     }
 
     @Override
