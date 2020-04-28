@@ -13,11 +13,12 @@ import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownDeclarationException;
 import symbolTable.exception.UnknownTypeException;
 
-public class  SymbolTableDoc implements SymbolTable {
+public class SymbolTableDoc implements SymbolTable {
     private SymbolTable parent = null;
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
     private HashMap<String, VarDescriptor> classes = new HashMap<>();
     private ArrayList<String> validTypes = new ArrayList<>(Arrays.asList("int", "boolean", "array", "String[]"));
+    private String className;
 
     public ArrayList<MethodDescriptor> getClassMethods(String className) {
         ArrayList<MethodDescriptor> descriptors = new ArrayList<>();
@@ -36,20 +37,33 @@ public class  SymbolTableDoc implements SymbolTable {
         return descriptors;
     }
 
+    public void setClassName(String className) {
+        if(debug) {
+            System.out.println("Registering document class: " + className);
+        }
+
+        this.className = className;
+    }
+
     @Override
     public void setParent(SymbolTable parent) {
         this.parent = parent;
     }
 
     @Override
+    public String getClassName() {
+        return className;
+    }
+
+    @Override
     public boolean isValidType(String type) {
-        if(debug) {
-            if (validTypes.contains(type) || classes.containsKey(type)) {
-                System.out.println("Type is valid");
-            } else {
-                System.out.println("Type is invalid");
-            }
-        }
+//        if(debug) {
+//            if (validTypes.contains(type) || classes.containsKey(type)) {
+//                System.out.println("Type is valid");
+//            } else {
+//                System.out.println("Type is invalid");
+//            }
+//        }
 
         return validTypes.contains(type) || classes.containsKey(type);
     }
@@ -63,7 +77,7 @@ public class  SymbolTableDoc implements SymbolTable {
                 if (descriptor.getParameters().equals(parameters) &&
                         descriptor.getClassName().equals(className)) {
                     if(debug) {
-                        System.out.println("method_lookup: " + descriptor);
+                        System.out.println("Method '" + id + "' found: " + descriptor);
                     }
                     return descriptor;
                 }
@@ -73,7 +87,7 @@ public class  SymbolTableDoc implements SymbolTable {
 
         if(parent != null) return this.parent.method_lookup(id, parameters,className);
 
-        throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Method '" + id + "' not defined.");
     }
 
     @Override
@@ -82,14 +96,14 @@ public class  SymbolTableDoc implements SymbolTable {
 
         if(varDescriptor != null) {
             if(debug) {
-                System.out.println("Var found: " + varDescriptor);
+                System.out.println("Variable '" + id + "' found: " + varDescriptor);
             }
             return varDescriptor;
         }
 
         if(parent != null) return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclarationException("Variable \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Variable '" + id + "' not defined.");
     }
 
     @Override
@@ -100,7 +114,7 @@ public class  SymbolTableDoc implements SymbolTable {
             ArrayList<MethodDescriptor> overloads = imports.get(id);
 
             if(debug) {
-                System.out.println("Registering " + id + " : " + ((MethodDescriptor) descriptor).getClassName());
+                System.out.println("Registering import method '" + id + "': " + mtd.getClassName());
             }
 
             if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
@@ -108,9 +122,9 @@ public class  SymbolTableDoc implements SymbolTable {
 
             if(overloads != null){ //a method with that id exists already
                 for(MethodDescriptor methodDescriptor : overloads){
-                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters() ) &&
-                        methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()) ) {
-                        throw new AlreadyDeclaredException("Method \'" + id + "\' already defined.\nConflict: " + methodDescriptor);
+                    if(methodDescriptor.getParameters().equals(mtd.getParameters() ) &&
+                        methodDescriptor.getClassName().equals(mtd.getClassName()) ) {
+                        throw new AlreadyDeclaredException("Method '" + id + "' already defined.\nConflict: " + methodDescriptor);
                     }
 
                 }
@@ -123,14 +137,13 @@ public class  SymbolTableDoc implements SymbolTable {
             }
 
         } else if(descriptor instanceof VarDescriptor) {
+            VarDescriptor var = (VarDescriptor) descriptor;
 
             if(debug) {
-                System.out.println("Registering document class: " + descriptor);
+                System.out.println("Registering class '" + id + "': " + var);
             }
 
-            if(classes.get(id) == null)
-                classes.put(id, (VarDescriptor) descriptor);
-
+            classes.putIfAbsent(id, var);
         }
 
     }

@@ -21,6 +21,14 @@ public class SymbolTableMethod implements SymbolTable {
     }
 
     @Override
+    public String getClassName() {
+        if(parent != null)
+            return parent.getClassName();
+
+        return null;
+    }
+
+    @Override
     public boolean isValidType(String type) {
         if(parent != null) return parent.isValidType(type);
 
@@ -40,7 +48,7 @@ public class SymbolTableMethod implements SymbolTable {
 
         if(varDescriptor != null) {
             if(debug) {
-                System.out.println("Var found: " + varDescriptor);
+                System.out.println("Variable found: " + varDescriptor);
             }
             return varDescriptor;
         }
@@ -57,7 +65,7 @@ public class SymbolTableMethod implements SymbolTable {
             VarDescriptor var = (VarDescriptor) descriptor;
 
             if(debug) {
-                System.out.println("Registering " + id + " class: " + ((VarDescriptor) descriptor).getClassName());
+                System.out.println("Registering variable '" + id + "': " + var);
             }
 
             if(!isValidType(var.getType()))
