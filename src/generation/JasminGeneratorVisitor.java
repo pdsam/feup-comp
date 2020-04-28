@@ -6,7 +6,7 @@ import symbolTable.descriptor.VarDescriptor;
 import java.io.PrintWriter;
 
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
-    private PrintWriter writer;
+    private final PrintWriter writer;
 
     public JasminGeneratorVisitor(PrintWriter writer) {
         this.writer = writer;
@@ -66,7 +66,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
         node.children[0].jjtAccept(this, node.identifier); //Field declarations
 
-        writer.println(".method public<init>()V");
+        writer.println(".method public <init>()V");
         writer.println("aload_0");
         writer.printf("invokenonvirtual %s/<init>()V\n", parent);
         writer.println("return\n.end method\n");
@@ -221,8 +221,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
-        //TODO string array
-        System.out.println("hello");
         if (node.arrayRef.type.equals("array")) {
             node.arrayRef.jjtAccept(this, data);
             node.index.jjtAccept(this, data);
@@ -258,17 +256,16 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
-        VarDescriptor desc = (VarDescriptor) node.desc;
+        VarDescriptor desc = node.desc;
         if (desc.isField()) {
             writer.println("aload_0");
             writer.printf("getfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
         } else {
+            int off = desc.getStackOffset();
             if (desc.getType().equals("int") || desc.getType().equals("boolean")) {
-                int off = desc.getStackOffset();
-                writer.printf("iload%s%d\n", off >= 3 ? "_" : " ", off);
+                writer.printf("iload%s%d\n", off <= 3 ? "_" : " ", off);
             } else {
-                int off = desc.getStackOffset();
-                writer.printf("aload%s%d\n", off >= 3 ? "_" : " ", off);
+                writer.printf("aload%s%d\n", off <= 3 ? "_" : " ", off);
             }
         }
 
@@ -290,7 +287,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTConstructorCall node, Object data) {
-        //TODO get proper class name
         writer.printf("new %s\ndup\n", node.identifier);
         writer.printf("invokespecial %s/<init>()V\n", node.identifier);
         return null;
@@ -320,27 +316,18 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTFunctionCall node, Object data) {
-        //TODO check if static method call
         if (node.desc.isStatic()) {
             node.arguments.childrenAccept(this, data);
             writer.printf("invokestatic %s/%s(", node.desc.getClassName(), node.desc.getName());
-            for (String par: node.desc.getParameters()) {
-                writer.print(getTypeString(par));
-            }
-            writer.printf(")%s\n", getTypeString(node.desc.getReturnType()));
         } else {
             node.ownerRef.jjtAccept(this, data);
             node.arguments.childrenAccept(this, data);
-            /*
-             * TODO get descriptor of method to extract parameter info and
-             * return type
-             */
             writer.printf("invokevirtual %s/%s(", node.desc.getClassName(), node.desc.getName());
-            for (String par: node.desc.getParameters()) {
-                writer.print(getTypeString(par));
-            }
-            writer.printf(")%s\n", getTypeString(node.desc.getReturnType()));
         }
+        for (String par: node.desc.getParameters()) {
+            writer.print(getTypeString(par));
+        }
+        writer.printf(")%s\n", getTypeString(node.desc.getReturnType()));
         return null;
     }
 
@@ -392,7 +379,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
 
-        writer.println("isum");
+        writer.println("iadd");
         return null;
     }
 
