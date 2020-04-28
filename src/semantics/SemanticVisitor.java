@@ -265,7 +265,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTMainMethod node, Object data) {
         SymbolTable st = node.getStMethod();
         st.setParent((SymbolTable)data);
-        node.childrenAccept(this, data);
+        node.childrenAccept(this, st);
         return null;
     }
 
