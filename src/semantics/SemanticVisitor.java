@@ -83,6 +83,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         try {
             // The following line register a new class as a valid type
             //so no type checking is done whatsoever
+            var.initialize(); //Classes may be used statically, so they are initialized by default
             st.put(var);
         } catch(Exception e){
             logError(node, e.getMessage());
@@ -166,6 +167,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTable st = (SymbolTable) data;
 
         try{
+            //Parameters are considered initialized by default
+            var.initialize();
             st.put(var);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + var.getType() + "' as return for parameter " + var.getName());
@@ -206,6 +209,14 @@ public class SemanticVisitor implements MyGrammarVisitor {
         } else {
             node.type = var.getType();
             node.desc = var;
+
+            if (node.parent instanceof ASTAssignment) {
+                // When the var is being assigned a value it becomes initialized
+                var.initialize();
+            } else if (!var.isInitialized()) {
+                // Otherwise, if the variable is being used and not initialized we have an error
+                logError(node, "Variable '" + var.getName() + "' might not have been initialized.");
+            }
         }
         return null;
     }
@@ -309,9 +320,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        SymbolTable st = (SymbolTable) data;
+//        SymbolTable st = (SymbolTable) data;
         ASTVarReference varRef = (ASTVarReference) node.varReference;
-        VarDescriptor var = null;
+//        VarDescriptor var = null;
 
         node.childrenAccept(this, data);
 
@@ -319,15 +330,15 @@ public class SemanticVisitor implements MyGrammarVisitor {
             logError(node, "Types do not match: was expecting '" + varRef.type + "' but got '" + node.value.type + '\'');
         }
 
-        try {
-            var = st.variable_lookup(varRef.identifier);
-        } catch (Exception e) {
-            // All errors are already logged in ASTVarReference visitor
-            //so here we just ignore them
-        }
-
-        if(var != null)
-            var.initialize();
+//        try {
+//            var = st.variable_lookup(varRef.identifier);
+//        } catch (Exception e) {
+//            // All errors are already logged in ASTVarReference visitor
+//            //so here we just ignore them
+//        }
+//
+//        if(var != null)
+//            var.initialize();
 
         return null;
     }
