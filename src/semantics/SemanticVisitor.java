@@ -4,7 +4,6 @@ import parser.*;
 import symbolTable.*;
 import symbolTable.descriptor.*;
 import symbolTable.exception.AlreadyDeclaredException;
-import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownTypeException;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         numErrors++;
         if(numErrors > 10){
             System.out.println("Max number of errors reached, Semantic analyser exiting.");
-            throw new SemanticException("Max number of errors reached, Semantic analyser exiting.");
+            System.exit(1);
         }
     }
 
