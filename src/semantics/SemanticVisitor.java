@@ -309,7 +309,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTableMethod st = node.getStMethod();
         st.setParent((SymbolTable)data);
         st.setStaticContext(node.isStatic);
-        node.childrenAccept(this, st);
+
+        FlowState fstate = new FlowState(st);
+
+        node.childrenAccept(this, fstate);
         return null;
     }
 
@@ -318,7 +321,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTableMethod st = node.getStMethod();
         st.setParent((SymbolTable)data);
         st.setStaticContext(true);
-        node.childrenAccept(this, st);
+
+        FlowState fstate = new FlowState(st);
+
+        node.childrenAccept(this, fstate);
         return null;
     }
 
