@@ -53,8 +53,10 @@ public class Main{
 
 		ASTDocument root = syntacticAnalysis(filename);
 
-		if(debug)
+		if(debug) {
 			root.dump(">");
+			System.out.print("\n");
+		}
 
 		semanticAnalysis(root);
 

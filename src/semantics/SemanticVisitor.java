@@ -279,7 +279,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
 
         if(mtd == null) {
-            System.out.println(node.identifier + ": null");
             node.type = "null";
         }
         else {

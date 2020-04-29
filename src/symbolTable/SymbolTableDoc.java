@@ -60,6 +60,10 @@ public class SymbolTableDoc extends SymbolTable {
     public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
         ArrayList<MethodDescriptor> overloads = imports.get(id);
 
+        if(debug) {
+            System.out.println("Method lookup in document's ST: " + id);
+        }
+
         if(overloads != null) {
             for (MethodDescriptor descriptor : overloads) {
                 //checks if the number and type of arguments matches 
@@ -85,7 +89,7 @@ public class SymbolTableDoc extends SymbolTable {
         VarDescriptor varDescriptor = classes.get(id);
 
         if(debug) {
-            System.out.println("Variable lookup: " + id);
+            System.out.println("Variable lookup in document's ST: " + id);
         }
 
         if(varDescriptor != null) {
@@ -106,7 +110,7 @@ public class SymbolTableDoc extends SymbolTable {
         String id = descriptor.getName();
 
         if(debug) {
-            System.out.println("Putting descriptor: " + id);
+            System.out.println("Putting descriptor in document's ST: " + id);
         }
 
         if(descriptor instanceof MethodDescriptor) {

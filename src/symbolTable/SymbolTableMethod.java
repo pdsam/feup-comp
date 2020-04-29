@@ -45,7 +45,11 @@ public class SymbolTableMethod extends SymbolTable {
 
     @Override
     public MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException {
-        if(parent != null) 
+        if(debug) {
+            System.out.println("Method lookup in method's ST: " + id);
+        }
+
+        if(parent != null)
             return this.parent.method_lookup(id, parameters, className);
 
         throw new UnknownDeclarationException("Method '" + id + "' not defined.");
@@ -57,7 +61,7 @@ public class SymbolTableMethod extends SymbolTable {
         VarDescriptor varDescriptor = variables.get(id);
 
         if(debug) {
-            System.out.println("Variable lookup: " + id);
+            System.out.println("Variable lookup in method's ST: " + id);
         }
 
         if(varDescriptor != null) {
@@ -79,7 +83,7 @@ public class SymbolTableMethod extends SymbolTable {
         String id = descriptor.getName();
 
         if(debug) {
-            System.out.println("Putting descriptor: " + id);
+            System.out.println("Putting descriptor in method's ST: " + id);
         }
 
         if(descriptor instanceof VarDescriptor) {
