@@ -13,26 +13,15 @@ import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownTypeException;
 import symbolTable.exception.UnknownDeclarationException;
 
-public class SymbolTableClass implements SymbolTable {
-    private SymbolTable parent = null;
+public class SymbolTableClass extends SymbolTable {
+
     private String superClass;
     private HashMap<String, VarDescriptor> fields_table = new HashMap<>();
     private HashMap<String, ArrayList<MethodDescriptor>> methods_table = new HashMap<>();
 
-    @Override
-    public String getClassName() {
-        if(parent != null)
-            return parent.getClassName();
-
-        return null;
-    }
 
     public void setSuperClass(String className) { this.superClass = className; }
 
-    @Override
-    public void setParent(SymbolTable parent) {
-        this.parent = parent;
-    }
 
     @Override
     public boolean isValidType(String type) {

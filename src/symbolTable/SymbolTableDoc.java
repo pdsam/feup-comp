@@ -13,8 +13,8 @@ import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownDeclarationException;
 import symbolTable.exception.UnknownTypeException;
 
-public class SymbolTableDoc implements SymbolTable {
-    private SymbolTable parent = null;
+public class SymbolTableDoc extends SymbolTable {
+
     private HashMap<String, ArrayList<MethodDescriptor>> imports = new HashMap<>();
     private HashMap<String, VarDescriptor> classes = new HashMap<>();
     private ArrayList<String> validTypes = new ArrayList<>(Arrays.asList("int", "boolean", "array", "String[]"));
@@ -43,11 +43,6 @@ public class SymbolTableDoc implements SymbolTable {
         }
 
         this.className = className;
-    }
-
-    @Override
-    public void setParent(SymbolTable parent) {
-        this.parent = parent;
     }
 
     @Override

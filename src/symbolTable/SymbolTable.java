@@ -7,13 +7,23 @@ import symbolTable.exception.SemanticException;
 
 import java.util.List;
 
-public interface SymbolTable {
+public abstract class SymbolTable {
+    protected SymbolTable parent = null;
     boolean debug = false;
 
-    String getClassName();
-    boolean isValidType(String type);
-    void setParent(SymbolTable parent);
-    MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException;
-    VarDescriptor variable_lookup(String id) throws SemanticException;
-    void put(Descriptor descriptor) throws SemanticException;
+    public String getClassName() {
+        if(parent != null)
+            return parent.getClassName();
+
+        return null;
+    }
+
+    public void setParent(SymbolTable parent) {
+        this.parent = parent;
+    }
+
+    abstract boolean isValidType(String type);
+    abstract MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException;
+    abstract VarDescriptor variable_lookup(String id) throws SemanticException;
+    abstract void put(Descriptor descriptor) throws SemanticException;
 }

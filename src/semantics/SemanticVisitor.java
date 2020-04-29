@@ -4,6 +4,7 @@ import parser.*;
 import symbolTable.*;
 import symbolTable.descriptor.*;
 import symbolTable.exception.AlreadyDeclaredException;
+import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownTypeException;
 
 import java.util.ArrayList;
@@ -155,23 +156,51 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
         mtd.setParameters(parameters);
         try {
-            classTable.put(mtd);
-        }  catch(UnknownTypeException e) {
+            put(classTable, mtd, node);
+        } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
     }
 
+    private void put(SymbolTable classTable, Descriptor descriptor, SimpleNode node) throws SemanticException {
+        if(classTable instanceof SymbolTableClass) {
+            SymbolTableClass symbolTableClass = (SymbolTableClass) classTable;
+            symbolTableClass.put(descriptor);
+        } else if(classTable instanceof  SymbolTableDoc) {
+            SymbolTableDoc symbolTableDoc = (SymbolTableDoc) classTable;
+            symbolTableDoc.put(descriptor);
+        } else if( classTable instanceof SymbolTableMethod) {
+            SymbolTableMethod symbolTableMethod = (SymbolTableMethod) classTable;
+            symbolTableMethod.put(descriptor);
+        }
+    }
+
+    private VarDescriptor variable_lookup(SymbolTable st, String node_identifier) throws SemanticException {
+        if(st instanceof SymbolTableClass) {
+            SymbolTableClass symbolTableClass = (SymbolTableClass) st;
+            return symbolTableClass.variable_lookup(node_identifier);
+
+        } else if(st instanceof  SymbolTableDoc) {
+            SymbolTableDoc symbolTableDoc = (SymbolTableDoc) st;
+            return symbolTableDoc.variable_lookup(node_identifier);
+
+        } else {
+            SymbolTableMethod symbolTableMethod = (SymbolTableMethod) st;
+            return symbolTableMethod.variable_lookup(node_identifier);
+        }
+    }
+
     @Override
     public Object visit(ASTParameter node, Object data) {
         VarDescriptor var = new VarDescriptor(node.identifier, node.type);
-        SymbolTable st = (SymbolTable) data;
+        SymbolTable symbolTable = (SymbolTable) data;
 
         try{
             //Parameters are considered initialized by default
             var.initialize();
-            st.put(var);
+            put(symbolTable, var, node);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + var.getType() + "' as return for parameter " + var.getName());
         } catch(Exception e){
@@ -183,9 +212,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTVar node, Object data) {
         VarDescriptor var = new VarDescriptor(node.identifier, node.type);
-        SymbolTable st = (SymbolTable) data;
+        SymbolTable symbolTable = (SymbolTable) data;
         try{
-            st.put(var);
+            put(symbolTable, var, node);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + var.getType() + "' as return for variable " + var.getName());
         } catch(Exception e){
@@ -201,7 +230,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         VarDescriptor var = null;
 
         try {
-            var = st.variable_lookup(node.identifier);
+            var = variable_lookup(st, node.identifier);
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
@@ -232,7 +261,19 @@ public class SemanticVisitor implements MyGrammarVisitor {
         MethodDescriptor mtd = null;
 
         try {
-            mtd = st.method_lookup(node.identifier, node.arguments.list, node.ownerRef.type);
+            if(st instanceof SymbolTableClass) {
+                SymbolTableClass symbolTableClass = (SymbolTableClass) st;
+                mtd = symbolTableClass.method_lookup(node.identifier, node.arguments.list, node.ownerRef.type);
+
+            } else if(st instanceof  SymbolTableDoc) {
+                SymbolTableDoc symbolTableDoc = (SymbolTableDoc) st;
+                mtd = symbolTableDoc.method_lookup(node.identifier, node.arguments.list, node.ownerRef.type);
+
+            } else if(st instanceof SymbolTableMethod) {
+                SymbolTableMethod symbolTableMethod = (SymbolTableMethod) st;
+                mtd = symbolTableMethod.method_lookup(node.identifier, node.arguments.list, node.ownerRef.type);
+            }
+
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
@@ -331,7 +372,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         ASTVarReference varRef = (ASTVarReference) node.varReference;
 
         try {
-            var = st.variable_lookup(varRef.identifier);
+            var = variable_lookup(st, varRef.identifier);
         } catch (Exception e) {
             // All errors will be logged in ASTVarReference visitor
             //so here we just ignore them
@@ -407,7 +448,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
 
         try {
-            st.variable_lookup(arr.identifier);
+            variable_lookup(st, arr.identifier);
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
@@ -457,7 +498,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         SymbolTable st = (SymbolTable) data;
 
         try {
-            st.variable_lookup(node.identifier);
+            variable_lookup(st, node.identifier);
         } catch (Exception e) {
             logError(node, "Unknown class '" + node.identifier + '\'');
         }

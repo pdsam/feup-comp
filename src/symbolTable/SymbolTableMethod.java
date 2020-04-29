@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 
 //TODO access string array in main arguments
-public class SymbolTableMethod implements SymbolTable {
-    private SymbolTable parent;
+public class SymbolTableMethod extends SymbolTable {
+
     private HashMap<String, VarDescriptor> variables = new HashMap<>();
     private boolean isStaticContext;
     private int currentVarIndex;
@@ -27,10 +27,6 @@ public class SymbolTableMethod implements SymbolTable {
         return isStaticContext;
     }
 
-    @Override
-    public void setParent(SymbolTable parent) {
-        this.parent = parent;
-    }
 
     @Override
     public String getClassName() {
@@ -52,7 +48,7 @@ public class SymbolTableMethod implements SymbolTable {
         if(parent != null) 
             return this.parent.method_lookup(id, parameters, className);
 
-        throw new UnknownDeclarationException("Method \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Method '" + id + "' not defined.");
     }
 
     // Lookup bottom up traverses the hierarchy until it finds the descriptor
@@ -75,18 +71,18 @@ public class SymbolTableMethod implements SymbolTable {
         if(parent != null) 
             return this.parent.variable_lookup(id);
 
-        throw new UnknownDeclarationException("Variable \'" + id + "\' not defined.");
+        throw new UnknownDeclarationException("Variable '" + id + "' not defined.");
     }
 
     @Override
     public void put(Descriptor descriptor) throws SemanticException {
+        String id = descriptor.getName();
 
         if(debug) {
             System.out.println("Putting descriptor: " + id);
         }
 
         if(descriptor instanceof VarDescriptor) {
-            String id = descriptor.getName();
             VarDescriptor var = (VarDescriptor) descriptor;
 
             if(debug) {
@@ -104,7 +100,7 @@ public class SymbolTableMethod implements SymbolTable {
                 return;
             }
             
-            throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
+            throw new AlreadyDeclaredException("Variable '" + id + "' already declared.");
 
         }
 
