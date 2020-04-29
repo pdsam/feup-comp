@@ -50,7 +50,7 @@ To test the program, run ``gradle test``. This will execute the build, and run t
        + tem de permitir method overload (i.e. métodos com mesmo nome mas assinatura de parâmetros diferente)
        + tem de permitir consulta da tabela por parte da análise semantica (e geração de código)
        + tem de permitir ligar e desligar a sua impressão para fins de debug (neste caso para fins de avaliação)
-       + 
+  
 ### Type Verification
     . verificar se operações são efetuadas com o mesmo tipo (e.g. int + boolean tem de dar erro)
     . não é possível utilizar arrays diretamente para operações aritmeticas (e.g. array1 + array2)
