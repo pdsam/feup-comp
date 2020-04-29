@@ -469,7 +469,7 @@ Expression Expr2NoArt(Expression l) #void : {Token identifier; Expression e, e2 
     |   <DOT> (
                 e = ArrayLength(l)
                 | e = FunctionCall(l)))
-    (LOOKAHEAD(2) e2=Expr2(e))?
+    (LOOKAHEAD(2) e2=Expr2NoArt(e))?
     // Maybe missing empty string??
     {return e2 == null ? e : e2;}
 }

@@ -57,14 +57,7 @@ public class SymbolTableDoc implements SymbolTable {
 
     @Override
     public boolean isValidType(String type) {
-//        if(debug) {
-//            if (validTypes.contains(type) || classes.containsKey(type)) {
-//                System.out.println("Type is valid");
-//            } else {
-//                System.out.println("Type is invalid");
-//            }
-//        }
-
+        //if type isn't valid a error message will be send afterwords
         return validTypes.contains(type) || classes.containsKey(type);
     }
 
@@ -120,7 +113,7 @@ public class SymbolTableDoc implements SymbolTable {
         if(debug) {
             System.out.println("Putting descriptor: " + id);
         }
-        
+
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = imports.get(id);

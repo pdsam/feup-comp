@@ -84,7 +84,7 @@ public class SymbolTableMethod implements SymbolTable {
         if(debug) {
             System.out.println("Putting descriptor: " + id);
         }
-        
+
         if(descriptor instanceof VarDescriptor) {
             String id = descriptor.getName();
             VarDescriptor var = (VarDescriptor) descriptor;
@@ -101,12 +101,11 @@ public class SymbolTableMethod implements SymbolTable {
                 var.setStackOffset(currentVarIndex);
                 currentVarIndex++;
                 variables.put(id, (VarDescriptor) descriptor);
-
-            } else {
-
-                throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
+                return;
             }
-            return;
+            
+            throw new AlreadyDeclaredException("Variable \'" + id + "\' already declared.");
+
         }
 
         throw new UnknownDeclarationException("Methods cannot be defined inside other methods.");

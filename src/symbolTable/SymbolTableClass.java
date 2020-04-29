@@ -107,10 +107,10 @@ public class SymbolTableClass implements SymbolTable {
             if(!isValidType(mtd.getReturnType()) && !mtd.getReturnType().equals("void"))
                 throw new UnknownTypeException();
 
-            if(overloads != null){
+            if(overloads != null){ //a method with that id exists already
                 for(MethodDescriptor methodDescriptor : overloads){
-                    if(methodDescriptor.getParameters().equals(((MethodDescriptor) descriptor).getParameters()) &&
-                            methodDescriptor.getClassName().equals( ((MethodDescriptor) descriptor).getClassName()))
+                    if(methodDescriptor.getParameters().equals(mtd.getParameters()) &&
+                            methodDescriptor.getClassName().equals(mtd.getClassName()))
                         throw new AlreadyDeclaredException("Method '" + id + "' already defined.\nConflict: " + methodDescriptor);
                 }
 
@@ -138,30 +138,5 @@ public class SymbolTableClass implements SymbolTable {
             } else
                 throw new AlreadyDeclaredException("Variable '" + id + "' already declared.");
         }
-
-        if(debug ){
-            System.out.println("Descriptor isn't neither a var neither a method");
-        }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder("SymbolTableClass{ superClass='" + superClass + '\'');
-
-        result.append(", fields=[ \n");
-        for(Map.Entry<String, VarDescriptor> entry : fields_table.entrySet()) {
-            result.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-        }
-
-        result.append("], methods=[ \n");
-        for(Map.Entry<String, ArrayList<MethodDescriptor>> entry : methods_table.entrySet()) {
-            for(MethodDescriptor mtd : entry.getValue()){
-                result.append(entry.getKey()).append(": ").append(mtd).append("\n");
-            }
-        }
-
-        result.append("]}");
-
-        return result.toString();
     }
 }

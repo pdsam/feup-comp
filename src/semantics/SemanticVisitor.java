@@ -61,24 +61,26 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
 
         VarDescriptor var = new VarDescriptor(node.className, node.className);
-        MethodDescriptor mtd = new MethodDescriptor(node.methodName, node.returnType, params, node.className, node.isStatic);
 
-        // If the import is only of a class then there is no method to register
-        //then the visitor stops here
-        if (mtd.getName() == null)
-            return null;
+        // If the import is only of a class
+        // then methodName will be null and only the class is registered as a valid type
+        if (node.methodName != null){
+            MethodDescriptor mtd = new MethodDescriptor(node.methodName, node.returnType, params, node.className, node.isStatic);
 
-        // Registering a method
-        try {
-            st.put(mtd);
-        } catch(UnknownTypeException e) {
-            logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
-        } catch (AlreadyDeclaredException e) {
-            //When there is a duplicate import only a warning is generated
-            logWarning(node, e.getMessage());
-        } catch (Exception e) {
-            logError(node, e.getMessage());
+            // Registering the imported method
+            try {
+                st.put(mtd);
+            } catch(UnknownTypeException e) {
+                logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
+            } catch (AlreadyDeclaredException e) {
+                //When there is a duplicate import only a warning is generated
+                logWarning(node, e.getMessage());
+            } catch (Exception e) {
+                logError(node, e.getMessage());
+            }
         }
+
+
 
         try {
             // The following line register a new class as a valid type
@@ -214,11 +216,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
             node.type = var.getType();
             node.desc = var;
 
-            if (node.parent instanceof ASTAssignment) {
-                // When the var is being assigned a value it becomes initialized
-                var.initialize();
-            } else if (!var.isInitialized()) {
-                // Otherwise, if the variable is being used and not initialized we have an error
+            // If the variable is being used and not initialized we have an error
+            // Note that when assigned it is previously marked as initialized
+            if (!var.isInitialized()) {
                 logError(node, "Variable '" + var.getName() + "' might not have been initialized.");
             }
         }
@@ -326,25 +326,25 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-//        SymbolTable st = (SymbolTable) data;
+        SymbolTable st = (SymbolTable) data;
+        VarDescriptor var = null;
         ASTVarReference varRef = (ASTVarReference) node.varReference;
-//        VarDescriptor var = null;
+
+        try {
+            var = st.variable_lookup(varRef.identifier);
+        } catch (Exception e) {
+            // All errors will be logged in ASTVarReference visitor
+            //so here we just ignore them
+        }
+
+        if(var != null)
+            var.initialize();
 
         node.childrenAccept(this, data);
 
         if(!varRef.type.equals(node.value.type)){
             logError(node, "Types do not match: was expecting '" + varRef.type + "' but got '" + node.value.type + '\'');
         }
-
-//        try {
-//            var = st.variable_lookup(varRef.identifier);
-//        } catch (Exception e) {
-//            // All errors are already logged in ASTVarReference visitor
-//            //so here we just ignore them
-//        }
-//
-//        if(var != null)
-//            var.initialize();
 
         return null;
     }
@@ -374,7 +374,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
-        //TODO: check if value being assigned is int
         node.childrenAccept(this, data);
 
         if(node.arrayRef.type.equals("array") && !node.value.type.equals("int")) {
@@ -418,13 +417,13 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTIntegerLiteral node, Object data) {
-        node.childrenAccept(this, data);
+        // Terminal node, does not have any children
         return null;
     }
 
     @Override
     public Object visit(ASTBooleanLiteral node, Object data) {
-        node.childrenAccept(this, data);
+        // Terminal node, does not have any children
         return null;
     }
 
@@ -476,10 +475,6 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
 
         node.type = "int";
-//        node.arrayRef.jjtAccept(this, data);
-//        if (!node.arrayRef.type.equals("array")) {
-//            logError(node, "Not an array.");
-//        }
         return null;
     }
 
@@ -487,8 +482,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTNegation node, Object data) {
         node.childrenAccept(this, data);
 
-        if(node.child.type != "boolean") {
-            logError(node, "! operator must be applied to a boolean expression.");
+        if(!node.child.type.equals("boolean")) {
+            logError(node, "! operator must be applied to a boolean expression");
         }
 
         node.type = "boolean";
@@ -497,9 +492,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     private void checkOperandsTypes(BinOpExpression expr, String type) {
         if(!expr.left.type.equals(type)) {
-            logError(expr, "Left side of && operator must be of type boolean.");
+            logError(expr, "Left side of expression must be of type" + type);
         } else if(!expr.right.type.equals(type)) {
-            logError(expr, "Right side of && operator must be of type boolean.");
+            logError(expr, "Right side of expression must be of type" + type);
         }
     }
 
