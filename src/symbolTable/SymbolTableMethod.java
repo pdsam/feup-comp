@@ -81,12 +81,14 @@ public class SymbolTableMethod implements SymbolTable {
     @Override
     public void put(Descriptor descriptor) throws SemanticException {
 
+        String id = descriptor.getName();
+        
         if(debug) {
             System.out.println("Putting descriptor: " + id);
         }
 
         if(descriptor instanceof VarDescriptor) {
-            String id = descriptor.getName();
+            
             VarDescriptor var = (VarDescriptor) descriptor;
 
             if(debug) {
