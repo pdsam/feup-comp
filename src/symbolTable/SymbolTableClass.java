@@ -70,6 +70,10 @@ public class SymbolTableClass implements SymbolTable {
     public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = fields_table.get(id);
 
+        if(debug) {
+            System.out.println("Variable lookup: " + id);
+        }
+
         if(varDescriptor != null) {
             if(debug) {
                 System.out.println("Variable found: " + varDescriptor);
@@ -88,6 +92,9 @@ public class SymbolTableClass implements SymbolTable {
     public void put(Descriptor descriptor) throws SemanticException {
         String id = descriptor.getName();
 
+        if(debug) {
+            System.out.println("Putting descriptor: " + id);
+        }
 
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;

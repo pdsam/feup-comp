@@ -96,6 +96,10 @@ public class SymbolTableDoc implements SymbolTable {
     public VarDescriptor variable_lookup(String id) throws SemanticException {
         VarDescriptor varDescriptor = classes.get(id);
 
+        if(debug) {
+            System.out.println("Variable lookup: " + id);
+        }
+
         if(varDescriptor != null) {
             if(debug) {
                 System.out.println("Variable '" + id + "' found: " + varDescriptor);
@@ -112,6 +116,11 @@ public class SymbolTableDoc implements SymbolTable {
     @Override
     public void put(Descriptor descriptor) throws SemanticException {
         String id = descriptor.getName();
+
+        if(debug) {
+            System.out.println("Putting descriptor: " + id);
+        }
+        
         if(descriptor instanceof MethodDescriptor) {
             MethodDescriptor mtd = (MethodDescriptor) descriptor;
             ArrayList<MethodDescriptor> overloads = imports.get(id);
