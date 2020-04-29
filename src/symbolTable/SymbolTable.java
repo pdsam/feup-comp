@@ -9,7 +9,11 @@ import java.util.List;
 
 public abstract class SymbolTable {
     protected SymbolTable parent = null;
-    boolean debug = false;
+    protected static boolean debug = false;
+
+    public static void setDebug(boolean val) {
+        debug = val;
+    }
 
     public String getClassName() {
         if(parent != null)

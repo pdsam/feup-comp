@@ -3,23 +3,55 @@ import parser.ASTDocument;
 import parser.MyGrammar;
 import parser.ParseException;
 import semantics.SemanticVisitor;
+import symbolTable.SymbolTable;
 import symbolTable.exception.SemanticException;
 
 import java.io.*;
 
 public class Main{
-	private static boolean debug = true;
+	private static boolean debug = false;
+	private static String filename;
 
-	public static void main(String[] args) throws ParseException, SemanticException {
-		if(args.length < 1) {
-			System.out.println("Usage: java jmm [-r=<num>] [-o] <input_file.jmm>");
-			return;
-		} else if (!args[0].matches("(.*).jmm")) {
-			System.out.println("Invalid file type: only .jmm files are accepted");
-			return;
+	public static boolean parseArgs(String[] args) {
+		if(args.length < 1 || args.length > 4){
+			System.err.println("Usage: java jmm [-v] [-r=<num>] [-o] <input_file.jmm>");
+			return false;
 		}
 
-		ASTDocument root = syntacticAnalysis(args[0]);
+		int i;
+
+		for(i = 0; i < args.length - 1; i++) {
+			switch (args[i]) {
+				case "-v":
+					debug = true;
+					SymbolTable.setDebug(true);
+					break;
+
+				case "-r":
+					break;
+
+				case "-o":
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		if (!args[i].matches("(.*).jmm")) {
+			System.err.println("Invalid file type: only .jmm files are accepted");
+			return false;
+		}
+
+		filename = args[i];
+
+		return true;
+	}
+
+	public static void main(String[] args) throws ParseException, SemanticException {
+		if(!parseArgs(args)) return;
+
+		ASTDocument root = syntacticAnalysis(filename);
 
 		if(debug)
 			root.dump(">");
