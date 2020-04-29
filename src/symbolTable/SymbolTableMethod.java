@@ -87,6 +87,7 @@ public class SymbolTableMethod extends SymbolTable {
         }
 
         if(descriptor instanceof VarDescriptor) {
+
             VarDescriptor var = (VarDescriptor) descriptor;
 
             if(debug) {
