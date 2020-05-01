@@ -3,6 +3,7 @@ package symbolTable;
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.descriptor.VarType;
 import symbolTable.exception.AlreadyDeclaredException;
 import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownTypeException;
@@ -98,8 +99,10 @@ public class SymbolTableMethod extends SymbolTable {
                 throw new UnknownTypeException();
 
             if(variables.get(id) == null) {
-                var.setField(false);
                 var.setStackOffset(currentVarIndex);
+                if (var.getVarType() == null) {
+                    var.setVarType(VarType.LOCAL);
+                }
                 currentVarIndex++;
                 variables.put(id, (VarDescriptor) descriptor);
                 return;

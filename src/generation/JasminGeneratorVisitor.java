@@ -2,6 +2,7 @@ package generation;
 
 import parser.*;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.descriptor.VarType;
 
 import java.io.PrintWriter;
 
@@ -174,7 +175,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         ASTVarReference ref = (ASTVarReference) node.varReference;
         VarDescriptor desc = ref.desc;
         node.value.jjtAccept(this, data);
-        if (desc.isField()) {
+        if (desc.getVarType() == VarType.FIELD) {
             writer.println("aload_0");
             writer.printf("putfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
         } else {
@@ -257,7 +258,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTVarReference node, Object data) {
         VarDescriptor desc = node.desc;
-        if (desc.isField()) {
+        if (desc.getVarType() == VarType.FIELD) {
             writer.println("aload_0");
             writer.printf("getfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
         } else {

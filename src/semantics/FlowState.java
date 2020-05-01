@@ -14,6 +14,14 @@ public class FlowState {
         this.st = st;
     }
 
+    public void clone (FlowState fs) {
+        vars.clear();
+
+        fs.getVars().forEach((var, state) -> {
+            vars.put(var, state);
+        });
+    }
+
     public SymbolTable getSt() {
         return st;
     }

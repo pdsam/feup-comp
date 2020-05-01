@@ -8,6 +8,7 @@ import java.util.Map;
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.descriptor.VarType;
 import symbolTable.exception.AlreadyDeclaredException;
 import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownTypeException;
@@ -125,7 +126,7 @@ public class SymbolTableClass extends SymbolTable {
                 throw new UnknownTypeException();
 
             if(fields_table.get(id) == null) {
-                var.setField(true);
+                var.setVarType(VarType.FIELD);
                 var.setClassName(getClassName());
                 fields_table.put(id, (VarDescriptor) descriptor);
             } else

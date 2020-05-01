@@ -9,6 +9,7 @@ import symbolTable.exception.UnknownTypeException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SemanticVisitor implements MyGrammarVisitor {
     public static int numErrors = 0;
@@ -195,11 +196,15 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTParameter node, Object data) {
         VarDescriptor var = new VarDescriptor(node.identifier, node.type);
-        SymbolTable symbolTable = (SymbolTable) data;
-
+        SymbolTable symbolTable;
+        if (data instanceof SymbolTable) {
+            symbolTable = (SymbolTable) data;
+        } else {
+            symbolTable = ((FlowState) data).getSt();
+        }
         try{
             //Parameters are considered initialized by default
-            var.initialize();
+            var.setVarType(VarType.PARAMETER);
             put(symbolTable, var, node);
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + var.getType() + "' as return for parameter " + var.getName());
@@ -212,7 +217,12 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTVar node, Object data) {
         VarDescriptor var = new VarDescriptor(node.identifier, node.type);
-        SymbolTable symbolTable = (SymbolTable) data;
+        SymbolTable symbolTable;
+        if (data instanceof SymbolTable) {
+            symbolTable = (SymbolTable) data;
+        } else {
+            symbolTable = ((FlowState) data).getSt();
+        }
         try{
             put(symbolTable, var, node);
         } catch(UnknownTypeException e) {
@@ -226,7 +236,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
-        SymbolTable st = (SymbolTable) data;
+        FlowState fs = (FlowState) data;
+        SymbolTable st = fs.getSt();
         VarDescriptor var = null;
 
         try {
@@ -238,7 +249,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         if(var == null) {
             node.type = "null";
         } else {
-            if (((SymbolTableMethod) st).isStaticContext() && var.isField()) {
+            if (((SymbolTableMethod) st).isStaticContext() && var.getVarType() == VarType.FIELD) {
                 logError(node, String.format("%s is non static variable in static context.", node.identifier));
             }
 
@@ -247,8 +258,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
             // If the variable is being used and not initialized we have an error
             // Note that when assigned it is previously marked as initialized
-            if (!var.isInitialized()) {
-                logError(node, "Variable '" + var.getName() + "' might not have been initialized.");
+
+            if (fs.getVars().get(var) != VarState.surely_init && var.getVarType() == VarType.LOCAL) {
+                logError(node, String.format("Variable %s might not have been initialized.", node.identifier));
             }
         }
         return null;
@@ -257,7 +269,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTFunctionCall node, Object data) {
         node.childrenAccept(this, data);
-        SymbolTable st = (SymbolTable) data;
+        FlowState fs = (FlowState) data;
+        SymbolTable st = fs.getSt();
         MethodDescriptor mtd = null;
 
         try {
@@ -372,7 +385,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        SymbolTable st = (SymbolTable) data;
+        FlowState fs = (FlowState) data;
+        SymbolTable st = fs.getSt();
         VarDescriptor var = null;
         ASTVarReference varRef = (ASTVarReference) node.varReference;
 
@@ -384,7 +398,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
 
         if(var != null)
-            var.initialize();
+            fs.getVars().put(var, VarState.surely_init);
 
         node.childrenAccept(this, data);
 
@@ -397,12 +411,61 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBranch node, Object data) {
-        node.childrenAccept(this, data);
+        FlowState fs = (FlowState) data;
+        SymbolTable st = fs.getSt();
+        node.condition.jjtAccept(this, data);
         if(!node.condition.type.equals("boolean")) {
             logError(node, "If condition must evaluate to boolean");
         }
 
-        //TODO: check if variables are initialized inside one of the statements
+        FlowState thenState = new FlowState(st);
+        thenState.clone(fs);
+        FlowState elseState = new FlowState(st);
+        elseState.clone(fs);
+
+        node.thenStatement.jjtAccept(this, thenState);
+        node.elseStatement.jjtAccept(this, elseState);
+
+        Map<VarDescriptor, VarState> mainVars = fs.getVars();
+        mainVars.forEach((var, state) -> {
+            if (state == VarState.surely_init) {
+                return;
+            }
+
+            VarState thenVarState = thenState.state_lookup(var);
+            VarState elseVarState = elseState.state_lookup(var);
+            if (thenVarState == VarState.surely_init && elseVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.surely_init);
+            } else if (thenVarState == VarState.surely_init || elseVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.probably_init);
+            }
+        });
+
+        Map<VarDescriptor, VarState> thenVars = thenState.getVars();
+        thenVars.forEach((var, state) -> {
+            VarState elseVarState = elseState.state_lookup(var);
+            if (state == VarState.surely_init && elseVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.surely_init);
+            } else if (state == VarState.surely_init || elseVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.probably_init);
+            } else {
+                mainVars.put(var, VarState.not_init);
+            }
+        });
+
+        Map<VarDescriptor, VarState> elseVars = elseState.getVars();
+        elseVars.forEach((var, state) -> {
+            VarState thenVarState = thenState.state_lookup(var);
+            if (state == VarState.surely_init && thenVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.surely_init);
+            } else if (state == VarState.surely_init || thenVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.probably_init);
+            } else {
+                mainVars.put(var, VarState.not_init);
+            }
+        });
+
+
         return null;
     }
 
@@ -441,7 +504,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTArrayAccess node, Object data) {
         node.childrenAccept(this, data);
         ASTVarReference arr = (ASTVarReference) node.arrayRef;
-        SymbolTable st = (SymbolTable) data;
+        FlowState fs = (FlowState) data;
+        SymbolTable st = fs.getSt();
 
         // Check if the variable is of type int[] or String[] (for main parameter)
         if(!arr.type.equals("array") && !arr.type.equals("String[]")) {
@@ -453,7 +517,13 @@ public class SemanticVisitor implements MyGrammarVisitor {
         }
 
         try {
-            variable_lookup(st, arr.identifier);
+            VarDescriptor var = variable_lookup(st, arr.identifier);
+
+            if (var != null) {
+                if (fs.getVars().get(var) != VarState.surely_init && var.getVarType() == VarType.LOCAL) {
+                    logError(node, String.format("Variable %s might not have been initialized.", arr.identifier));
+                }
+            }
         } catch (Exception e) {
             logError(node, e.getMessage());
         }
@@ -475,14 +545,15 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
-        SymbolTableMethod st = (SymbolTableMethod) data;
+        FlowState fs = (FlowState) data;
+        SymbolTableMethod st = (SymbolTableMethod) fs.getSt();
         if (st.isStaticContext()) {
             logError(node, "Cannot use non static variable in static context.");
         }
 
         node.childrenAccept(this, data);
 
-        node.type = st.getClassName();
+        node.type = fs.getSt().getClassName();
         return null;
     }
 
@@ -500,7 +571,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTConstructorCall node, Object data) {
-        SymbolTable st = (SymbolTable) data;
+        FlowState fs = (FlowState) data;
+        SymbolTable st = fs.getSt();
 
         try {
             variable_lookup(st, node.identifier);

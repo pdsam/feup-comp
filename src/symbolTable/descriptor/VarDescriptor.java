@@ -6,7 +6,7 @@ public class VarDescriptor implements Descriptor {
     private int stackOffset;
     private String className;
     private boolean initialized;
-    private boolean isField;
+    private VarType varType;
 
     public VarDescriptor(String name, String type) {
         this.name = name;
@@ -43,16 +43,16 @@ public class VarDescriptor implements Descriptor {
         return initialized;
     }
 
-    public boolean isField() {
-        return isField;
-    }
-
     public void setClassName(String className) {
         this.className = className;
     }
 
-    public void setField(boolean field) {
-        isField = field;
+    public VarType getVarType() {
+        return varType;
+    }
+
+    public void setVarType(VarType varType) {
+        this.varType = varType;
     }
 
     @Override
