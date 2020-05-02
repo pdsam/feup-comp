@@ -505,29 +505,15 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
         node.childrenAccept(this, data);
-        ASTVarReference arr = (ASTVarReference) node.arrayRef;
-        FlowState fs = (FlowState) data;
-        SymbolTable st = fs.getSt();
+        Expression arr = node.arrayRef;
 
         // Check if the variable is of type int[] or String[] (for main parameter)
         if(!arr.type.equals("array") && !arr.type.equals("String[]")) {
-            logError(node, "Variable '" + arr.identifier + "' is not an array");
+            logError(node, "Access to an expression that is not an array");
         }
 
         if(!node.index.type.equals("int")) {
             logError(node, "Index expression is not of type int");
-        }
-
-        try {
-            VarDescriptor var = variable_lookup(st, arr.identifier);
-
-            if (var != null) {
-                if (fs.getVars().get(var) != VarState.surely_init && var.getVarType() == VarType.LOCAL) {
-                    logError(node, String.format("Variable %s might not have been initialized.", arr.identifier));
-                }
-            }
-        } catch (Exception e) {
-            logError(node, e.getMessage());
         }
 
         return null;
@@ -550,7 +536,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         FlowState fs = (FlowState) data;
         SymbolTableMethod st = (SymbolTableMethod) fs.getSt();
         if (st.isStaticContext()) {
-            logError(node, "Cannot use non static variable in static context.");
+            logError(node, "Cannot use 'this' in static context.");
         }
 
         node.childrenAccept(this, data);

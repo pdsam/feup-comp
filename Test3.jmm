@@ -1,3 +1,7 @@
+import static Package;
+import Package(int, boolean);
+import static Package.statMethod(int, void, void, int[]) int;
+
 class IfTest {
     boolean enterIf;
 

@@ -1,0 +1,30 @@
+class Encadeado{
+
+    public static void main(String[] args){
+        int[] a;
+        int b;
+        int c;
+        Encadeado enc;
+        enc = new Encadeado();
+
+        a = new int[10];
+        b = new int[1][0] + enc.add();
+        c = enc.add()[0] + enc.add();
+        c = enc.getArray()[0] + enc.add();
+        b = a.length;
+        b = new int[10].length;
+        b = enc.getArray().length;
+    }
+
+
+
+    public int add(){
+        return 1;
+    }
+
+    public int[] getArray(){
+        int[] ar;
+        ar = new int[34];
+        return ar;
+    }
+}
