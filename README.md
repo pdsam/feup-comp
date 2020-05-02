@@ -26,6 +26,10 @@ java -cp "./build/classes/java/main/" <class_name> <arguments>
 
 Where ``<class_name>`` is the name of the class you want to run and ``<arguments>`` are the arguments to be passed to ``main()``.
 
+#### Avaiable flags
++ -v - Turns on the verbose mode, which turns on the programms debug prints.
++ -werror - The Warnings will be treated like errors by the compiler.
+
 ### Run ``.jar``
 
 To run the JAR, do the following command:
@@ -65,7 +69,10 @@ To test the program, run ``gradle test``. This will execute the build, and run t
        + será considerado bónus a quem resolver esta verificação usando erros em vez de warning.
             - cuidado que se a analise não estiver bem feita os erros vão fazer com que o vosso compilador não passe para a geração de código!
 			- caso pretendam fazer esta abordagem com erros adicionem uma forma de ativar/desativar o erro para facilitar no caso de haver problemas.
-			
+
+
+
+
 ### Function Verification
 	* verificar se o "target" do método existe, e se este contém o método (e.g. a.foo, ver se 'a' existe e se tem um método 'foo')
 	    - caso seja do tipo da classe declarada (e.g. a usar o this), verificar se é método do extends olhando para o que foi importado (isto se a classe fizer extends de outra classe importada)
