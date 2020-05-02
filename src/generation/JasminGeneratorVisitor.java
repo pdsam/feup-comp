@@ -173,12 +173,12 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     public Object visit(ASTAssignment node, Object data) {
         ASTVarReference ref = (ASTVarReference) node.varReference;
         VarDescriptor desc = ref.desc;
-        node.value.jjtAccept(this, data);
         if (desc.isField()) {
             writer.println("aload_0");
-            writer.println("swap");
+            node.value.jjtAccept(this, data);
             writer.printf("putfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
         } else {
+            node.value.jjtAccept(this, data);
             if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
                 writer.printf("istore %d\n", desc.getStackOffset());
             } else {
