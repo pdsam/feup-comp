@@ -176,6 +176,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         node.value.jjtAccept(this, data);
         if (desc.isField()) {
             writer.println("aload_0");
+            writer.println("swap");
             writer.printf("putfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
         } else {
             if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
