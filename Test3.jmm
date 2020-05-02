@@ -2,34 +2,34 @@ class IfTest {
     boolean enterIf;
 
     public static void main(String[] args) {
+
+    }
+
+    public int[] ident(int param) {
         int a;
         int b;
         int c;
-        boolean enterIf;
 
-        enterIf = true;
+        enterIf = false;
+        a = 0-5;
 
-        /*if(enterIf) {
-            a = 5;
+        if(enterIf) {
+            //c = a;
         } else {
-            a = 10;
-        }*/
-
-        if(enterIf) { // a -> 0
-            a = 1; // a -> 1
-            if(enterIf) {
-                a = 5; // a -> 2
-                //c = a;
-            } else {
-                //c = a;
-                //a = 7; // a -> 2
-            }
-            c = a;
-        } else { // a -> 2
-            //a = 10;
-            c = a;
+            c = param;
         }
 
-        c = a;
+        while(a < 1) {
+
+            if(enterIf) {
+                c = a;
+            } else {
+                b = a + c;
+                c = b;
+            }
+            a = c;
+        }
+
+        return c;
     }
 }

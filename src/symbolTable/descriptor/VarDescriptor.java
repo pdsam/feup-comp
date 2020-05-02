@@ -5,13 +5,11 @@ public class VarDescriptor implements Descriptor {
     private final String type;
     private int stackOffset;
     private String className;
-    private boolean initialized;
     private VarType varType;
 
     public VarDescriptor(String name, String type) {
         this.name = name;
         this.type = type;
-        this.initialized = false;
     }
 
     @Override
@@ -31,16 +29,8 @@ public class VarDescriptor implements Descriptor {
         this.stackOffset = stackOffset;
     }
 
-    public void initialize() {
-        this.initialized = true;
-    }
-
     public String getClassName() {
         return className;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
     }
 
     public void setClassName(String className) {
@@ -61,7 +51,6 @@ public class VarDescriptor implements Descriptor {
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", stackOffset=" + stackOffset +
-                ", initialized='" + initialized + '\'' +
                 '}';
     }
 }

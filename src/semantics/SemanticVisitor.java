@@ -87,7 +87,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         try {
             // The following line register a new class as a valid type
             //so no type checking is done whatsoever
-            var.initialize(); //Classes may be used statically, so they are initialized by default
+            var.setVarType(VarType.CLASS); //Classes may be used statically, so they are initialized by default
             st.put(var);
         } catch(Exception e){
             logError(node, e.getMessage());
@@ -107,6 +107,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         //so no type checking is needed
         VarDescriptor var = new VarDescriptor(node.identifier, node.identifier);
         try {
+            var.setVarType(VarType.CLASS);
             parentST.put(var);
         } catch(Exception e){
             logError(node, e.getMessage());
@@ -224,9 +225,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
             symbolTable = ((FlowState) data).getSt();
         }
         try{
+            var.setVarType(VarType.LOCAL);
             put(symbolTable, var, node);
         } catch(UnknownTypeException e) {
-            logError(node, e.getMessage() + " '" + var.getType() + "' as return for variable " + var.getName());
+            logError(node, e.getMessage() + " '" + var.getType() + "' for variable " + var.getName());
         } catch(Exception e){
             logError(node, e.getMessage());
         }
@@ -427,57 +429,51 @@ public class SemanticVisitor implements MyGrammarVisitor {
         node.elseStatement.jjtAccept(this, elseState);
 
         Map<VarDescriptor, VarState> mainVars = fs.getVars();
-        mainVars.forEach((var, state) -> {
-            if (state == VarState.surely_init) {
-                return;
-            }
-
-            VarState thenVarState = thenState.state_lookup(var);
-            VarState elseVarState = elseState.state_lookup(var);
-            if (thenVarState == VarState.surely_init && elseVarState == VarState.surely_init) {
-                mainVars.put(var, VarState.surely_init);
-            } else if (thenVarState == VarState.surely_init || elseVarState == VarState.surely_init) {
-                mainVars.put(var, VarState.probably_init);
-            }
-        });
-
-        Map<VarDescriptor, VarState> thenVars = thenState.getVars();
-        thenVars.forEach((var, state) -> {
-            VarState elseVarState = elseState.state_lookup(var);
-            if (state == VarState.surely_init && elseVarState == VarState.surely_init) {
-                mainVars.put(var, VarState.surely_init);
-            } else if (state == VarState.surely_init || elseVarState == VarState.surely_init) {
-                mainVars.put(var, VarState.probably_init);
-            } else {
-                mainVars.put(var, VarState.not_init);
-            }
-        });
-
-        Map<VarDescriptor, VarState> elseVars = elseState.getVars();
-        elseVars.forEach((var, state) -> {
-            VarState thenVarState = thenState.state_lookup(var);
-            if (state == VarState.surely_init && thenVarState == VarState.surely_init) {
-                mainVars.put(var, VarState.surely_init);
-            } else if (state == VarState.surely_init || thenVarState == VarState.surely_init) {
-                mainVars.put(var, VarState.probably_init);
-            } else {
-                mainVars.put(var, VarState.not_init);
-            }
-        });
-
+        checkInitialization(thenState, elseState, mainVars);
+        checkInitialization(elseState, thenState, mainVars);
 
         return null;
     }
 
+    private void checkInitialization(FlowState first, FlowState second, Map<VarDescriptor, VarState> mainVars) {
+        Map<VarDescriptor, VarState> firstVars = first.getVars();
+        firstVars.forEach((var, state) -> {
+            VarState secondVarState = second.state_lookup(var);
+            if (state == VarState.surely_init && secondVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.surely_init);
+            } else if (state == VarState.surely_init || secondVarState == VarState.surely_init) {
+                mainVars.put(var, VarState.probably_init);
+            } else {
+                mainVars.put(var, VarState.not_init);
+            }
+        });
+    }
+
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
-        node.childrenAccept(this, data);
+        FlowState fs = (FlowState) data;
+        SymbolTable st = fs.getSt();
+
+        node.condition.jjtAccept(this, data);
 
         if(!node.condition.type.equals("boolean")) {
             logError(node, "While condition must evaluate to boolean");
         }
 
-        //TODO: check if variables are initialized inside the statement
+        FlowState bodyFS = new FlowState(st);
+        bodyFS.clone(fs);
+        node.body.jjtAccept(this, bodyFS);
+
+        Map<VarDescriptor, VarState> mainVars = fs.getVars();
+        Map<VarDescriptor, VarState> bodyVars = bodyFS.getVars();
+        bodyVars.forEach((var, state) -> {
+            if(mainVars.get(var) == VarState.surely_init)
+                return;
+
+            //Everything assigned inside a while is only probably inited
+            mainVars.put(var, VarState.probably_init);
+        });
+
         return null;
     }
 
