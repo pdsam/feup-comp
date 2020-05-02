@@ -26,8 +26,8 @@ public abstract class SymbolTable {
         this.parent = parent;
     }
 
-    abstract boolean isValidType(String type);
-    abstract MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException;
-    abstract VarDescriptor variable_lookup(String id) throws SemanticException;
-    abstract void put(Descriptor descriptor) throws SemanticException;
+    public abstract boolean isValidType(String type);
+    public abstract MethodDescriptor method_lookup(String id, List<String> parameters, String className) throws SemanticException;
+    public abstract VarDescriptor variable_lookup(String id) throws SemanticException;
+    public abstract void put(Descriptor descriptor) throws SemanticException;
 }
