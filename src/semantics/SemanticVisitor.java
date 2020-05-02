@@ -598,9 +598,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     private void checkOperandsTypes(BinOpExpression expr, String type) {
         if(!expr.left.type.equals(type)) {
-            logError(expr, "Left side of expression must be of type" + type);
+            logError(expr, "Left side of expression must be of type " + type);
         } else if(!expr.right.type.equals(type)) {
-            logError(expr, "Right side of expression must be of type" + type);
+            logError(expr, "Right side of expression must be of type " + type);
         }
     }
 

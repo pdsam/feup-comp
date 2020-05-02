@@ -7,19 +7,21 @@ class Encadeado{
         Encadeado enc;
         enc = new Encadeado();
 
-        a = new int[10];
-        b = new int[1][0] + enc.add();
-        c = enc.add()[0] + enc.add();
+        a = enc.add(b, c);
+        b = new int[1][0] + enc.add(b, c);
+        c = a[0] + enc.add();
         c = enc.getArray()[0] + enc.add();
         b = a.length;
         b = new int[10].length;
         b = enc.getArray().length;
     }
 
-
-
-    public int add(){
+    public int add() {
         return 1;
+    }
+
+    public int add(int left, int right){
+        return left + right;
     }
 
     public int[] getArray(){
