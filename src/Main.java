@@ -27,6 +27,10 @@ public class Main{
 					SymbolTable.setDebug(true);
 					break;
 
+				case "-werror":
+					SemanticVisitor.werror = true;
+					break;
+
 				case "-r":
 					break;
 
