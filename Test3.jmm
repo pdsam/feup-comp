@@ -1,5 +1,6 @@
-import static Package;
+import Package;
 import Package(int, boolean);
+import static Package.someAttr;
 import static Package.statMethod(void) int;
 
 class IfTest {

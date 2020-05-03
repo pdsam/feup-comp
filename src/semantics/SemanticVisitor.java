@@ -81,6 +81,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
             } catch (Exception e) {
                 logError(node, e.getMessage());
             }
+        } else if(node.isStatic) {
+            logError(node, "Static import of a constructor not allowed.");
         }
 
 
