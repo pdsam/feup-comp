@@ -236,13 +236,11 @@ public class SemanticVisitor implements MyGrammarVisitor {
             // If the variable is being used and not initialized we have an error
             // Note that when assigned it is previously marked as initialized
             VarState vstate = fs.getVars().get(var);
-            if (vstate == VarState.probably_init && var.getVarType() == VarType.LOCAL) {
+            if (vstate != VarState.surely_init && var.getVarType() == VarType.LOCAL) {
                 if(werror)
-                    logError(node, String.format("Variable %s might not have been initialized.", node.identifier));
+                    logError(node, String.format("Variable %s might not been initialized.", node.identifier));
                 else
                     logWarning(node, String.format("Variable %s might not have been initialized.", node.identifier));
-            } else if ((vstate == VarState.not_init || vstate == null) && var.getVarType() == VarType.LOCAL) {
-                logError(node, String.format("Variable %s has not been initialized.", node.identifier));
             }
         }
         return null;

@@ -25,7 +25,7 @@ public class ParserTest {
             Method mainMethod = mainClass.getMethod("main", String[].class);
 
             // Invoke main method with file as argument
-            String[] mainArgs = { testFile.getAbsolutePath() };
+            String[] mainArgs = { "-werror", testFile.getAbsolutePath() };
             Object[] invokeArgs = { mainArgs };
             mainMethod.invoke(null, invokeArgs);
 

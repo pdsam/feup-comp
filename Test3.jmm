@@ -32,9 +32,11 @@ class IfTest {
                 b = a + c;
                 c = b;
             }
+            b = c;
             a = c;
         }
 
+        a = b;
         return c;
     }
 }
