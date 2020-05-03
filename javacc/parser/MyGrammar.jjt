@@ -98,7 +98,8 @@ void ImportDeclaration() #Import : {Token t; String type;}{
   <SEMICOLON>
 }
 void ImportParamList(List<String> params) #void: {String p;} {
-    [p=Type() {params.add(p);} (<COMMA> (p=Type() {params.add(p);}))*]
+    [(p=Type() {params.add(p);} (<COMMA> (p=Type() {params.add(p);}))*)
+    | <VOID> ]
 }
 
 void ClassDeclaration() #Class : {Token identifier, parent;}
