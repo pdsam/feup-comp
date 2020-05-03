@@ -7,7 +7,9 @@ class Encadeado{
         Encadeado enc;
         enc = new Encadeado();
 
-        a = enc.add(b, c);
+        b = 1;
+        c = 2;
+        a = enc.getArray();
         b = new int[1][0] + enc.add(b, c);
         c = a[0] + enc.add();
         c = enc.getArray()[0] + enc.add();

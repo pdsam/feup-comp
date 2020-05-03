@@ -362,18 +362,31 @@ public class SemanticVisitor implements MyGrammarVisitor {
         try {
             var = st.variable_lookup(varRef.identifier);
         } catch (Exception e) {
-            // All errors will be logged in ASTVarReference visitor
-            //so here we just ignore them
+            logError(node, e.getMessage());
         }
 
-        if(var != null)
-            fs.getVars().put(var, VarState.surely_init);
+        if(var == null) {
+            varRef.type = "null";
+        } else {
+            if (((SymbolTableMethod) st).isStaticContext() && var.getVarType() == VarType.FIELD) {
+                logError(node, String.format("%s is non static variable in static context.", varRef.identifier));
+            }
 
-        node.childrenAccept(this, data);
+            varRef.type = var.getType();
+            varRef.desc = var;
+        }
+
+        for(int i = 1; i < node.jjtGetNumChildren(); i++) {
+            node.jjtGetChild(i).jjtAccept(this, data);
+        }
 
         if(!varRef.type.equals(node.value.type)){
             logError(node, "Types do not match: was expecting '" + varRef.type + "' but got '" + node.value.type + '\'');
         }
+
+        // Variable is initialized only in the end
+        if(var != null)
+            fs.getVars().put(var, VarState.surely_init);
 
         return null;
     }
