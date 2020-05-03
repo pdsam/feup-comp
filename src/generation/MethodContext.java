@@ -12,7 +12,7 @@ public class MethodContext {
     }
 
     public String generateLabel() {
-        String label = String.format("label_%d\n", currentLabel);
+        String label = String.format("label_%d", currentLabel);
         currentLabel++;
         return label;
     }

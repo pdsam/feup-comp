@@ -145,7 +145,8 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         writer.println(".method public static main([Ljava/lang/String;)V");
         writer.println(".limit stack 99\n.limit locals 99\n");
 
-        node.children[2].jjtAccept(this, data);
+        MethodContext context = new MethodContext(node.getStMethod());
+        node.children[2].jjtAccept(this, context);
 
 
         writer.println("return\n.end method\n");
@@ -367,7 +368,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         String lessLabel = context.generateLabel();
         String endLabel = context.generateLabel();
 
-        writer.printf("if_cmplt %s\n",  lessLabel);
+        writer.printf("if_icmplt %s\n",  lessLabel);
         writer.printf("iconst_0\n");
         writer.printf("goto %s\n", endLabel);
         writer.printf("%s:\n", lessLabel);

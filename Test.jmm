@@ -1,15 +1,8 @@
 import static io.println(int);
+import static io.println(boolean);
 class Simple {
 	public static void main(String[] args) {
-		int a;
-		int b;
-		Simple simple;
-		int c;
-		a = 30;
-		b = 0-10;
-		simple = new Simple();
-		c = simple.add(a,b);
-		io.println(c);
+        io.println((1<2) && !(4<3));
 	}
 	public int add(int a, int b){
 		return a+b;
