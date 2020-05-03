@@ -2,7 +2,14 @@ import static io.println(int);
 import static io.println(boolean);
 class Simple {
 	public static void main(String[] args) {
-        io.println((1<2) && !(4<3));
+	    boolean a;
+	    boolean b;
+	    a = 1<2;
+	    b = 4<3;
+        io.println((a) && !(b));
+
+        a = 2<1;
+        io.println((a) && !(b));
 	}
 	public int add(int a, int b){
 		return a+b;
