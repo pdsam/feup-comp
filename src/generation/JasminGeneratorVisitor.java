@@ -192,6 +192,20 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBranch node, Object data) {
+
+        MethodContext context = (MethodContext) data;
+        String[] labels = context.generateIfLabel();
+        String elseLabel = labels[0];
+        String endifLabel = labels[1];
+
+        //generates de code
+        node.condition.jjtAccept(this, data);
+        writer.printf("ifeq %s\n", elseLabel );
+        node.thenStatement.jjtAccept(this, data);
+        writer.printf("goto %s\n", endifLabel);
+        writer.printf("%s:\n", elseLabel);
+        node.elseStatement.jjtAccept(this, data);
+        writer.printf("%s:\n", endifLabel);
         return null;
     }
 
@@ -368,12 +382,14 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         String lessLabel = context.generateLabel();
         String endLabel = context.generateLabel();
 
+        //see if variable is less than the other
         writer.printf("if_icmplt %s\n",  lessLabel);
         writer.printf("iconst_0\n");
         writer.printf("goto %s\n", endLabel);
         writer.printf("%s:\n", lessLabel);
         writer.printf("iconst_1\n");
         writer.printf("%s:\n", endLabel);
+        //finishes with 0 if false and 1 otherwise in the stack
         return null;
     }
 

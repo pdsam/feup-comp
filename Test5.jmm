@@ -1,0 +1,27 @@
+import static io.println(int);
+
+class If {
+
+    public static void main(String[] args){
+
+        int a;
+        int b;
+
+        if(true) {
+            a = 2;
+        } else {
+            a = 5;
+        }
+
+        b = 4;
+        if(a < b) {
+            a = 2;
+        } else {
+            b = 5;
+        }
+
+        io.println(a);
+        io.println(b);
+    }
+
+}
