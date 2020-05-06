@@ -28,6 +28,9 @@ public class SymbolTableMethod extends SymbolTable {
         return isStaticContext;
     }
 
+    public int getLocalsCount() {
+        return variables.size();
+    }
 
     @Override
     public String getClassName() {
