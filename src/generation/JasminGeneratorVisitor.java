@@ -192,14 +192,13 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBranch node, Object data) {
-
         MethodContext context = (MethodContext) data;
         String[] labels = context.generateIfLabel();
         String elseLabel = labels[0];
         String endifLabel = labels[1];
 
-        //generates de code
         node.condition.jjtAccept(this, data);
+        //ifeq makes the jump if the last value on stack is = 0 (= false)
         writer.printf("ifeq %s\n", elseLabel );
         node.thenStatement.jjtAccept(this, data);
         writer.printf("goto %s\n", endifLabel);
