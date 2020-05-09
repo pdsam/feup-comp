@@ -224,6 +224,36 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
+        MethodContext context = (MethodContext) data;
+        String loopLabel = context.generateLabel();
+        String endLabel = context.generateLabel();
+
+        writer.printf("%s\n", loopLabel);
+        Expression condition = node.condition;
+        if (condition instanceof ASTAnd) {
+            ASTAnd expr = (ASTAnd) condition;
+            expr.left.jjtAccept(this, data);
+            writer.printf("ifle %s\n", endLabel);
+            expr.right.jjtAccept(this, data);
+            writer.printf("ifle %s\n", endLabel);
+        } else if (condition instanceof ASTNegation) {
+            ASTNegation expr = (ASTNegation) condition;
+            expr.child.jjtAccept(this, data);
+            writer.printf("ifle %s\n", endLabel);
+        } else if (condition instanceof ASTLessThan) {
+            ASTLessThan expr = (ASTLessThan) condition;
+            expr.left.jjtAccept(this, data);
+            expr.right.jjtAccept(this, data);
+
+            //see if variable is less than the other
+            writer.printf("if_icmpge %s\n",  endLabel);
+        } else {
+            node.condition.jjtAccept(this, data);
+            writer.printf("ifeq %s\n", endLabel);
+        }
+        node.body.jjtAccept(this, data);
+        writer.printf("goto %s\n", loopLabel);
+        writer.printf("%s\n", endLabel);
         return null;
     }
 
