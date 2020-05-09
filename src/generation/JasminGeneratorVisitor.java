@@ -113,7 +113,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         params.childrenAccept(this, data);
         writer.printf(")%s\n", getTypeString(node.type));
 
-        writer.printf(".limit stack %d\n", 99);
+        writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(), null));
         writer.printf(".limit locals %d\n", getLocalCount(node));
 
         MethodContext context = new MethodContext(node.getStMethod());
@@ -156,7 +156,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     public Object visit(ASTMainMethod node, Object data) {
         writer.println(".method public static main([Ljava/lang/String;)V");
 
-        writer.printf(".limit stack %d\n", 99);
+        writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(), null));
         writer.printf(".limit locals %d\n", getLocalCount(node));
 
         MethodContext context = new MethodContext(node.getStMethod());
@@ -276,6 +276,9 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTExprStatement node, Object data) {
         node.expression.jjtAccept(this, data);
+        if (!node.expression.type.equals("void")) {
+            writer.printf("pop\n");
+        }
         return null;
     }
 

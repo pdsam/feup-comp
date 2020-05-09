@@ -122,7 +122,7 @@ void VarDeclaration() #Var : {String type; Token identifier;}
     type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER> {jjtThis.identifier = identifier.image;} <SEMICOLON>
 }
 
-void MethodDeclaration() #Method : {String type; Token identifier;}
+void MethodDeclaration() #Method : {String type; Token identifier; Expression expr;}
 {
     <PUBLIC> type=Type() {jjtThis.type = type;} identifier=<IDENTIFIER>
         {jjtThis.identifier = identifier.image;}  <L_PAR> Parameters() <R_PAR>
@@ -131,8 +131,8 @@ void MethodDeclaration() #Method : {String type; Token identifier;}
             LOOKAHEAD(2)
             VarDeclaration()
         )* #VarDeclarationsList(true)
-        (Statement())* #StatementList
-        <RETURN> Expression() #ReturnStatement <SEMICOLON> // A return statement has to be the last thing in a method declaration
+        (Statement())* #StatementList(true)
+        (<RETURN> expr=Expression() {jjtThis.expr = expr;}) #ReturnStatement <SEMICOLON> // A return statement has to be the last thing in a method declaration
     <R_BRACKET>
 }
 
