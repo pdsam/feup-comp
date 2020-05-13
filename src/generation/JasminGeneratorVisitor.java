@@ -211,9 +211,29 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         String elseLabel = labels[0];
         String endifLabel = labels[1];
 
-        node.condition.jjtAccept(this, data);
-        //ifeq makes the jump if the last value on stack is = 0 (= false)
-        writer.printf("ifeq %s\n", elseLabel );
+        Expression condition = node.condition;
+        if (condition instanceof ASTAnd) {
+            ASTAnd expr = (ASTAnd) condition;
+            expr.left.jjtAccept(this, data);
+            writer.printf("ifle %s\n", elseLabel);
+            expr.right.jjtAccept(this, data);
+            writer.printf("ifle %s\n", elseLabel);
+        } else if (condition instanceof ASTNegation) {
+            ASTNegation expr = (ASTNegation) condition;
+            expr.child.jjtAccept(this, data);
+            writer.printf("ifgt %s\n", elseLabel);
+        } else if (condition instanceof ASTLessThan) {
+            ASTLessThan expr = (ASTLessThan) condition;
+            expr.left.jjtAccept(this, data);
+            expr.right.jjtAccept(this, data);
+
+            //see if variable is less than the other
+            writer.printf("if_icmpge %s\n",  elseLabel);
+        } else {
+            node.condition.jjtAccept(this, data);
+            //ifeq makes the jump if the last value on stack is = 0 (= false)
+            writer.printf("ifeq %s\n", elseLabel);
+        }
         node.thenStatement.jjtAccept(this, data);
         writer.printf("goto %s\n", endifLabel);
         writer.printf("%s:\n", elseLabel);
@@ -357,10 +377,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTNegation node, Object data) {
-        node.child.jjtAccept(this, data);
         MethodContext context = (MethodContext) data;
         String successLabel = context.generateLabel();
         String endLabel = context.generateLabel();
+        node.child.jjtAccept(this, data);
         writer.printf("ifgt %s\n", successLabel);
         writer.printf("iconst_1\n");
         writer.printf("goto %s\n", endLabel);
