@@ -1,0 +1,45 @@
+
+import static io.print(int) void;
+
+
+class Palindrome{
+
+    public static void main(String[] args){
+        int result;
+        result = checkIntegerPalindrome(100);
+        io.print(result);
+        result = checkIntegerPalindrome(101);
+        io.print(result);
+        result = checkIntegerPalindrome(500045);
+        io.print(result);
+        result = checkIntegerPalindrome(50005);
+        io.print(result);
+    }
+
+    public static int checkIntegerPalindrome(int number)
+    {
+        int isPalindrome;
+        isPalindrome = 0;
+        if(number == reverse(number))
+        {
+            isPalindrome = 1;
+        }
+        return isPalindrome;
+    }
+
+    public static int reverse(int number)
+    {
+        int reverse;
+        reverse = 0;
+        int remainder;
+        remainder= 0;
+        while (number > 0) {
+            remainder = number % 10;
+            reverse = reverse * 10 + remainder;
+            number = number / 10;
+ 
+        }
+        return reverse;
+    }
+
+}
