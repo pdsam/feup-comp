@@ -40,7 +40,7 @@ class GraphPath {
     /**
     *   Since J-- does not accept access to fields of a class,
     *   this method was necessary to retrieve the value of $foundPath.
-    */
+    **/
     public boolean getFoundPath() {
         return $foundPath;
     }
