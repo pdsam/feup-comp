@@ -295,6 +295,13 @@ public class SemanticVisitor implements MyGrammarVisitor {
         FlowState fstate = new FlowState(st);
 
         node.childrenAccept(this, fstate);
+        // Getting the last child of the method -> the return statement
+        ASTReturnStatement returnStm = (ASTReturnStatement) node.jjtGetChild(node.jjtGetNumChildren() - 1);
+
+        if(!returnStm.expr.type.equals(node.type)) {
+            logError(node, "Returned type '" + returnStm.expr.type + "' does not match method's type '" + node.type + '\'');
+        }
+
         return null;
     }
 
