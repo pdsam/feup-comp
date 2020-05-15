@@ -1,0 +1,99 @@
+import static State.Unvisited; // represented as 0
+import static State.Visited; // represented as 1
+import static State.Visiting; // represented as 2
+import static io.print(boolean);
+import Node;
+import NodeList;
+import Graph;
+import Node.equals(Node) boolean;
+import Node.setState(int) void;
+import Node.inState(int) boolean;
+import Node.getAdjacent() NodeList;
+import NodeList.isEmpty() boolean;
+import NodeList.getFirst() Node;
+import NodeList.removeFirst() Node;
+import NodeList.add(Node);
+import Graph.getNodes() NodeList;
+
+class GraphPath {
+    boolean $foundPath;
+
+    public static void main(String[] args) {
+        GraphPath _gR4ph;
+        Graph _g;
+        Node start;
+        Node end;
+
+        _gR4ph = new GraphPath();
+        _g = new Graph();
+        start = new Node();
+        end = new Node();
+        io.print(_gR4ph.search(_g, start, end));
+
+        if(_gR4ph.getFoundPath()) {
+            io.print(_gR4ph.search(_g, end, start)); // Check if there is a path both ways
+        } else {
+            // Otherwise we do not really care
+        }
+    }
+
+    /**
+    *   Since J-- does not accept access to fields of a class,
+    *   this method was necessary to retrieve the value of $foundPath.
+    */
+    public boolean getFoundPath() {
+        return $foundPath;
+    }
+
+    /*****
+    **
+    **  Searches a path from start to end in a directed graph
+    **
+    *****/
+    public boolean search(Graph g, Node start, Node end) {
+        //This List is actually a LinkedList<Node> and operates as a Queue
+        NodeList q;
+        NodeList _list0;
+        Node u;
+        Node v;
+
+        $foundPath = false;
+        q = new NodeList();
+        _list0 = g.getNodes();
+        this.unvisitAll(_list0);
+
+        start.setState(2);
+        q.add(start);
+
+        while(!q.isEmpty() && !$foundPath) {
+            u = q.removeFirst(); // The list kinda works as a Dequeue
+            _list0 = u.getAdjacent();
+            while(!_list0.isEmpty() && !$foundPath) {
+                v = _list0.removeFirst();
+                if(v.inState(0)){
+                    if(v.equals(end)) {
+                        $foundPath = true;
+                    } else {
+                        v.setState(2);
+                        q.add(v);
+                    }
+                } else {
+                    // It does nothing if variable is being or has been visited
+                }
+            }
+            u.setState(1);
+        }
+
+        return $foundPath;
+    }
+
+    public boolean unvisitAll(NodeList list) {
+        Node n;
+        while(!list.isEmpty()) {
+            n = list.removeFirst();
+            n.setState(0);
+        }
+
+        return true;
+    }
+}
