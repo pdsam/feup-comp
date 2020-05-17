@@ -11,18 +11,18 @@ class If {
         a = 0;
         b = 2;
 
-        varIf.cond(a);
-        varIf.isGreater(a, b);
+        a = varIf.cond(a);
+        b = varIf.isGreater(a, b);
 
         io.println(a);
 
     }
 
     public boolean cond(int val) {
-        return 23;
+        return (val < 0);
     }
 
-    public int isGreater(int val, int val1) {
+    public boolean isGreater(int val, int val1) {
         return (val < val1);
     }
 
