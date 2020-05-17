@@ -4,8 +4,7 @@ public class Main {
 
     public static void main(String[] args)
     {
-
-        //var declaration
+        //var declaration * /
         int start_value;
         int end_value;
         int allowed_error;
@@ -16,7 +15,7 @@ public class Main {
         int[] y2;
         int[] y3;
 
-        /* var attribution */
+        /** var * attribution */
         start_value = 0;
         end_value = 30;
         allowed_error = 4;
@@ -37,7 +36,7 @@ public class Main {
             temp = temp + allowed_error;
         }
 
-        //   System.out.printf("\nX\n");
+        // io.print("\nX\n");
 
         temp = start_value;
 
@@ -49,31 +48,36 @@ public class Main {
 
         count = 0;
         temp = start_value;
-        //  System.out.printf("\n\nY(1)\n");
-        
+
+        //io.print("\n\nY(1)\n");
+
         while(temp <= end_value) {
-             temp = temp + allowed_error, count++
-        //   System.out.print(y1[count]);
+              temp = temp + allowed_error;
+              count++;
+              //io.print(y1[count]);
+
         }
 
-        // System.out.printf("\n\nY(2)\n");
+        //io.print("\n\nY(2)\n");
 
         temp = start_value;
         count = 0;
 
         while (temp <= end_value ) {
-            //  System.out.print(y2[count]);
+
+            //io.print(y2[count]);
             temp = temp + allowed_error;
             count++;
         }
 
-        //System.out.printf("\n\nY(3)\n");
+        //io.print("\n\nY(3)\n");
 
         temp = start_value;
         count = 0;
 
         while ( temp <= end_value ) {
-            //System.out.print(y3[count]);
+
+            //io.print(y3[count]);
             temp = temp + allowed_error;
             count++;
         }
