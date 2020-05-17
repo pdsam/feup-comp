@@ -59,8 +59,7 @@ class GraphPath {
 
         $foundPath = false;
         q = new NodeList();
-        _list0 = g.getNodes();
-        this.unvisitAll(_list0);
+        _list0 = this.unvisitAll(g.getNodes());
 
         start.setState(2);
         q.add(start);
@@ -87,19 +86,19 @@ class GraphPath {
         return $foundPath;
     }
 
-    public boolean unvisitAll(Graph graph) {
+    public NodeList unvisitAll(Graph graph) {
         NodeList list;
         list = graph.getNodes();
         return this.unvisitAll(list);
     }
 
-    public boolean unvisitAll(NodeList list) {
+    public NodeList unvisitAll(NodeList list) {
         Node n;
         while(!list.isEmpty()) {
             n = list.removeFirst();
             n.setState(0);
         }
 
-        return true;
+        return list;
     }
 }
