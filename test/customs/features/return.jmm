@@ -7,9 +7,12 @@ class If {
         int a;
         int b;
 
-        a = 0;
         varIf = new If();
+        a = 0;
+        b = 2;
+
         varIf.cond(a);
+        varIf.isGreater(a, b);
 
         io.println(a);
 
@@ -17,6 +20,10 @@ class If {
 
     public boolean cond(int val) {
         return 23;
+    }
+
+    public int isGreater(int val, int val1) {
+        return (val < val1);
     }
 
 }
