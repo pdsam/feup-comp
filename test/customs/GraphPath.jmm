@@ -40,7 +40,7 @@ class GraphPath {
     /**
     *   Since J-- does not accept access to fields of a class,
     *   this method was necessary to retrieve the value of $foundPath.
-    **/
+    */
     public boolean getFoundPath() {
         return $foundPath;
     }
@@ -85,6 +85,12 @@ class GraphPath {
         }
 
         return $foundPath;
+    }
+
+    public boolean unvisitAll(Graph graph) {
+        NodeList list;
+        list = graph.getNodes();
+        return this.unvisitAll(list);
     }
 
     public boolean unvisitAll(NodeList list) {
