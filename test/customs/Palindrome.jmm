@@ -5,36 +5,58 @@ import static io.print(int) void;
 class Palindrome{
 
     public static void main(String[] args){
+
+        Palindrome palindrome;
         int result;
-        result = checkIntegerPalindrome(100);
+
+        palindrome = new Palindrome();
+        result = palindrome.checkIntegerPalindrome(100);
         io.print(result);
-        result = checkIntegerPalindrome(101);
+        result = palindrome.checkIntegerPalindrome(101);
         io.print(result);
-        result = checkIntegerPalindrome(500045);
+        result = palindrome.checkIntegerPalindrome(500045);
         io.print(result);
-        result = checkIntegerPalindrome(50005);
+        result = palindrome.checkIntegerPalindrome(50005);
         io.print(result);
     }
 
-    public static int checkIntegerPalindrome(int number)
+    public int checkIntegerPalindrome(int number)
     {
+
+        Palindrome palindrome;
         int isPalindrome;
-        isPalindrome = 0;
-        if(number == reverse(number))
-        {
+
+        palindrome = new Palindrome();
+
+         isPalindrome = 1;
+
+        if(number < palindrome.reverse(number)) {
+            isPalindrome = 0;
+        } else {
             isPalindrome = 1;
+        }
+
+        if(palindrome.reverse(number) < number )
+        {
+           isPalindrome = 0;
+        } else {
+
         }
         return isPalindrome;
     }
 
-    public static int reverse(int number)
+    public int reverse(int number)
     {
         int reverse;
-        reverse = 0;
         int remainder;
+        int temp;
+
+        reverse = 0;
         remainder= 0;
-        while (number > 0) {
-            remainder = number % 10;
+
+        while (0 < number) {
+            temp = number / 10;
+            remainder = number - (temp * 10);
             reverse = reverse * 10 + remainder;
             number = number / 10;
  
