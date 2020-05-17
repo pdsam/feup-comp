@@ -1,0 +1,32 @@
+import static io.println(int);
+
+class If {
+
+    public static void main(String[] args){
+        If varIf;
+        int a;
+        int b;
+
+        varIf = new If();
+        if(varIf.cond(a)) {
+            a = 0;
+        } else {
+            a = 0 - 1;
+        }
+
+        b = 4;
+        if(varIf.cond(a)) {
+            a = 3;
+        } else {
+            b = 5;
+        }
+
+        io.println(a);
+        io.println(b);
+    }
+
+    public boolean cond(int val) {
+        return ! ((val - 1) < 0);
+    }
+
+}

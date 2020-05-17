@@ -1,0 +1,11 @@
+import static io.println(int);
+
+class This {
+
+    int a;
+    public static void main(String[] args){
+        a = 0;
+        io.println(a);
+    }
+
+}

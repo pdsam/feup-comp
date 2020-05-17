@@ -1,0 +1,22 @@
+import static io.println(int);
+
+class If {
+
+    public static void main(String[] args){
+        If varIf;
+        int a;
+        int b;
+
+        a = 0;
+        varIf = new If();
+        varIf.cond(a);
+
+        io.println(a);
+
+    }
+
+    public boolean cond(int val) {
+        return 23;
+    }
+
+}
