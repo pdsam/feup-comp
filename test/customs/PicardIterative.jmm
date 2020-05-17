@@ -1,10 +1,10 @@
 import static io.print(int) void;
 
-public class Main {
+class Main {
 
     public static void main(String[] args)
     {
-        //var declaration * /
+        //var declaration * / & %
         int start_value;
         int end_value;
         int allowed_error;
@@ -15,7 +15,7 @@ public class Main {
         int[] y2;
         int[] y3;
 
-        /** var * attribution */
+        /** var * attribution & $ # */
         start_value = 0;
         end_value = 30;
         allowed_error = 4;
@@ -26,13 +26,14 @@ public class Main {
         y2 = new int[30];
         y3 = new int[30];
 
-        while (temp <= end_value) {
+        while (temp < end_value) {
 
             y1[count] = 1 + temp + (temp * temp) / 2;
             y2[count] = 1 + temp + (temp * temp) / 2 + (temp * temp * temp) / 3 + (temp * temp * temp * temp )/ 8;
-            y3[count] = 1 + (temp) + (temp * temp) / 2 + (temp * temp * temp) / 3 + (temp * temp * temp * temp ) / 8 + (temp * temp * temp * temp * temp ) / 15 + (temp * temp * temp * temp * temp * temp) / 48;
+            y3[count] = 1 + (temp) + (temp * temp) / 2 + (temp * temp * temp) / 3 + (temp * temp * temp * temp ) / 8
+                    + (temp * temp * temp * temp * temp ) / 15 + (temp * temp * temp * temp * temp * temp) / 48;
 
-            count++;
+            count = count + 1;
             temp = temp + allowed_error;
         }
 
@@ -40,7 +41,7 @@ public class Main {
 
         temp = start_value;
 
-        while (temp <= end_value) {
+        while (temp < end_value) {
             //prints temp
             io.print(temp);
             temp = temp + allowed_error;
@@ -49,37 +50,40 @@ public class Main {
         count = 0;
         temp = start_value;
 
+        io.print(1);
         //io.print("\n\nY(1)\n");
 
-        while(temp <= end_value) {
+        while(temp < end_value) {
               temp = temp + allowed_error;
-              count++;
-              //io.print(y1[count]);
+              count = count + 1;
+              io.print(y1[count]);
 
         }
 
         //io.print("\n\nY(2)\n");
+        io.print(2);
 
         temp = start_value;
         count = 0;
 
-        while (temp <= end_value ) {
+        while (temp < end_value ) {
 
-            //io.print(y2[count]);
+            io.print(y2[count]);
             temp = temp + allowed_error;
-            count++;
+            count = count + 1;
         }
 
         //io.print("\n\nY(3)\n");
+        io.print(3);
 
         temp = start_value;
         count = 0;
 
-        while ( temp <= end_value ) {
+        while ( temp < end_value ) {
 
-            //io.print(y3[count]);
+            io.print(y3[count]);
             temp = temp + allowed_error;
-            count++;
+            count = count + 1;
         }
 
 
