@@ -1,11 +1,53 @@
+/*  Test: usage of non-static variables in static context
+    This test is supposed to FAIL!!!
+
+    We added a feature to the semantic analysis stage that
+ consists in checking if a field or 'this' is being directly accessed
+ inside a static method. Note that the error shown on the console
+ is quite clear and helps the programmer to easily fix the mistake.
+*/
+
 import static io.println(int);
 
 class This {
-
     int a;
+
     public static void main(String[] args){
-        a = 0;
-        io.println(a);
+        This thisInst;
+        thisInst = new This();
+
+        // main is a static method and
+        // cannot access 'a' directly
+        //a = 0;
+
+        // The same applies to 'this' keyword
+        // we cannot use 'this' in a static context
+        //this.setAPlus2(5);
+
+        // By using 'thisInst' it is all good
+        thisInst.setAPlus2(1);
+
+        // If you comment out lines 21 and 25
+        // and run the code, this will print 3
+        io.println(thisInst.getA());
     }
 
+    public int setAPlus2(int val) {
+        int b;
+
+        // Here both 'this' and 'a' are accessible
+        // since we are no longer in a static context
+        b = this.getVal();
+        a = b + val;
+
+        return a;
+    }
+
+    public int getVal() {
+        return 2;
+    }
+
+    public int getA() {
+        return a;
+    }
 }

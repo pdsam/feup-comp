@@ -1,21 +1,46 @@
-class Encadeado{
+/*  Test: direct access to various ways of getting an array
+    This test is supposed to PASS!!
 
+    During the test we try to access the three ways of getting an array:
+by accessing a variable of type array, by accessing an array returned by
+a method and by accessing a newly constructed array.
+    Although this is support in j-- and is not really an extra, we wanted
+to confirm that this worked and we did allow such cases that are also valid
+in Java.
+*/
+import static io.println(int);
+
+class ArrayAccess{
     public static void main(String[] args){
         int[] a;
         int b;
         int c;
-        Encadeado enc;
-        enc = new Encadeado();
+        ArrayAccess enc;
+        enc = new ArrayAccess();
 
         b = 1;
         c = 2;
         a = enc.getArray();
+        a[0] = 1;
+
+        // Accessing a newly constructed array
         b = new int[1][0] + enc.add(b, c);
+
+        // Accessing an array through a variable
         c = a[0] + enc.add();
+
+        // Accessing an array returned by a method
         c = enc.getArray()[0] + enc.add();
+
+        // The same kind of accesses as above, but this
+        // time getting the length of the arrays
         b = a.length;
         b = new int[10].length;
         b = enc.getArray().length;
+
+        io.println(a[0]); //Prints 1
+        io.println(b);    //Prints 34
+        io.println(c);    //Prints 21
     }
 
     public int add() {
@@ -29,6 +54,7 @@ class Encadeado{
     public int[] getArray(){
         int[] ar;
         ar = new int[34];
+        ar[0] = 20;
         return ar;
     }
 }
