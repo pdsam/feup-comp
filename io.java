@@ -6,4 +6,8 @@ class io {
     public static void println(boolean b) {
         System.out.println(b);
     }
+
+    public static void println(String s) {
+        System.out.println(s);
+    }
 }

@@ -279,12 +279,12 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
-        if (node.arrayRef.type.equals("array")) {
+        if (node.arrayRef.type.equals("int")) {
             node.arrayRef.arrayRef.jjtAccept(this, data);
             node.arrayRef.index.jjtAccept(this, data);
             node.value.jjtAccept(this, data);
             writer.printf("iastore\n");
-        } else if (node.arrayRef.type.equals("String[]")) {
+        } else if (node.arrayRef.type.equals("String")) {
             node.arrayRef.arrayRef.jjtAccept(this, data);
             node.arrayRef.index.jjtAccept(this, data);
             node.value.jjtAccept(this, data);

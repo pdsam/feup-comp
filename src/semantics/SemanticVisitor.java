@@ -468,9 +468,9 @@ public class SemanticVisitor implements MyGrammarVisitor {
     public Object visit(ASTArrayAssignment node, Object data) {
         node.childrenAccept(this, data);
 
-        if(node.arrayRef.type.equals("array") && !node.value.type.equals("int")) {
+        if(node.arrayRef.type.equals("int") && !node.value.type.equals("int")) {
             logError(node,"Types do not match: was expecting 'int' but got '" + node.value.type + '\'');
-        } else if (node.arrayRef.type.equals("String[]") && !node.value.type.equals("String")) {
+        } else if (node.arrayRef.type.equals("String") && !node.value.type.equals("String")) {
             logError(node,"Types do not match: was expecting 'String' but got '" + node.value.type + '\'');
         }
 
@@ -489,9 +489,12 @@ public class SemanticVisitor implements MyGrammarVisitor {
         Expression arr = node.arrayRef;
 
         // Check if the variable is of type int[] or String[] (for main parameter)
-        if(!arr.type.equals("array") && !arr.type.equals("String[]")) {
+        if(arr.type.equals("array"))
+            node.type = "int";
+        else if (arr.type.equals("String[]"))
+            node.type = "String";
+        else
             logError(node, "Access to an expression that is not an array");
-        }
 
         if(!node.index.type.equals("int")) {
             logError(node, "Index expression is not of type int");

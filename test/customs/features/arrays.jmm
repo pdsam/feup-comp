@@ -8,7 +8,9 @@ a method and by accessing a newly constructed array.
 to confirm that this worked and we did allow such cases that are also valid
 in Java.
 */
+import String;
 import static io.println(int);
+import static io.println(String);
 
 class ArrayAccess{
     public static void main(String[] args){
@@ -16,12 +18,13 @@ class ArrayAccess{
         int b;
         int c;
         ArrayAccess enc;
+        String str;
         enc = new ArrayAccess();
 
         b = 1;
         c = 2;
         a = enc.getArray();
-        a[0] = 1;
+        a[1] = 1;
 
         // Accessing a newly constructed array
         b = new int[1][0] + enc.add(b, c);
@@ -38,7 +41,11 @@ class ArrayAccess{
         b = new int[10].length;
         b = enc.getArray().length;
 
-        io.println(a[0]); //Prints 1
+        // Since String is imported, it is also allowed as a valid type!
+        str = args[0];
+
+        io.println(str);
+        io.println(a[1]); //Prints 1
         io.println(b);    //Prints 34
         io.println(c);    //Prints 21
     }
