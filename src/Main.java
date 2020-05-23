@@ -62,10 +62,10 @@ public class Main{
 			System.out.print("\n");
 		}
 
-		semanticAnalysis(root);
+		String filename = semanticAnalysis(root);
 
 		try {
-			File generatedCodeFile = new File("prog.jsm");
+			File generatedCodeFile = new File(filename + ".jsm");
 			if (!generatedCodeFile.exists()) {
 				generatedCodeFile.createNewFile();
 			}
@@ -101,12 +101,14 @@ public class Main{
 		return root;
 	}
 
-	private static void semanticAnalysis(ASTDocument root) throws SemanticException {
+	private static String semanticAnalysis(ASTDocument root) throws SemanticException {
 		SemanticVisitor.numErrors = 0;
-		root.jjtAccept(new SemanticVisitor(), null);
+		String className = (String) root.jjtAccept(new SemanticVisitor(), null);
 
 		if(SemanticVisitor.numErrors > 0) {
 			throw new SemanticException(SemanticVisitor.numErrors + " error(s) were found during semantic analysis. Fix them and try again.");
 		}
+
+		return className;
 	}
 }

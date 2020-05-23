@@ -39,9 +39,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTDocument node, Object data) {
-        node.childrenAccept(this, node.getStDoc());
+        SymbolTableDoc stDoc = node.getStDoc();
+        node.childrenAccept(this, stDoc);
 
-        return null;
+        return stDoc.getClassName();
     }
 
     @Override
