@@ -101,7 +101,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTVar node, Object data) {
         if (data != null) {
-            writer.printf(".field %s/%s %s\n", data, node.identifier, getTypeString(node.type));
+            writer.printf(".field '%s' %s\n", node.identifier, getTypeString(node.type));
         }
         return null;
     }
@@ -248,7 +248,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         String loopLabel = context.generateLabel();
         String endLabel = context.generateLabel();
 
-        writer.printf("%s\n", loopLabel);
+        writer.printf("%s:\n", loopLabel);
         Expression condition = node.condition;
         if (condition instanceof ASTAnd) {
             ASTAnd expr = (ASTAnd) condition;
@@ -273,7 +273,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         }
         node.body.jjtAccept(this, data);
         writer.printf("goto %s\n", loopLabel);
-        writer.printf("%s\n", endLabel);
+        writer.printf("%s:\n", endLabel);
         return null;
     }
 
