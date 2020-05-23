@@ -18,11 +18,11 @@ class This {
 
         // main is a static method and
         // cannot access 'a' directly
-        //a = 0;
+        a = 0;
 
         // The same applies to 'this' keyword
         // we cannot use 'this' in a static context
-        //this.setAPlus2(5);
+        this.setAPlus2(5);
 
         // By using 'thisInst' it is all good
         thisInst.setAPlus2(1);
