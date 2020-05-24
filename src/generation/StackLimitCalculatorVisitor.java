@@ -217,7 +217,7 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
                 }
             }
         }
-        return max;
+        return Integer.max(max, node.jjtGetNumChildren());
     }
 
     private int BinOpSize(BinOpExpression node, Object data) {
