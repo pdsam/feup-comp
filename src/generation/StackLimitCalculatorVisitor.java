@@ -130,17 +130,19 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
     public Object visit(ASTArrayAssignment node, Object data) {
         int indexVal = (int) node.arrayRef.index.jjtAccept(this, data);
         int valueVal = (int) node.value.jjtAccept(this, data);
-        return Integer.max(3, Integer.max(2 + indexVal, 1 + valueVal));
+        return Integer.max(3, Integer.max(1 + indexVal, 2 + valueVal));
     }
 
     @Override
     public Object visit(ASTExprStatement node, Object data) {
-        return Integer.max(0, (int) node.expression.jjtAccept(this, data));
+        return node.expression.jjtAccept(this, data);
     }
 
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
-        return Integer.max(2, 1 + (int) node.index.jjtAccept(this, data));
+        int arrayRefValue = (int) node.arrayRef.jjtAccept(this, data);
+        int indexValue = (int) node.index.jjtAccept(this, data);
+        return Integer.max(2, Integer.max(arrayRefValue, 1+indexValue));
     }
 
     @Override
@@ -194,12 +196,11 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
     public Object visit(ASTFunctionCall node, Object data) {
         int current = 0;
 
-        current = Integer.max(current, (int) node.ownerRef.jjtAccept(this, data));
-
-        current = Integer.max(current, 1 + (int) node.arguments.jjtAccept(this, data));
-
-        if (!node.desc.isStatic()) {
-            current++;
+        if (node.desc.isStatic()) {
+            current = Integer.max(current, (int) node.arguments.jjtAccept(this, data));
+        } else {
+            current = Integer.max(current, (int) node.ownerRef.jjtAccept(this, data));
+            current = Integer.max(current, 1 + (int) node.arguments.jjtAccept(this, data));
         }
 
         return current;
@@ -220,7 +221,7 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
     }
 
     private int BinOpSize(BinOpExpression node, Object data) {
-        return Integer.max(2, 1 + Integer.max((int) node.left.jjtAccept(this, data), (int) node.right.jjtAccept(this, data)));
+        return Integer.max(2, Integer.max((int) node.left.jjtAccept(this, data), 1 + (int) node.right.jjtAccept(this, data)));
     }
 
     @Override
