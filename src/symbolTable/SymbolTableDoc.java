@@ -81,7 +81,18 @@ public class SymbolTableDoc extends SymbolTable {
 
         if(parent != null) return this.parent.method_lookup(id, parameters,className);
 
-        throw new UnknownDeclarationException("Method '" + id + "' not defined.");
+        String errorMessage = "Method '" + id +"(";
+
+        for(int i = 0; i < parameters.size(); i++) {
+            if(i == parameters.size() - 1)
+                errorMessage += parameters.get(i);
+            else
+                errorMessage += parameters.get(i) + ", ";
+        }
+
+        errorMessage += ")' not defined.";
+
+        throw new UnknownDeclarationException(errorMessage);
     }
 
     @Override

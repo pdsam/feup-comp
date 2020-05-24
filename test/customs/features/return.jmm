@@ -1,35 +1,75 @@
-import static io.println(int);
+/*  Test: return type of methods must be the one declared
+    This test is supposed to FAIL!!
 
-class If {
+    It was not part of the checklist for CP2 and we decided to add
+a semantic check that ensures the return type of a method is the one
+supposed.
+*/
+import static io.println(int);
+import static io.println(boolean);
+
+class Return {
+    boolean bol;
 
     public static void main(String[] args){
-        If varIf;
+        Return returnInstance;
         int a;
         int b;
         boolean c;
 
-        varIf = new If();
+        returnInstance = new Return();
         a = 0;
         b = 2;
 
-        a = varIf.cond(a);
-        b = varIf.isGreater(a, b);
-        c = varIf.cond(a, b);
+        c = returnInstance.isGreater(a, b);
 
+        if(returnInstance.setBol(c)) {
+            a = 0-5;
+        } else {
+            a = 5;
+        }
+
+        b = returnInstance.getBol();
+
+        // If you change the return types or the returned values
+        // of the failing methods below, these should print:
+        // 5
+        // 0
+        // false
         io.println(a);
-
+        io.println(b);
+        io.println(c);
     }
 
-    public boolean cond(int val) {
+    // This method should return boolean instead of int
+    // Change the return type to boolean in order to make it work.
+    public int cond(int val) {
         return (val < 0);
     }
 
     public boolean isGreater(int val, int val1) {
-        return (val < val1);
+        return (val1 < val);
     }
 
-    public int cond(int val,  int val1) {
-        return 0;
+    public boolean setBol(boolean b) {
+        bol = b;
+        // getBol returns an int but the method is expecting a boolean value
+        // In order to make it work change the line below to:
+        //return bol;
+        return this.getBol();
+    }
+
+    // This method should return int instead of boolean
+    public int getBol() {
+        return bol;
+        // To fix it you may change the above line to:
+        //int result;
+        //if(bol) {
+        //    result = 1;
+        //} else {
+        //    result = 0;
+        //}
+        //return result;
     }
 
 }

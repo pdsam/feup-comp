@@ -1,3 +1,13 @@
+/*  Test: initialization of variables inside if branches
+    This test is supposed to FAIL if you run our compiler
+    with the -werror option activated!!
+
+    During the test we try to initialize a variable inside an if branch and access it
+inside the corresponding else branch. We also test nested if statements and how they
+deal with already declared variables.
+    Although this is supported in j-- we wanted to show that we have the option to
+produce errors in this cases.
+*/
 import static io.println(int);
 
 class If {
@@ -8,19 +18,35 @@ class If {
         int b;
 
         varIf = new If();
-        if(varIf.cond(a)) {
-            a = 0;
+        b = 1;
+        if(varIf.cond(b)) {
+            // If you uncomment the following line the program will work
+            //a = 3;
+            if(varIf.cond(5)) {
+                a = 2;
+            } else {
+                b = 3;
+            }
         } else {
+            // The following instruction is supposed to fail since a
+            // is not initialized in this scope. Comment it out in order
+            // to run the program
+            b = a;
             a = 0 - 1;
         }
 
-        b = 4;
+        // The following condition will produce an error since a might not have been
+        // initialized! If you uncomment line 14 the condition will not produce an error
         if(varIf.cond(a)) {
-            a = 3;
+            b = 10;
         } else {
             b = 5;
         }
 
+        // If you uncomment line 14 and comment out line 24,
+        // the following instructions should print:
+        // 2
+        // 10
         io.println(a);
         io.println(b);
     }
