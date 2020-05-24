@@ -53,7 +53,7 @@ public class Main{
 	}
 
 	public static void main(String[] args) throws ParseException, SemanticException {
-		if(!parseArgs(args)) return;
+		if(!parseArgs(args)) System.exit(1);
 
 		ASTDocument root = syntacticAnalysis(filename);
 
