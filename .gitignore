@@ -104,6 +104,7 @@ modules.xml
 
 # Package Files #
 *.jsm
+*.j
 *.jar
 *.war
 *.nar

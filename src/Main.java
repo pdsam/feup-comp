@@ -65,7 +65,7 @@ public class Main{
 		String filename = semanticAnalysis(root);
 
 		try {
-			File generatedCodeFile = new File(filename + ".jsm");
+			File generatedCodeFile = new File(filename + ".j");
 			if (!generatedCodeFile.exists()) {
 				generatedCodeFile.createNewFile();
 			}

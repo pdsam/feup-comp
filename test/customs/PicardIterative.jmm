@@ -1,6 +1,6 @@
 import static io.print(int) void;
 
-class Main {
+class PicardIterative {
 
     public static void main(String[] args)
     {
