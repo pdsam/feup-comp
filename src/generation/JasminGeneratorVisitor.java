@@ -221,7 +221,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         } else if (condition instanceof ASTNegation) {
             ASTNegation expr = (ASTNegation) condition;
             expr.child.jjtAccept(this, data);
-            writer.printf("ifgt %s\n", elseLabel);
+            writer.printf("ifne %s\n", elseLabel);
         } else if (condition instanceof ASTLessThan) {
             ASTLessThan expr = (ASTLessThan) condition;
             expr.left.jjtAccept(this, data);
@@ -259,7 +259,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         } else if (condition instanceof ASTNegation) {
             ASTNegation expr = (ASTNegation) condition;
             expr.child.jjtAccept(this, data);
-            writer.printf("ifle %s\n", endLabel);
+            writer.printf("ifne %s\n", endLabel);
         } else if (condition instanceof ASTLessThan) {
             ASTLessThan expr = (ASTLessThan) condition;
             expr.left.jjtAccept(this, data);
