@@ -122,6 +122,7 @@ public class Main{
 
 	private static void controlFlowAnalysis(ASTDocument root) throws AllocationException {
 
+		@SuppressWarnings("unchecked")
 		List<ControlFlowGraph> graphList = (List<ControlFlowGraph>) root.jjtAccept(new ControlFlowVisitor(), null);
 
 
