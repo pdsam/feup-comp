@@ -71,7 +71,7 @@ public class Main{
 			}
 			FileOutputStream out = new FileOutputStream(generatedCodeFile);
 			PrintWriter writer = new PrintWriter(out);
-			JasminGeneratorVisitor generator = new JasminGeneratorVisitor(writer);
+			JasminGeneratorVisitor generator = new JasminGeneratorVisitor(writer, false, false);
 			root.jjtAccept(generator, null);
 			writer.flush();
 			out.close();

@@ -1,7 +1,6 @@
 package generation;
 
 import parser.*;
-import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
 import symbolTable.descriptor.VarType;
 
@@ -9,9 +8,17 @@ import java.io.PrintWriter;
 
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
     private final PrintWriter writer;
+    private boolean optimizeBooleanExpressions;
+    private boolean optimizations;
 
-    public JasminGeneratorVisitor(PrintWriter writer) {
+    public JasminGeneratorVisitor(PrintWriter writer, boolean optimizeBooleanExpressions, boolean optimizations) {
         this.writer = writer;
+        this.optimizeBooleanExpressions = optimizeBooleanExpressions;
+        this.optimizations = optimizations;
+    }
+
+    public PrintWriter getWriter() {
+        return writer;
     }
 
     private String getTypeString(String type) {
@@ -378,13 +385,18 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTNegation node, Object data) {
         MethodContext context = (MethodContext) data;
-        String successLabel = context.generateLabel();
+        String failLabel = context.generateLabel();
         String endLabel = context.generateLabel();
-        node.child.jjtAccept(this, data);
-        writer.printf("ifgt %s\n", successLabel);
+        if (optimizeBooleanExpressions) {
+            BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
+            node.jjtAccept(gen, new BooleanGenerationContext(context, null, failLabel));
+        } else {
+            node.child.jjtAccept(this, data);
+            writer.printf("ifgt %s\n", failLabel);
+        }
         writer.printf("iconst_1\n");
         writer.printf("goto %s\n", endLabel);
-        writer.printf("%s:\n", successLabel);
+        writer.printf("%s:\n", failLabel);
         writer.printf("iconst_0\n");
         writer.printf("%s:\n", endLabel);
         return null;
@@ -422,20 +434,24 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTAnd node, Object data) {
         MethodContext context = (MethodContext) data;
-        String successLabel = context.generateLabel();
         String failLabel = context.generateLabel();
         String endLabel = context.generateLabel();
 
-        node.left.jjtAccept(this, data);
-        writer.printf("ifle %s\n", failLabel);
-        node.right.jjtAccept(this, data);
-        writer.printf("ifgt %s\n", successLabel);
+        if (optimizeBooleanExpressions) {
+            BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
+            node.jjtAccept(gen, new BooleanGenerationContext(context, null, failLabel));
+        } else {
+            node.left.jjtAccept(this, data);
+            writer.printf("ifle %s\n", failLabel);
+            node.right.jjtAccept(this, data);
+            writer.printf("ifle %s\n", failLabel);
+        }
+        writer.printf("iconst_1\n");
+        writer.printf("goto %s\n", endLabel);
         writer.printf("%s:\n", failLabel);
         writer.printf("iconst_0\n");
-        writer.printf("goto %s\n", endLabel);
-        writer.printf("%s:\n", successLabel);
-        writer.printf("iconst_1\n");
         writer.printf("%s:\n", endLabel);
+
         return null;
     }
 
