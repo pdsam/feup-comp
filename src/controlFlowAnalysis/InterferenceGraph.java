@@ -21,8 +21,19 @@ public class InterferenceGraph {
         return nodes.get(varDescriptor.getName());
     }
 
-    public void addEdge(VarDescriptor node1, VarDescriptor node2) {
-        //node1.addEdge(node2);
-        //node2.addEdge(node1);
+    public void addEdge(VarDescriptor varDescriptor1, VarDescriptor varDescriptor2) {
+        VarNode node1 = lookup(varDescriptor1);
+        VarNode node2 = lookup(varDescriptor2);
+
+        if(node1 == null) {
+            node1 =  new VarNode(varDescriptor1);
+        }
+
+        if(node2 == null) {
+            node2 = new VarNode(varDescriptor2);
+        }
+
+        node1.addEdge(node2);
+        node2.addEdge(node1);
     }
 }
