@@ -5,6 +5,7 @@ class TestFlow{
         TestFlow thisClass;
         int result;
 
+        thisClass = new TestFlow();
         result = thisClass.test();
         io.println(result);
     }

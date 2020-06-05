@@ -21,5 +21,18 @@ class ASTReturnStatement extends Statement {
     return
     visitor.visit(this, data);
   }
+
+  @Override
+  public void dump(String prefix) {
+    String pref = prefix + "Return: ";
+    if (children != null) {
+      for (int i = 0; i < children.length; ++i) {
+        SimpleNode n = (SimpleNode)children[i];
+        if (n != null) {
+          n.dump(pref);
+        }
+      }
+    }
+  }
 }
 /* JavaCC - OriginalChecksum=c4e044e89c3c71bb03995a44b8e87ebe (do not edit this line) */

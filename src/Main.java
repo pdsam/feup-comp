@@ -1,4 +1,5 @@
 import controlFlowAnalysis.AllocationException;
+import controlFlowAnalysis.ControlFlowAnalysis;
 import controlFlowAnalysis.ControlFlowVisitor;
 import generation.JasminGeneratorVisitor;
 import parser.ASTDocument;
@@ -29,6 +30,7 @@ public class Main{
 				case "-v":
 					debug = true;
 					SymbolTable.setDebug(true);
+					ControlFlowVisitor.setDebug(true);
 					break;
 
 				case "-werror":
@@ -42,7 +44,6 @@ public class Main{
 					if(args[i].matches("-r=\\d+")){
 						registerAllocation = true;
 						numRegisters = Integer.parseInt(args[i].substring(3));
-						System.out.printf("Detected %d registers\n", numRegisters);
 					}
 					break;
 			}

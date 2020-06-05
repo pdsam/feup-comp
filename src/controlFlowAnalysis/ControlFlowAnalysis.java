@@ -6,23 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ControlFlowAnalysis {
-
-    private static ArrayList<ArrayList<VarDescriptor>> inL = new ArrayList<>();
-    private static ArrayList<ArrayList<VarDescriptor>> outL = new ArrayList<>();
-
     public static void liveness(ControlFlowData controlFlowData) {
-
         List<ControlFlowNode> graph = controlFlowData.getGraph().getNodeSet();
-
-        /* Initialize solutions */
-        //for each node n in CFG
-         for(int j = 0; j < graph.size(); j++) {
-             //in[n] = ∅;
-             inL.add(new ArrayList<>());
-             //out[n] = ∅
-             outL.add(new ArrayList<>());
-         }
-
         boolean end;
 
         do {
@@ -34,77 +19,42 @@ public class ControlFlowAnalysis {
                 ControlFlowNode current_node = graph.get(i);
 
                 //in’[n] = in[n]
-                inL.set(i, new ArrayList<>(current_node.getIn()));
+                List<VarDescriptor> inL = new ArrayList<>(current_node.getIn());
 
                 //out’[n] = out[n]
-                outL.set(i, new ArrayList<>(current_node.getOut()));
+                List<VarDescriptor> outL = new ArrayList<>(current_node.getOut());
 
-                ArrayList<VarDescriptor> successorsIn = new ArrayList<>();
+                List<VarDescriptor> successorsIn = new ArrayList<>();
 
                 //for all successors
-                for(int w = 0; i < current_node.getSuccessors().size(); w++) {
-                    //get position in the arrayList
-                    ControlFlowNode successor = current_node.getSuccessors().get(w);
-
+                for(ControlFlowNode successor : current_node.getSuccessors()) {
                     //out[n] = ∪ in[s]
+                    successorsIn.removeAll(successor.getIn());
                     successorsIn.addAll(successor.getIn());
                 }
 
                 //out[n] = ∪ in[s]
                 current_node.setOut(successorsIn);
 
-
-                //in[n] = use[n] ∪ (out[n] – def[n])
-                ArrayList<VarDescriptor> newSuccessorsIn = new ArrayList<>();
-
-                //add all use
-                newSuccessorsIn.addAll(current_node.getUse());
-
-                ArrayList<VarDescriptor> diff = new ArrayList<>(current_node.getOut());
+                //use[n]
+                ArrayList<VarDescriptor> newSuccessorsIn = new ArrayList<>(current_node.getUse());
 
                 //(out[n] – def[n])
+                ArrayList<VarDescriptor> diff = new ArrayList<>(current_node.getOut());
                 diff.removeAll(current_node.getDef());
 
+                //in[n] = use[n] ∪ (out[n] – def[n])
+                newSuccessorsIn.removeAll(diff);
                 newSuccessorsIn.addAll(diff);
-
                 current_node.setIn(newSuccessorsIn);
 
                //Test for convergence
-                if(!current_node.getIn().equals(inL.get(i)) || !current_node.getOut().equals(inL.get(i))) {
+                if(!current_node.getIn().equals(inL) || !current_node.getOut().equals(outL)) {
                     end = false;
                 }
             }
 
             //until in’[n]=in[n] and out’[n]=out[n] for all n
         } while(!end);
-
-
-        //Todo: delete, for debug only
-        for (ControlFlowNode node : graph) {
-
-            System.out.println("Node " + node.getNode().id + " has " + node.getSuccessors().size() + " successors");
-            System.out.println("Node " + node.getNode().id + " has " + node.getPredecessors().size() + " predecessors");
-
-            System.out.print("In: ");
-            for(VarDescriptor descriptor: node.getIn()) {
-                System.out.print(descriptor.getName());
-            }
-
-            System.out.print("\nOut: ");
-            for(VarDescriptor descriptor: node.getOut()) {
-                System.out.print(descriptor.getName());
-            }
-
-            System.out.print("\nUse: ");
-            for(VarDescriptor descriptor: node.getUse()) {
-                System.out.print(descriptor.getName());
-            }
-
-            System.out.print("\nDef: ");
-            for(VarDescriptor descriptor: node.getDef()) {
-                System.out.print(descriptor.getName());
-            }
-
-        }
     }
 }

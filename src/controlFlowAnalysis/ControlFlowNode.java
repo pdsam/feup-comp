@@ -11,29 +11,29 @@ public class ControlFlowNode {
     private List<ControlFlowNode> predecessors = new ArrayList<>();
 
     private SimpleNode node;
-    private ArrayList<VarDescriptor> in = new ArrayList<>();
-    private ArrayList<VarDescriptor> out = new ArrayList<>();
-    private ArrayList<VarDescriptor> def = new ArrayList<>();
-    private ArrayList<VarDescriptor> use = new ArrayList<>();
+    private List<VarDescriptor> in = new ArrayList<>();
+    private List<VarDescriptor> out = new ArrayList<>();
+    private List<VarDescriptor> def = new ArrayList<>();
+    private List<VarDescriptor> use = new ArrayList<>();
 
 
-    public ArrayList<VarDescriptor> getIn() {
+    public List<VarDescriptor> getIn() {
         return in;
     }
 
-    public void setIn(ArrayList<VarDescriptor> in) {
+    public void setIn(List<VarDescriptor> in) {
         this.in = in;
     }
 
-    public ArrayList<VarDescriptor> getOut() {
+    public List<VarDescriptor> getOut() {
         return out;
     }
 
-    public void setOut(ArrayList<VarDescriptor> out) {
+    public void setOut(List<VarDescriptor> out) {
         this.out = out;
     }
 
-    public ArrayList<VarDescriptor> getDef() {
+    public List<VarDescriptor> getDef() {
         return def;
     }
 
@@ -47,20 +47,12 @@ public class ControlFlowNode {
             this.use.add(use);
     }
 
-    public ArrayList<VarDescriptor> getUse() {
+    public List<VarDescriptor> getUse() {
         return use;
-    }
-
-    public void setUse(ArrayList<VarDescriptor> use) {
-        this.use = use;
     }
 
     public List<ControlFlowNode> getSuccessors() {
         return successors;
-    }
-
-    public List<ControlFlowNode> getPredecessors() {
-        return predecessors;
     }
 
     public void addSuccessor(ControlFlowNode succ) {
@@ -81,5 +73,43 @@ public class ControlFlowNode {
 
     public void setNode(SimpleNode node) {
         this.node = node;
+    }
+
+    @Override
+    public String toString() {
+        String msg = "";
+        msg += "Line " + node.line + " has " + successors.size() + " successors and " + predecessors.size() + " predecessors\n";
+
+        msg+= "\tPred: ";
+        for(ControlFlowNode descriptor: predecessors) {
+            msg+= descriptor.getNode().line + "; ";
+        }
+
+        msg+= "\n\tSucc: ";
+        for(ControlFlowNode descriptor: successors) {
+            msg+= descriptor.getNode().line + "; ";
+        }
+
+        msg+= "\n\tIn: ";
+        for(VarDescriptor descriptor: in) {
+            msg+= descriptor.getName() + "; ";
+        }
+
+        msg+= "\n\tOut: ";
+        for(VarDescriptor descriptor: out) {
+            msg+= descriptor.getName() + "; ";
+        }
+
+        msg+= "\n\tUse: ";
+        for(VarDescriptor descriptor: use) {
+            msg+= descriptor.getName() + "; ";
+        }
+
+        msg+= "\n\tDef: ";
+        for(VarDescriptor descriptor: def) {
+            msg+= descriptor.getName() + "; ";
+        }
+
+        return msg;
     }
 }

@@ -3,10 +3,21 @@ package controlFlowAnalysis;
 import parser.*;
 import symbolTable.SymbolTable;
 import symbolTable.descriptor.VarDescriptor;
+import symbolTable.descriptor.VarType;
 import symbolTable.exception.SemanticException;
 
 public class ControlFlowVisitor implements MyGrammarVisitor {
+    private static boolean debug = false;
     private int maxRegisters = 0;
+
+    public static void setDebug(boolean flag) {
+        debug = flag;
+    }
+
+    private void printGraph(String name, ControlFlowGraph graph) {
+        System.out.println("In method " + name + ": ");
+        System.out.println(graph.toString());
+    }
 
     @Override
     public Object visit(SimpleNode node, Object data) {
@@ -63,12 +74,31 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     public Object visit(ASTMethod node, Object data) {
         SymbolTable st = node.getStMethod();
         ControlFlowData cfdata = new ControlFlowData(st);
+        ControlFlowNode lastStatementNode = null;
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
-        node.childrenAccept(this, cfdata);
+        for(int i = 0; i < node.jjtGetNumChildren(); i++) {
+            Node child = node.jjtGetChild(i);
+            child.jjtAccept(this, cfdata);
+
+            //If there is a StatementList, then we save the last statement node
+            //in order to register the ReturnStatement as its successor
+            if(child instanceof ASTStatementList) {
+                Statement lastStatement = (Statement) child.jjtGetChild(child.jjtGetNumChildren() - 1);
+                lastStatementNode = lastStatement.cfNode;
+            }
+        }
+
+        //If there was a StatementList, then we register the last statement as the
+        //Return's predecessor
+        if(lastStatementNode != null)
+            cfdata.getGraph().addSuccessor(lastStatementNode, cfdata.getNode());
 
         //Afterwards, we can run the Liveness algorithm
         ControlFlowAnalysis.liveness(cfdata);
+
+        if(debug)
+            printGraph(node.identifier, cfdata.getGraph());
 
         return null;
     }
@@ -83,6 +113,9 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //Afterwards, we can run the Liveness algorithm
         ControlFlowAnalysis.liveness(cfdata);
+
+        if(debug)
+            printGraph(node.identifier, cfdata.getGraph());
 
         return null;
     }
@@ -123,6 +156,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     public Object visit(ASTReturnStatement node, Object data) {
         ControlFlowData cfdata = (ControlFlowData) data;
         ControlFlowNode thisNode = new ControlFlowNode();
+        thisNode.setNode(node);
         cfdata.setNode(thisNode);
 
         //This will fill use[] and def[] properties of this node
@@ -138,6 +172,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         ControlFlowData cfdata = (ControlFlowData) data;
         ControlFlowGraph cfg = cfdata.getGraph();
         ControlFlowNode thisNode = new ControlFlowNode();
+        thisNode.setNode(node);
         cfdata.setNode(thisNode);
 
         //This will fill use[] and def[] properties of this node
@@ -148,12 +183,23 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //These will create the successors nodes
         node.thenStatement.jjtAccept(this, cfdata);
-        ControlFlowNode thenNode = cfdata.getNode();
         node.elseStatement.jjtAccept(this, cfdata);
-        ControlFlowNode elseNode = cfdata.getNode();
 
-        cfg.addSuccessor(thisNode, thenNode);
-        cfg.addSuccessor(thisNode, elseNode);
+        //This node has the first statement of the thenStatement and the elseStatement as its successors
+        //The first statement may either be the first on a ScopedStatementList
+        //or the only Statement in the each statement branch
+        Statement thenStmt;
+        Statement elseStmt;
+        if(node.thenStatement instanceof ASTScopedStatementList) {
+            thenStmt = (Statement) node.thenStatement.jjtGetChild(0);
+            elseStmt = (Statement) node.elseStatement.jjtGetChild(0);
+        } else {
+            thenStmt = node.thenStatement;
+            elseStmt = node.elseStatement;
+        }
+
+        cfg.addSuccessor(thisNode, thenStmt.cfNode);
+        cfg.addSuccessor(thisNode, elseStmt.cfNode);
 
         return null;
     }
@@ -163,6 +209,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         ControlFlowData cfdata = (ControlFlowData) data;
         ControlFlowGraph cfg = cfdata.getGraph();
         ControlFlowNode thisNode = new ControlFlowNode();
+        thisNode.setNode(node);
         cfdata.setNode(thisNode);
 
         //This will fill use[] and def[] properties of this node
@@ -173,7 +220,21 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //This will create the successor node
         node.body.jjtAccept(this, cfdata);
-        cfg.addSuccessor(thisNode, cfdata.getNode());
+        //After the above line runs, the node that remains in CFData is the last
+        //body statement node, which must jump to the while() statement (thisNode)
+        ControlFlowNode lastBodyNode = cfdata.getNode();
+        cfg.addSuccessor(lastBodyNode, thisNode);
+
+        //This node has the first statement of the body as its successor
+        //The first statement may either be the first on a ScopedStatementList
+        //or the only Statement in the body
+        Statement bodyStmt;
+        if(node.body instanceof ASTScopedStatementList) {
+            bodyStmt = (Statement) node.body.jjtGetChild(0);
+        } else {
+            bodyStmt = node.body;
+        }
+        cfg.addSuccessor(thisNode, bodyStmt.cfNode);
 
         return null;
     }
@@ -182,6 +243,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     public Object visit(ASTExprStatement node, Object data) {
         ControlFlowData cfdata = (ControlFlowData) data;
         ControlFlowNode thisNode = new ControlFlowNode();
+        thisNode.setNode(node);
         cfdata.setNode(thisNode);
 
         //This will fill use[] and def[] properties of this node
@@ -208,6 +270,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         ControlFlowData cfdata = (ControlFlowData) data;
         ControlFlowGraph cfg = cfdata.getGraph();
         ControlFlowNode thisNode = new ControlFlowNode();
+        thisNode.setNode(node);
         cfdata.setNode(thisNode);
 
         //This will fill def[] properties of this node
@@ -226,6 +289,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         ControlFlowData cfdata = (ControlFlowData) data;
         ControlFlowGraph cfg = cfdata.getGraph();
         ControlFlowNode thisNode = new ControlFlowNode();
+        thisNode.setNode(node);
         cfdata.setNode(thisNode);
 
         //This will fill def[] properties of this node
@@ -244,7 +308,11 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         try {
             VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(varName);
-            thisNode.addUse(varDescriptor);
+            //We are only interested in variables that are allocated to registers inside
+            //the current method (i.e. Locals and Parameters)
+            if(varDescriptor.getVarType() == VarType.LOCAL ||
+                varDescriptor.getVarType() == VarType.PARAMETER)
+                thisNode.addUse(varDescriptor);
         } catch (SemanticException e) {
             e.printStackTrace();
         }

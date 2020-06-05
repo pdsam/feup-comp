@@ -26,4 +26,15 @@ public class ControlFlowGraph {
         current.addSuccessor(succ);
         succ.addPredecessor(current);
     }
+
+    @Override
+    public String toString() {
+        String msg = "Graph: \n";
+
+        for(ControlFlowNode node : nodeSet){
+            msg += node.toString() + '\n';
+        }
+
+        return msg;
+    }
 }
