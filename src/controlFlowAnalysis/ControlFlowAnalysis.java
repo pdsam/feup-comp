@@ -44,10 +44,10 @@ public class ControlFlowAnalysis {
                 //for all successors
                 for(int w = 0; i < current_node.getSuccessors().size(); w++) {
                     //get position in the arrayList
-                    ControlFlowNode node = current_node.getSuccessors().get(w);
+                    ControlFlowNode successor = current_node.getSuccessors().get(w);
 
                     //out[n] = ∪ in[s]
-                    successorsIn.addAll(node.getIn());
+                    successorsIn.addAll(successor.getIn());
                 }
 
                 //out[n] = ∪ in[s]
@@ -77,5 +77,24 @@ public class ControlFlowAnalysis {
 
             //until in’[n]=in[n] and out’[n]=out[n] for all n
         } while(!end);
+
+
+        //Todo: delete, for debug only
+        for (ControlFlowNode node : graph) {
+
+            System.out.print("In: ");
+            for(VarDescriptor descriptor: node.getIn()) {
+                System.out.print(descriptor.getName());
+            }
+
+            System.out.print("Out: ");
+            for(VarDescriptor descriptor: node.getOut()) {
+                System.out.print(descriptor.getName());
+            }
+
+            System.out.println("Node has " + node.getSuccessors().size() + " successors");
+            System.out.println("Node has " + node.getSuccessors().size() + " predecessors");
+
+        }
     }
 }
