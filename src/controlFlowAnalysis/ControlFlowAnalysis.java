@@ -3,6 +3,7 @@ package controlFlowAnalysis;
 import symbolTable.descriptor.VarDescriptor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ControlFlowAnalysis {
 
@@ -10,47 +11,67 @@ public class ControlFlowAnalysis {
     private ArrayList<ArrayList<VarDescriptor>> outL = new ArrayList<>();
 
     public void algorithm(ArrayList<ControlFlowNode> graph) {
-        
+
+        /* Initialize solutions */
         //for each node n in CFG
          for(int j = 0; j < graph.size(); j++) {
              //in[n] = ∅;
-             graph.get(j).setIn(new ArrayList<>());
+             inL.add(new ArrayList<>());
              //out[n] = ∅
-             graph.get(j).setOut(new ArrayList<>());
+             outL.add(new ArrayList<>());
          }
-/*
-        boolean end = false;
+
+        boolean end;
 
         do {
+            end = true;
+
             //for each node n in CFG in reverse topsort order
             for(int i = graph.size() - 1; i >= 0; i--) {
 
-
                 //in’[n] = in[n]
-                graph.get(i).setInL(new ArrayList<>(graph.get(i).getIn()));
+                inL.set(i, new ArrayList<>(graph.get(i).getIn()));
 
                 //out’[n] = out[n]
-                graph.get(i).setOutL(new ArrayList<>(graph.get(i).getOut()));
+                outL.set(i, new ArrayList<>(graph.get(i).getOut()));
+
+                ArrayList<VarDescriptor> successorsIn = new ArrayList<>();
+
+                //for all successors
+                for(int w = 0; i < graph.get(i).getSuccessors().size(); w++) {
+                    //get position in the arrayList
+                    ControlFlowNode node = graph.get(i).getSuccessors().get(w);
+
+                    //out[n] = ∪ in[s]
+                    successorsIn.addAll(node.getIn());
+                }
 
                 //out[n] = ∪ in[s]
+                graph.get(i).setOut(successorsIn);
+
+
                 //in[n] = use[n] ∪ (out[n] – def[n])
-            }
+                ArrayList<VarDescriptor> newSuccessorsIn = new ArrayList<>();
 
-            end = true;
+                //add all use
+                newSuccessorsIn.addAll(graph.get(i).getUse());
 
-            //until in’[n]=in[n] and out’[n]=out[n] for all n
-            for(int j = 0; j < graph.size(); j++) {
-                Collections.sort(graph.get(j).getIn());
-                Collections.sort(graph.get(j).getInL());
-                Collections.sort(graph.get(j).getOut());
-                Collections.sort(graph.get(j).getOutL());
+                ArrayList<VarDescriptor> diff = new ArrayList<>(graph.get(i).getOut());
 
-                if(!graph.get(j).getIn().equals(graph.get(j).getInL()) || !graph.get(j).getOut().equals(graph.get(j).getOutL())) {
+                //(out[n] – def[n])
+                diff.removeAll(graph.get(i).getDef());
+
+                newSuccessorsIn.addAll(diff);
+
+                graph.get(i).setIn(newSuccessorsIn);
+
+               //Test for convergence
+                if(!graph.get(i).getIn().equals(inL.get(i)) || !graph.get(i).getOut().equals(inL.get(i))) {
                     end = false;
                 }
             }
 
+            //until in’[n]=in[n] and out’[n]=out[n] for all n
         } while(!end);
-*/
     }
 }
