@@ -4,8 +4,12 @@ import parser.SimpleNode;
 import symbolTable.descriptor.VarDescriptor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ControlFlowNode {
+    private List<ControlFlowNode> successors;
+    private List<ControlFlowNode> predecessors;
+
     private SimpleNode node;
     private ArrayList<VarDescriptor> in = new ArrayList<>();
     private ArrayList<VarDescriptor> out = new ArrayList<>();
@@ -43,5 +47,21 @@ public class ControlFlowNode {
 
     public void setUse(ArrayList<VarDescriptor> use) {
         this.use = use;
+    }
+
+    public List<ControlFlowNode> getSuccessors() {
+        return successors;
+    }
+
+    public List<ControlFlowNode> getPredecessors() {
+        return predecessors;
+    }
+
+    public void addSuccessor(ControlFlowNode succ) {
+        successors.add(succ);
+    }
+
+    public void addPredecessor(ControlFlowNode pred) {
+        predecessors.add(pred);
     }
 }
