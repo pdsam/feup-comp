@@ -72,68 +72,76 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    public Object visit(ASTStatementList node, Object data) {
-        node.childrenAccept(this, data);
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTReturnStatement node, Object data) {
-        //TODO: this is a statement
-        return null;
-    }
-
-    @Override
     public Object visit(ASTMainMethod node, Object data) {
-        //TODO: Method
+        SymbolTable st = node.getStMethod();
+        ControlFlowData cfdata = new ControlFlowData(st);
+
+        //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
+        node.childrenAccept(this, cfdata);
+
+        //Afterwards, we can run the Liveness algorithm
+        //TODO: insert algorithm
+
         return null;
     }
 
     @Override
-    public Object visit(ASTParameter node, Object data) {
-        //TODO: def var
-
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTParameterList node, Object data) {
-        //TODO: this is a statement
+    public Object visit(ASTStatementList node, Object data) {
+        //TODO: add successors
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTScopedStatementList node, Object data) {
+        //TODO: add successors
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
-    public Object visit(ASTAssignment node, Object data) {
-        //TODO: def var
+    public Object visit(ASTReturnStatement node, Object data) {
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
+
+        //This will fill use[] and def[] properties of this node
+        node.childrenAccept(this, cfdata);
+        return null;
+    }
+
+
+    @Override
+    public Object visit(ASTParameterList node, Object data) {
+        //TODO: check later if we can optimize parameters alocation
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTBranch node, Object data) {
-        //TODO: statement
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
 
-        node.childrenAccept(this, data);
+        //This will fill use[] and def[] properties of this node
+        node.condition.jjtAccept(this, cfdata);
+
+        //These will create the successors nodes
+        node.thenStatement.jjtAccept(this, cfdata);
+        ControlFlowNode thenNode = cfdata.getNode();
+        node.elseStatement.jjtAccept(this, cfdata);
+        ControlFlowNode elseNode = cfdata.getNode();
+
+        cfg.addSuccessor(thisNode, thenNode);
+        cfg.addSuccessor(thisNode, elseNode);
+
         return null;
     }
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
-        //TODO: statement
-
-        node.childrenAccept(this, data);
-        return null;
-    }
-
-    @Override
-    public Object visit(ASTArrayAssignment node, Object data) {
         //TODO: statement
 
         node.childrenAccept(this, data);
@@ -149,20 +157,32 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    public Object visit(ASTArrayAccess node, Object data) {
-        //TODO: use var
+    public Object visit(ASTArrayAssignment node, Object data) {
+        //TODO: statement && def var
 
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
-    public Object visit(ASTIntegerLiteral node, Object data) {
+    public Object visit(ASTAssignment node, Object data) {
+        //TODO: statement & def var
+        node.childrenAccept(this, data);
         return null;
     }
 
     @Override
-    public Object visit(ASTBooleanLiteral node, Object data) {
+    public Object visit(ASTParameter node, Object data) {
+        //TODO: def var
+
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTArrayAccess node, Object data) {
+        //TODO: use var
+
+        node.childrenAccept(this, data);
         return null;
     }
 
@@ -174,7 +194,17 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
-        //TODO: user var
+        //TODO: check later if we can optimize 'this' alocation
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTIntegerLiteral node, Object data) {
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTBooleanLiteral node, Object data) {
         return null;
     }
 
