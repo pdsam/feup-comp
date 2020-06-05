@@ -5,7 +5,11 @@ import java.util.Collections;
 
 public class DataFlowAnalysis {
 
+    
+
     public void algorithm(ArrayList<DataFlowNode> graph) {
+
+
 
         //for each node n in CFG
          for(int j = 0; j < graph.size(); j++) {
