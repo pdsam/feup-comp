@@ -2,8 +2,6 @@ package controlFlowAnalysis;
 
 import parser.*;
 import symbolTable.SymbolTable;
-import symbolTable.SymbolTableDoc;
-import symbolTable.SymbolTableMethod;
 import symbolTable.descriptor.VarDescriptor;
 import symbolTable.exception.SemanticException;
 
@@ -68,8 +66,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         node.childrenAccept(this, cfdata);
 
         //Afterwards, we can run the Liveness algorithm
-        //run algorithm
-        ControlFlowAnalysis.algorithm(cfdata);
+        ControlFlowAnalysis.liveness(cfdata);
 
         return null;
     }
@@ -83,22 +80,40 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         node.childrenAccept(this, cfdata);
 
         //Afterwards, we can run the Liveness algorithm
-        //TODO: insert algorithm
+        ControlFlowAnalysis.liveness(cfdata);
 
         return null;
     }
 
     @Override
     public Object visit(ASTStatementList node, Object data) {
-        //TODO: add successors
         node.childrenAccept(this, data);
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+
+        for (int i = 0; i < node.jjtGetNumChildren() - 1; i++) {
+            Statement current = (Statement) node.jjtGetChild(i);
+            Statement next = (Statement) node.jjtGetChild(i+1);
+
+            cfg.addSuccessor(current.cfNode, next.cfNode);
+        }
+
         return null;
     }
 
     @Override
     public Object visit(ASTScopedStatementList node, Object data) {
-        //TODO: add successors
         node.childrenAccept(this, data);
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+
+        for (int i = 0; i < node.jjtGetNumChildren() - 1; i++) {
+            Statement current = (Statement) node.jjtGetChild(i);
+            Statement next = (Statement) node.jjtGetChild(i+1);
+
+            cfg.addSuccessor(current.cfNode, next.cfNode);
+        }
+
         return null;
     }
 
@@ -110,6 +125,9 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //This will fill use[] and def[] properties of this node
         node.childrenAccept(this, cfdata);
+        //Adding the constructed node to the graph
+        cfdata.getGraph().addNode(thisNode);
+        node.cfNode = thisNode;
         return null;
     }
 
@@ -122,6 +140,9 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //This will fill use[] and def[] properties of this node
         node.condition.jjtAccept(this, cfdata);
+        //Adding the constructed node to the graph
+        cfg.addNode(thisNode);
+        node.cfNode = thisNode;
 
         //These will create the successors nodes
         node.thenStatement.jjtAccept(this, cfdata);
@@ -137,17 +158,35 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
-        //TODO: statement
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
 
-        node.childrenAccept(this, data);
+        //This will fill use[] and def[] properties of this node
+        node.condition.jjtAccept(this, cfdata);
+        //Adding the constructed node to the graph
+        cfg.addNode(thisNode);
+        node.cfNode = thisNode;
+
+        //This will create the successor node
+        node.body.jjtAccept(this, cfdata);
+        cfg.addSuccessor(thisNode, cfdata.getNode());
+
         return null;
     }
 
     @Override
     public Object visit(ASTExprStatement node, Object data) {
-        //TODO: statement
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
 
+        //This will fill use[] and def[] properties of this node
         node.childrenAccept(this, data);
+        //Adding the constructed node to the graph
+        cfdata.getGraph().addNode(thisNode);
+        node.cfNode = thisNode;
         return null;
     }
 
@@ -164,16 +203,37 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
-        //TODO: statement && def var
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
 
-        node.childrenAccept(this, data);
+        //This will fill def[] properties of this node
+        ASTVarReference var = (ASTVarReference) node.arrayRef.arrayRef;
+        varDef(var.identifier, cfdata);
+        //This will fill use[] properties of this node
+        node.value.jjtAccept(this, cfdata);
+        //Adding the constructed node to the graph
+        cfg.addNode(thisNode);
+        node.cfNode = thisNode;
         return null;
     }
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        //TODO: statement & def var
-        node.childrenAccept(this, data);
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
+
+        //This will fill def[] properties of this node
+        ASTVarReference var = (ASTVarReference) node.varReference;
+        varDef(var.identifier, cfdata);
+        //This will fill use[] properties of this node
+        node.value.jjtAccept(this, cfdata);
+        //Adding the constructed node to the graph
+        cfg.addNode(thisNode);
+        node.cfNode = thisNode;
         return null;
     }
 

@@ -481,6 +481,10 @@ public class SemanticVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTExprStatement node, Object data) {
         node.childrenAccept(this, data);
+
+        if(!(node.expression instanceof ASTFunctionCall || node.expression instanceof ASTConstructorCall))
+            logError(node, "Not a statement");
+
         return null;
     }
 

@@ -3,7 +3,7 @@
 package parser;
 
 public
-class ASTReturnStatement extends SimpleNode {
+class ASTReturnStatement extends Statement {
   public Expression expr;
 
   public ASTReturnStatement(int id) {

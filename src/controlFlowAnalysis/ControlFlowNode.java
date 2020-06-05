@@ -38,11 +38,13 @@ public class ControlFlowNode {
     }
 
     public void addDef(VarDescriptor def) {
-        this.def.add(def);
+        if(!this.def.contains(def))
+            this.def.add(def);
     }
 
     public void addUse(VarDescriptor use) {
-        this.use.add(use);
+        if(!this.use.contains(use))
+            this.use.add(use);
     }
 
     public ArrayList<VarDescriptor> getUse() {
@@ -62,10 +64,12 @@ public class ControlFlowNode {
     }
 
     public void addSuccessor(ControlFlowNode succ) {
-        successors.add(succ);
+        if(!this.successors.contains(succ))
+            successors.add(succ);
     }
 
     public void addPredecessor(ControlFlowNode pred) {
-        predecessors.add(pred);
+        if(!this.predecessors.contains(pred))
+            predecessors.add(pred);
     }
 }

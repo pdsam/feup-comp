@@ -10,7 +10,7 @@ public class ControlFlowAnalysis {
     private static ArrayList<ArrayList<VarDescriptor>> inL = new ArrayList<>();
     private static ArrayList<ArrayList<VarDescriptor>> outL = new ArrayList<>();
 
-    public static void algorithm(ControlFlowData controlFlowData) {
+    public static void liveness(ControlFlowData controlFlowData) {
 
         List<ControlFlowNode> graph = controlFlowData.getGraph().getNodeSet();
 

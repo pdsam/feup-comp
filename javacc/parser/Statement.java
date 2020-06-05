@@ -1,6 +1,10 @@
 package parser;
 
+import controlFlowAnalysis.ControlFlowNode;
+
 public class Statement extends SimpleNode {
+    public ControlFlowNode cfNode;
+
     public Statement(int id) {
         super(id);
     }
