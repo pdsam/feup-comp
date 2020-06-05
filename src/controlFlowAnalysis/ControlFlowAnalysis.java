@@ -82,18 +82,28 @@ public class ControlFlowAnalysis {
         //Todo: delete, for debug only
         for (ControlFlowNode node : graph) {
 
+            System.out.println("Node " + node.getNode().id + " has " + node.getSuccessors().size() + " successors");
+            System.out.println("Node " + node.getNode().id + " has " + node.getPredecessors().size() + " predecessors");
+
             System.out.print("In: ");
             for(VarDescriptor descriptor: node.getIn()) {
                 System.out.print(descriptor.getName());
             }
 
-            System.out.print("Out: ");
+            System.out.print("\nOut: ");
             for(VarDescriptor descriptor: node.getOut()) {
                 System.out.print(descriptor.getName());
             }
 
-            System.out.println("Node has " + node.getSuccessors().size() + " successors");
-            System.out.println("Node has " + node.getSuccessors().size() + " predecessors");
+            System.out.print("\nUse: ");
+            for(VarDescriptor descriptor: node.getUse()) {
+                System.out.print(descriptor.getName());
+            }
+
+            System.out.print("\nDef: ");
+            for(VarDescriptor descriptor: node.getDef()) {
+                System.out.print(descriptor.getName());
+            }
 
         }
     }

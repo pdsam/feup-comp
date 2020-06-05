@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ControlFlowNode {
-    private List<ControlFlowNode> successors;
-    private List<ControlFlowNode> predecessors;
+    private List<ControlFlowNode> successors = new ArrayList<>();
+    private List<ControlFlowNode> predecessors = new ArrayList<>();
 
     private SimpleNode node;
     private ArrayList<VarDescriptor> in = new ArrayList<>();
@@ -64,12 +64,22 @@ public class ControlFlowNode {
     }
 
     public void addSuccessor(ControlFlowNode succ) {
+        //check if suc is not on the list
         if(!this.successors.contains(succ))
             successors.add(succ);
     }
 
     public void addPredecessor(ControlFlowNode pred) {
+        //check if pred is not on the list
         if(!this.predecessors.contains(pred))
             predecessors.add(pred);
+    }
+
+    public SimpleNode getNode() {
+        return node;
+    }
+
+    public void setNode(SimpleNode node) {
+        this.node = node;
     }
 }
