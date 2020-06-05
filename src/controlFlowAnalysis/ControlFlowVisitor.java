@@ -6,6 +6,8 @@ import symbolTable.descriptor.VarDescriptor;
 import symbolTable.exception.SemanticException;
 
 public class ControlFlowVisitor implements MyGrammarVisitor {
+    private int maxRegisters = 0;
+
     @Override
     public Object visit(SimpleNode node, Object data) {
         return null;
@@ -15,7 +17,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     public Object visit(ASTDocument node, Object data) {
         node.childrenAccept(this, data);
 
-        return null;
+        return maxRegisters;
     }
 
     @Override

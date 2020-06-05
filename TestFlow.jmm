@@ -1,0 +1,26 @@
+import static io.println(int);
+
+class TestFlow{
+    public static void main(String[] args){
+        TestFlow thisClass;
+        int result;
+
+        result = thisClass.test();
+        io.println(result);
+    }
+
+    public int test() {
+        int a;
+        int b;
+        int c;
+        c=0;
+        a=0;
+        while(a < 10) {
+            b = a+1;
+            c = c+b;
+            a = b*2;
+        }
+
+        return c;
+    }
+}
