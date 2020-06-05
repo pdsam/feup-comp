@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ControlFlowGraph {
-    private List<ControlFlowNode> nodeSet;
+    private ArrayList<ControlFlowNode> nodeSet;
 
     public ControlFlowGraph() {
         this(new ArrayList<>());
     }
 
-    public ControlFlowGraph(List<ControlFlowNode> nodeSet) {
+    public ControlFlowGraph(ArrayList<ControlFlowNode> nodeSet) {
         this.nodeSet = nodeSet;
     }
 
-    public List<ControlFlowNode> getNodeSet() {
+    public ArrayList<ControlFlowNode> getNodeSet() {
         return nodeSet;
     }
 

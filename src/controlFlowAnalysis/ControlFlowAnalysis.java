@@ -3,14 +3,15 @@ package controlFlowAnalysis;
 import symbolTable.descriptor.VarDescriptor;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ControlFlowAnalysis {
 
-    private ArrayList<ArrayList<VarDescriptor>> inL = new ArrayList<>();
-    private ArrayList<ArrayList<VarDescriptor>> outL = new ArrayList<>();
+    private static ArrayList<ArrayList<VarDescriptor>> inL = new ArrayList<>();
+    private static ArrayList<ArrayList<VarDescriptor>> outL = new ArrayList<>();
 
-    public void algorithm(ArrayList<ControlFlowNode> graph) {
+    public static void algorithm(ControlFlowData controlFlowData) {
+
+        ArrayList<ControlFlowNode> graph = controlFlowData.getGraph().getNodeSet();
 
         /* Initialize solutions */
         //for each node n in CFG

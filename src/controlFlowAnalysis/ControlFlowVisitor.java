@@ -4,6 +4,8 @@ import parser.*;
 import symbolTable.SymbolTable;
 import symbolTable.SymbolTableDoc;
 import symbolTable.SymbolTableMethod;
+import symbolTable.descriptor.VarDescriptor;
+import symbolTable.exception.SemanticException;
 
 public class ControlFlowVisitor implements MyGrammarVisitor {
     @Override
@@ -66,7 +68,8 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         node.childrenAccept(this, cfdata);
 
         //Afterwards, we can run the Liveness algorithm
-        //TODO: insert algorithm
+        //run algorithm
+        ControlFlowAnalysis.algorithm(cfdata);
 
         return null;
     }
@@ -173,7 +176,19 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTParameter node, Object data) {
-        //TODO: def var
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+        //TODO change to access existing node
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
+
+        try {
+            VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(node.identifier);
+            //definition of the var
+            thisNode.addDef(varDescriptor);
+        } catch (SemanticException e) {
+            e.printStackTrace();
+        }
 
         return null;
     }
@@ -188,7 +203,21 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
-        //TODO: use var
+
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+        //TODO change to access existing node
+        ControlFlowNode thisNode = new ControlFlowNode();
+        cfdata.setNode(thisNode);
+
+        try {
+            VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(node.identifier);
+            //declare use of the var
+            thisNode.addUse(varDescriptor);
+        } catch (SemanticException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

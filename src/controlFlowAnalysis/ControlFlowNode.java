@@ -37,8 +37,12 @@ public class ControlFlowNode {
         return def;
     }
 
-    public void setDef(ArrayList<VarDescriptor> def) {
-        this.def = def;
+    public void addDef(VarDescriptor def) {
+        this.def.add(def);
+    }
+
+    public void addUse(VarDescriptor use) {
+        this.use.add(use);
     }
 
     public ArrayList<VarDescriptor> getUse() {
