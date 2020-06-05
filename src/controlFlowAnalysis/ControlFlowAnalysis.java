@@ -4,6 +4,7 @@ import symbolTable.descriptor.VarDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class ControlFlowAnalysis {
 
@@ -50,7 +51,7 @@ public class ControlFlowAnalysis {
                 newSuccessorsIn.addAll(diff);
                 current_node.setIn(newSuccessorsIn);
 
-               //Test for convergence
+                //Test for convergence
                 if(!current_node.getIn().equals(inL) || !current_node.getOut().equals(outL)) {
                     end = false;
                 }
@@ -85,7 +86,24 @@ public class ControlFlowAnalysis {
         return interferenceGraph;
     }
 
-    public static int coloring(InterferenceGraph graph) {
+    public static int coloring(InterferenceGraph graph, int numRegisters) {
+        List<VarNode> nodes = graph.getNodes();
+        Stack<VarNode> stack = new Stack<>();
+        boolean spillingNeeded;
+
+        do {
+            spillingNeeded = true;
+            for(VarNode node : nodes) {
+                if(node.numInterferences() < numRegisters) {
+                    stack.push(node);
+                    spillingNeeded = false;
+                }
+            }
+
+            nodes.removeAll(stack);
+        } while(!nodes.isEmpty());
+
+
         return 0;
     }
 }

@@ -28,4 +28,6 @@ public class VarNode {
     public void addEdge(VarNode node) {
         interferences.add(node);
     }
+
+    public int numInterferences() { return interferences.size(); }
 }
