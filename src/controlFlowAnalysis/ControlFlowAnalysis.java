@@ -1,16 +1,16 @@
 package controlFlowAnalysis;
 
+import symbolTable.descriptor.VarDescriptor;
+
 import java.util.ArrayList;
-import java.util.Collections;
 
-public class DataFlowAnalysis {
+public class ControlFlowAnalysis {
 
-    
+    private ArrayList<ArrayList<VarDescriptor>> inL = new ArrayList<>();
+    private ArrayList<ArrayList<VarDescriptor>> outL = new ArrayList<>();
 
-    public void algorithm(ArrayList<DataFlowNode> graph) {
-
-
-
+    public void algorithm(ArrayList<ControlFlowNode> graph) {
+        
         //for each node n in CFG
          for(int j = 0; j < graph.size(); j++) {
              //in[n] = ∅;

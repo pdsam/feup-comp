@@ -5,7 +5,7 @@ import symbolTable.descriptor.VarDescriptor;
 
 import java.util.ArrayList;
 
-public class DataFlowNode {
+public class ControlFlowNode {
     private SimpleNode node;
     private ArrayList<VarDescriptor> in = new ArrayList<>();
     private ArrayList<VarDescriptor> out = new ArrayList<>();
