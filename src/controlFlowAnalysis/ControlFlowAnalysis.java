@@ -3,6 +3,7 @@ package controlFlowAnalysis;
 import symbolTable.descriptor.VarDescriptor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ControlFlowAnalysis {
 
@@ -11,7 +12,7 @@ public class ControlFlowAnalysis {
 
     public static void algorithm(ControlFlowData controlFlowData) {
 
-        ArrayList<ControlFlowNode> graph = controlFlowData.getGraph().getNodeSet();
+        List<ControlFlowNode> graph = controlFlowData.getGraph().getNodeSet();
 
         /* Initialize solutions */
         //for each node n in CFG

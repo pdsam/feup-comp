@@ -113,14 +113,6 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         return null;
     }
 
-
-    @Override
-    public Object visit(ASTParameterList node, Object data) {
-        //TODO: check later if we can optimize parameters alocation
-        node.childrenAccept(this, data);
-        return null;
-    }
-
     @Override
     public Object visit(ASTBranch node, Object data) {
         ControlFlowData cfdata = (ControlFlowData) data;
@@ -159,6 +151,17 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         return null;
     }
 
+    private void varDef(String varName, ControlFlowData cfdata) {
+        ControlFlowNode thisNode = cfdata.getNode();
+
+        try {
+            VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(varName);
+            thisNode.addDef(varDescriptor);
+        } catch (SemanticException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
         //TODO: statement && def var
@@ -174,56 +177,49 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         return null;
     }
 
-    @Override
-    public Object visit(ASTParameter node, Object data) {
-        ControlFlowData cfdata = (ControlFlowData) data;
-        ControlFlowGraph cfg = cfdata.getGraph();
-        //TODO change to access existing node
-        ControlFlowNode thisNode = new ControlFlowNode();
-        cfdata.setNode(thisNode);
+    private void varUse(String varName, ControlFlowData cfdata) {
+        ControlFlowNode thisNode = cfdata.getNode();
 
         try {
-            VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(node.identifier);
-            //definition of the var
-            thisNode.addDef(varDescriptor);
+            VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(varName);
+            thisNode.addUse(varDescriptor);
         } catch (SemanticException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Object visit(ASTVarReference node, Object data) {
+        varUse(node.identifier, (ControlFlowData) data);
 
         return null;
     }
 
     @Override
-    public Object visit(ASTArrayAccess node, Object data) {
-        //TODO: use var
-
+    public Object visit(ASTParameterList node, Object data) {
+        //TODO: check later if we can optimize parameters alocation
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
-    public Object visit(ASTVarReference node, Object data) {
-
-        ControlFlowData cfdata = (ControlFlowData) data;
-        ControlFlowGraph cfg = cfdata.getGraph();
-        //TODO change to access existing node
-        ControlFlowNode thisNode = new ControlFlowNode();
-        cfdata.setNode(thisNode);
-
-        try {
-            VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(node.identifier);
-            //declare use of the var
-            thisNode.addUse(varDescriptor);
-        } catch (SemanticException e) {
-            e.printStackTrace();
-        }
-
+    public Object visit(ASTParameter node, Object data) {
+        //varDef(node.identifier, (ControlFlowData) data);
+        //TODO: check later if we can optimize parameters alocation
+        //def var
         return null;
     }
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
         //TODO: check later if we can optimize 'this' alocation
+        //use var
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTArrayAccess node, Object data) {
+        node.childrenAccept(this, data);
         return null;
     }
 
