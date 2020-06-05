@@ -6,18 +6,12 @@ import symbolTable.descriptor.VarDescriptor;
 import symbolTable.descriptor.VarType;
 import symbolTable.exception.SemanticException;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class ControlFlowVisitor implements MyGrammarVisitor {
-    private static boolean debug = false;
-    private int maxRegisters = 0;
-
-    public static void setDebug(boolean flag) {
-        debug = flag;
-    }
-
-    private void printGraph(String name, ControlFlowGraph graph) {
-        System.out.println("In method " + name + ": ");
-        System.out.println(graph.toString());
-    }
+    private List<ControlFlowGraph> graphList = new LinkedList<>();
 
     @Override
     public Object visit(SimpleNode node, Object data) {
@@ -25,10 +19,10 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     }
 
     @Override
-    public Object visit(ASTDocument node, Object data) {
+    public List<ControlFlowGraph> visit(ASTDocument node, Object data) {
         node.childrenAccept(this, data);
 
-        return maxRegisters;
+        return graphList;
     }
 
     @Override
@@ -73,7 +67,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTMethod node, Object data) {
         SymbolTable st = node.getStMethod();
-        ControlFlowData cfdata = new ControlFlowData(st);
+        ControlFlowData cfdata = new ControlFlowData(st, node.identifier);
         ControlFlowNode lastStatementNode = null;
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
@@ -94,11 +88,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         if(lastStatementNode != null)
             cfdata.getGraph().addSuccessor(lastStatementNode, cfdata.getNode());
 
-        //Afterwards, we can run the Liveness algorithm
-        ControlFlowAnalysis.liveness(cfdata);
-
-        if(debug)
-            printGraph(node.identifier, cfdata.getGraph());
+        graphList.add(cfdata.getGraph());
 
         return null;
     }
@@ -106,16 +96,12 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTMainMethod node, Object data) {
         SymbolTable st = node.getStMethod();
-        ControlFlowData cfdata = new ControlFlowData(st);
+        ControlFlowData cfdata = new ControlFlowData(st, node.identifier);
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
         node.childrenAccept(this, cfdata);
 
-        //Afterwards, we can run the Liveness algorithm
-        ControlFlowAnalysis.liveness(cfdata);
-
-        if(debug)
-            printGraph(node.identifier, cfdata.getGraph());
+        graphList.add(cfdata.getGraph());
 
         return null;
     }

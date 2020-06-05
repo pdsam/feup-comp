@@ -16,7 +16,6 @@ public class ControlFlowNode {
     private List<VarDescriptor> def = new ArrayList<>();
     private List<VarDescriptor> use = new ArrayList<>();
 
-
     public List<VarDescriptor> getIn() {
         return in;
     }
@@ -112,4 +111,5 @@ public class ControlFlowNode {
 
         return msg;
     }
+
 }

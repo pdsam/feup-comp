@@ -5,13 +5,15 @@ import java.util.List;
 
 public class ControlFlowGraph {
     private List<ControlFlowNode> nodeSet;
+    private final String methodName;
 
-    public ControlFlowGraph() {
-        this(new ArrayList<>());
+    public ControlFlowGraph(String methodName) {
+        this(new ArrayList<>(), methodName);
     }
 
-    public ControlFlowGraph(ArrayList<ControlFlowNode> nodeSet) {
+    public ControlFlowGraph(ArrayList<ControlFlowNode> nodeSet, String methodName) {
         this.nodeSet = nodeSet;
+        this.methodName = methodName;
     }
 
     public List<ControlFlowNode> getNodeSet() {
@@ -29,7 +31,7 @@ public class ControlFlowGraph {
 
     @Override
     public String toString() {
-        String msg = "Graph: \n";
+        String msg= "Method's " + methodName + " graph: \n";
 
         for(ControlFlowNode node : nodeSet){
             msg += node.toString() + '\n';

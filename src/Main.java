@@ -1,6 +1,4 @@
-import controlFlowAnalysis.AllocationException;
-import controlFlowAnalysis.ControlFlowAnalysis;
-import controlFlowAnalysis.ControlFlowVisitor;
+import controlFlowAnalysis.*;
 import generation.JasminGeneratorVisitor;
 import parser.ASTDocument;
 import parser.MyGrammar;
@@ -10,6 +8,7 @@ import symbolTable.SymbolTable;
 import symbolTable.exception.SemanticException;
 
 import java.io.*;
+import java.util.List;
 
 public class Main{
 	private static boolean debug = false;
@@ -30,7 +29,6 @@ public class Main{
 				case "-v":
 					debug = true;
 					SymbolTable.setDebug(true);
-					ControlFlowVisitor.setDebug(true);
 					break;
 
 				case "-werror":
@@ -123,10 +121,25 @@ public class Main{
 	}
 
 	private static void controlFlowAnalysis(ASTDocument root) throws AllocationException {
-		int neededRegisters = (int) root.jjtAccept(new ControlFlowVisitor(), null);
 
-//		if(neededRegisters > numRegisters) {
-//			throw new AllocationException(numRegisters, neededRegisters);
-//		}
+		List<ControlFlowGraph> graphList = (List<ControlFlowGraph>) root.jjtAccept(new ControlFlowVisitor(), null);
+
+
+		for(ControlFlowGraph graph: graphList){
+			ControlFlowAnalysis.liveness(graph);
+
+			if(debug) {
+				System.out.println(graph.toString());
+			}
+
+			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
+			int neededRegisters = ControlFlowAnalysis.coloring(interferenceGraph);
+
+			if(neededRegisters > numRegisters) {
+				throw new AllocationException(numRegisters, neededRegisters);
+			}
+		}
+
 	}
+
 }

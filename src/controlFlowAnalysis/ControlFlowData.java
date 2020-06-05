@@ -7,9 +7,9 @@ public class ControlFlowData {
     private ControlFlowGraph cfg;
     private ControlFlowNode node;
 
-    public ControlFlowData(SymbolTable symbolTable) {
+    public ControlFlowData(SymbolTable symbolTable, String methodName) {
         this.symbolTable = symbolTable;
-        this.cfg = new ControlFlowGraph();
+        this.cfg = new ControlFlowGraph(methodName);
     }
 
     public void setNode(ControlFlowNode node) {

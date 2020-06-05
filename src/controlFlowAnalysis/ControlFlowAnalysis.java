@@ -6,17 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ControlFlowAnalysis {
-    public static void liveness(ControlFlowData controlFlowData) {
-        List<ControlFlowNode> graph = controlFlowData.getGraph().getNodeSet();
+
+    public static void liveness(ControlFlowGraph graph) {
+        List<ControlFlowNode> nodes = graph.getNodeSet();
+
         boolean end;
 
         do {
             end = true;
 
             //for each node n in CFG in reverse topsort order
-            for(int i = graph.size() - 1; i >= 0; i--) {
+            for(int i = nodes.size() - 1; i >= 0; i--) {
 
-                ControlFlowNode current_node = graph.get(i);
+                ControlFlowNode current_node = nodes.get(i);
 
                 //in’[n] = in[n]
                 List<VarDescriptor> inL = new ArrayList<>(current_node.getIn());
@@ -52,9 +54,38 @@ public class ControlFlowAnalysis {
                 if(!current_node.getIn().equals(inL) || !current_node.getOut().equals(outL)) {
                     end = false;
                 }
+
             }
 
             //until in’[n]=in[n] and out’[n]=out[n] for all n
         } while(!end);
+
+    }
+
+    public static InterferenceGraph interferenceGraph(ControlFlowGraph graph) {
+        List<ControlFlowNode> nodes = graph.getNodeSet();
+        InterferenceGraph interferenceGraph = new InterferenceGraph();
+
+        for(int i = 0; i < nodes.size(); i--) {
+
+            ControlFlowNode current_node = nodes.get(i);
+            List<VarDescriptor> current_nodeIn = current_node.getIn();
+
+            for(int j = 0; j < current_nodeIn.size(); j++) {
+
+                VarDescriptor descriptor = current_nodeIn.get(j);
+                VarNode node = interferenceGraph.lookup(descriptor);
+
+                if(node == null) {
+                    node = new VarNode(descriptor);
+                    interferenceGraph.addNode(node);
+                }
+            }
+        }
+        return interferenceGraph;
+    }
+
+    public static int coloring(InterferenceGraph graph) {
+        return 0;
     }
 }
