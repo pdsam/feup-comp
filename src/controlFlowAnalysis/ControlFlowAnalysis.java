@@ -31,44 +31,46 @@ public class ControlFlowAnalysis {
             //for each node n in CFG in reverse topsort order
             for(int i = graph.size() - 1; i >= 0; i--) {
 
+                ControlFlowNode current_node = graph.get(i);
+
                 //in’[n] = in[n]
-                inL.set(i, new ArrayList<>(graph.get(i).getIn()));
+                inL.set(i, new ArrayList<>(current_node.getIn()));
 
                 //out’[n] = out[n]
-                outL.set(i, new ArrayList<>(graph.get(i).getOut()));
+                outL.set(i, new ArrayList<>(current_node.getOut()));
 
                 ArrayList<VarDescriptor> successorsIn = new ArrayList<>();
 
                 //for all successors
-                for(int w = 0; i < graph.get(i).getSuccessors().size(); w++) {
+                for(int w = 0; i < current_node.getSuccessors().size(); w++) {
                     //get position in the arrayList
-                    ControlFlowNode node = graph.get(i).getSuccessors().get(w);
+                    ControlFlowNode node = current_node.getSuccessors().get(w);
 
                     //out[n] = ∪ in[s]
                     successorsIn.addAll(node.getIn());
                 }
 
                 //out[n] = ∪ in[s]
-                graph.get(i).setOut(successorsIn);
+                current_node.setOut(successorsIn);
 
 
                 //in[n] = use[n] ∪ (out[n] – def[n])
                 ArrayList<VarDescriptor> newSuccessorsIn = new ArrayList<>();
 
                 //add all use
-                newSuccessorsIn.addAll(graph.get(i).getUse());
+                newSuccessorsIn.addAll(current_node.getUse());
 
-                ArrayList<VarDescriptor> diff = new ArrayList<>(graph.get(i).getOut());
+                ArrayList<VarDescriptor> diff = new ArrayList<>(current_node.getOut());
 
                 //(out[n] – def[n])
-                diff.removeAll(graph.get(i).getDef());
+                diff.removeAll(current_node.getDef());
 
                 newSuccessorsIn.addAll(diff);
 
-                graph.get(i).setIn(newSuccessorsIn);
+                current_node.setIn(newSuccessorsIn);
 
                //Test for convergence
-                if(!graph.get(i).getIn().equals(inL.get(i)) || !graph.get(i).getOut().equals(inL.get(i))) {
+                if(!current_node.getIn().equals(inL.get(i)) || !current_node.getOut().equals(inL.get(i))) {
                     end = false;
                 }
             }
