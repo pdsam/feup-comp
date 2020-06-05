@@ -2,8 +2,12 @@ package controlFlowAnalysis;
 
 import symbolTable.descriptor.VarDescriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VarNode {
     private VarDescriptor descriptor;
+    private List<VarNode> interferences = new ArrayList<>();
 
     public VarNode(VarDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -19,5 +23,9 @@ public class VarNode {
 
     public boolean lookup( VarDescriptor varDescriptor) {
         return descriptor.equals(varDescriptor);
+    }
+
+    public void addEdge(VarNode node) {
+        interferences.add(node);
     }
 }

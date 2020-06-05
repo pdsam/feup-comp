@@ -69,17 +69,17 @@ public class ControlFlowAnalysis {
         for(int i = 0; i < nodes.size(); i--) {
 
             ControlFlowNode current_node = nodes.get(i);
-            List<VarDescriptor> current_nodeIn = current_node.getIn();
+            List<VarDescriptor> current_nodeDef = current_node.getDef();
+            List<VarDescriptor> current_nodeOut = current_node.getOut();
 
-            for(int j = 0; j < current_nodeIn.size(); j++) {
+            for(int j = 0; j < current_nodeDef.size(); j++) {
 
-                VarDescriptor descriptor = current_nodeIn.get(j);
-                VarNode node = interferenceGraph.lookup(descriptor);
+                VarDescriptor descriptor = current_nodeDef.get(j);
 
-                if(node == null) {
-                    node = new VarNode(descriptor);
-                    interferenceGraph.addNode(node);
+                for (VarDescriptor outDescriptor : current_nodeOut) {
+                    interferenceGraph.addEdge(descriptor, outDescriptor);
                 }
+
             }
         }
         return interferenceGraph;
