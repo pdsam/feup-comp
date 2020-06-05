@@ -66,6 +66,8 @@ public class ControlFlowAnalysis {
         List<ControlFlowNode> nodes = graph.getNodeSet();
         InterferenceGraph interferenceGraph = new InterferenceGraph();
 
+        //For each CFG node n that assigns the value to the variable a (ie, a $ \in$ def[n])
+        // we add the edges (a, b1), (a, b2),...,(a, bm), where out[n] = {b1, b2,..., bm}
         for(int i = 0; i < nodes.size(); i--) {
 
             ControlFlowNode current_node = nodes.get(i);
