@@ -1,3 +1,5 @@
+import controlFlowAnalysis.AllocationException;
+import controlFlowAnalysis.ControlFlowVisitor;
 import generation.JasminGeneratorVisitor;
 import parser.ASTDocument;
 import parser.MyGrammar;
@@ -10,6 +12,8 @@ import java.io.*;
 
 public class Main{
 	private static boolean debug = false;
+	private static boolean registerAllocation = false;
+	private static int numRegisters = 0;
 	private static String filename;
 
 	public static boolean parseArgs(String[] args) {
@@ -31,13 +35,15 @@ public class Main{
 					SemanticVisitor.werror = true;
 					break;
 
-				case "-r":
-					break;
-
 				case "-o":
 					break;
 
 				default:
+					if(args[i].matches("-r=\\d+")){
+						registerAllocation = true;
+						numRegisters = Integer.parseInt(args[i].substring(3));
+						System.out.printf("Detected %d registers\n", numRegisters);
+					}
 					break;
 			}
 		}
@@ -52,7 +58,7 @@ public class Main{
 		return true;
 	}
 
-	public static void main(String[] args) throws ParseException, SemanticException {
+	public static void main(String[] args) throws ParseException, SemanticException, AllocationException {
 		if(!parseArgs(args)) System.exit(1);
 
 		ASTDocument root = syntacticAnalysis(filename);
@@ -63,6 +69,9 @@ public class Main{
 		}
 
 		String filename = semanticAnalysis(root);
+
+		if(registerAllocation)
+			controlFlowAnalysis(root);
 
 		try {
 			File generatedCodeFile = new File(filename + ".j");
@@ -110,5 +119,13 @@ public class Main{
 		}
 
 		return className;
+	}
+
+	private static void controlFlowAnalysis(ASTDocument root) throws AllocationException {
+		int neededRegisters = (int) root.jjtAccept(new ControlFlowVisitor(), null);
+
+//		if(neededRegisters > numRegisters) {
+//			throw new AllocationException(numRegisters, neededRegisters);
+//		}
 	}
 }
