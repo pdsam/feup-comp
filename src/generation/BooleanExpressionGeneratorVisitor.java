@@ -168,11 +168,15 @@ public class BooleanExpressionGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTNegation node, Object data) {
         BooleanGenerationContext ctx = (BooleanGenerationContext) data;
-        BooleanGenerationContext newCtx = new BooleanGenerationContext(ctx.methodcontext, ctx.failLabel, ctx.successLabel);
+        String success = ctx.methodcontext.generateLabel();
+        BooleanGenerationContext newCtx = new BooleanGenerationContext(ctx.methodcontext, ctx.failLabel, success);
 
         node.child.jjtAccept(this, newCtx);
         if (!(isArithmeticBoolean(node.child))) {
             writer.printf("ifgt %s\n", ctx.failLabel);
+        } else {
+            writer.printf("goto %s\n", ctx.failLabel);
+            writer.printf("%s: \n", success);
         }
         return null;
     }
