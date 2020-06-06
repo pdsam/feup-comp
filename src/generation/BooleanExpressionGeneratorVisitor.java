@@ -198,13 +198,9 @@ public class BooleanExpressionGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTAnd node, Object data) {
         BooleanGenerationContext ctx = (BooleanGenerationContext) data;
-        String success = ctx.methodcontext.generateLabel();
-        BooleanGenerationContext newCtx = new BooleanGenerationContext(ctx.methodcontext, success, ctx.failLabel);
-        node.left.jjtAccept(this, newCtx);
+        node.left.jjtAccept(this, ctx);
         if (!(isArithmeticBoolean(node.left))) {
             writer.printf("ifle %s\n", ctx.failLabel);
-        } else {
-            writer.printf("%s:\n", success);
         }
         node.right.jjtAccept(this, ctx);
         if (!(isArithmeticBoolean(node.right))) {
@@ -219,7 +215,7 @@ public class BooleanExpressionGeneratorVisitor implements MyGrammarVisitor {
         node.left.jjtAccept(this, ctx);
         node.right.jjtAccept(this, ctx);
 
-        writer.printf("if_icmplt %s\n",  ctx.successLabel);
+        writer.printf("if_icmpge %s\n",  ctx.failLabel);
         return null;
     }
 
