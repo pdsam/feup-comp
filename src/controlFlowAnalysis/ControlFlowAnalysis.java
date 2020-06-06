@@ -163,4 +163,19 @@ public class ControlFlowAnalysis {
             }
         } while(!stack.empty());
     }
+
+
+    public static void constantPropagation(ControlFlowGraph graph){
+
+        List<ControlFlowNode> nodeSet = graph.getNodeSet();
+        
+        for(int i = 0; i < nodeSet.size();i++){
+
+
+        }
+
+        
+    }
+
+
 }

@@ -6,6 +6,7 @@ public class VarDescriptor implements Descriptor {
     private int stackOffset = -1;
     private String className;
     private VarType varType;
+    private boolean toConstant = false;
 
     public VarDescriptor(String name, String type) {
         this.name = name;
@@ -52,5 +53,9 @@ public class VarDescriptor implements Descriptor {
                 ", type='" + type + '\'' +
                 ", stackOffset=" + stackOffset +
                 '}';
+    }
+
+    public void makeBoolean(){
+        
     }
 }
