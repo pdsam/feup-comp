@@ -73,16 +73,16 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         }
         writer.printf(".super %s\n\n", parent);
 
-        node.children[0].jjtAccept(this, node.identifier); //Field declarations
+        node.children[0].jjtAccept(this, node.identifier); // Field declarations
 
         writer.println(".method public <init>()V");
         writer.println("aload_0");
         writer.printf("invokenonvirtual %s/<init>()V\n", parent);
         writer.println("return\n.end method\n");
 
-        node.children[1].jjtAccept(this, data); //Method declarations
-        node.children[2].jjtAccept(this, data); //Main declaration
-        node.children[3].jjtAccept(this, data); //Method declarations
+        node.children[1].jjtAccept(this, data); // Method declarations
+        node.children[2].jjtAccept(this, data); // Main declaration
+        node.children[3].jjtAccept(this, data); // Method declarations
 
         return null;
     }
@@ -124,9 +124,9 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         writer.printf(".limit locals %d\n", getLocalCount(node));
 
         MethodContext context = new MethodContext(node.getStMethod());
-        node.children[2].jjtAccept(this, context); //Generate code for statements
+        node.children[2].jjtAccept(this, context); // Generate code for statements
 
-        node.children[3].jjtAccept(this, context); //Generate code for return statement
+        node.children[3].jjtAccept(this, context); // Generate code for return statement
 
         writer.println(".end method\n");
         return null;
@@ -134,7 +134,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     private int getLocalCount(ASTMethod node) {
         int locals = 0;
-        if(!node.isStatic)
+        if (!node.isStatic)
             locals++;
 
         locals += node.getStMethod().getLocalsCount();
@@ -168,7 +168,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
         MethodContext context = new MethodContext(node.getStMethod());
         node.children[2].jjtAccept(this, context);
-
 
         writer.println("return\n.end method\n");
         return null;
@@ -234,11 +233,11 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             expr.left.jjtAccept(this, data);
             expr.right.jjtAccept(this, data);
 
-            //see if variable is less than the other
-            writer.printf("if_icmpge %s\n",  elseLabel);
+            // see if variable is less than the other
+            writer.printf("if_icmpge %s\n", elseLabel);
         } else {
             node.condition.jjtAccept(this, data);
-            //ifeq makes the jump if the last value on stack is = 0 (= false)
+            // ifeq makes the jump if the last value on stack is = 0 (= false)
             writer.printf("ifeq %s\n", elseLabel);
         }
         node.thenStatement.jjtAccept(this, data);
@@ -252,36 +251,74 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
         MethodContext context = (MethodContext) data;
-        String loopLabel = context.generateLabel();
-        String endLabel = context.generateLabel();
+        if (!optimizations) {
+            String loopLabel = context.generateLabel();
+            String endLabel = context.generateLabel();
 
-        writer.printf("%s:\n", loopLabel);
-        Expression condition = node.condition;
-        if (condition instanceof ASTAnd) {
-            ASTAnd expr = (ASTAnd) condition;
-            expr.left.jjtAccept(this, data);
-            writer.printf("ifle %s\n", endLabel);
-            expr.right.jjtAccept(this, data);
-            writer.printf("ifle %s\n", endLabel);
-        } else if (condition instanceof ASTNegation) {
-            ASTNegation expr = (ASTNegation) condition;
-            expr.child.jjtAccept(this, data);
-            writer.printf("ifne %s\n", endLabel);
-        } else if (condition instanceof ASTLessThan) {
-            ASTLessThan expr = (ASTLessThan) condition;
-            expr.left.jjtAccept(this, data);
-            expr.right.jjtAccept(this, data);
+            writer.printf("%s:\n", loopLabel);
+            Expression condition = node.condition;
+            if (condition instanceof ASTAnd) {
+                ASTAnd expr = (ASTAnd) condition;
+                expr.left.jjtAccept(this, data);
+                writer.printf("ifle %s\n", endLabel);
+                expr.right.jjtAccept(this, data);
+                writer.printf("ifle %s\n", endLabel);
+            } else if (condition instanceof ASTNegation) {
+                ASTNegation expr = (ASTNegation) condition;
+                expr.child.jjtAccept(this, data);
+                writer.printf("ifne %s\n", endLabel);
+            } else if (condition instanceof ASTLessThan) {
+                ASTLessThan expr = (ASTLessThan) condition;
+                expr.left.jjtAccept(this, data);
+                expr.right.jjtAccept(this, data);
 
-            //see if variable is less than the other
-            writer.printf("if_icmpge %s\n",  endLabel);
+                // see if variable is less than the other
+                writer.printf("if_icmpge %s\n", endLabel);
+            } else {
+                node.condition.jjtAccept(this, data);
+                writer.printf("ifeq %s\n", endLabel);
+            }
+            node.body.jjtAccept(this, data);
+            writer.printf("goto %s\n", loopLabel);
+            writer.printf("%s:\n", endLabel);
+            return null;
         } else {
-            node.condition.jjtAccept(this, data);
-            writer.printf("ifeq %s\n", endLabel);
+            
+            String beginLabel = context.generateLabel();
+            String conditionLabel = context.generateLabel();
+            
+
+            writer.printf("goto %s\n",conditionLabel);
+            writer.printf("%s:\n", beginLabel);
+            node.body.jjtAccept(this, data);
+            writer.printf("%s:\n", conditionLabel);
+            Expression condition = node.condition;
+            if (condition instanceof ASTAnd) {
+                String skipLabel = context.generateLabel();
+                ASTAnd expr = (ASTAnd) condition;
+                expr.left.jjtAccept(this, data);
+                writer.printf("ifle %s\n", skipLabel);
+                expr.right.jjtAccept(this, data);
+                writer.printf("ifgt %s\n", beginLabel);
+                writer.printf("%s:\n", skipLabel);
+            } else if (condition instanceof ASTNegation) {
+                ASTNegation expr = (ASTNegation) condition;
+                expr.child.jjtAccept(this, data);
+                writer.printf("ifeq %s\n", beginLabel);
+            } else if (condition instanceof ASTLessThan) {
+                ASTLessThan expr = (ASTLessThan) condition;
+                expr.left.jjtAccept(this, data);
+                expr.right.jjtAccept(this, data);
+
+                // see if variable is less than the other
+                writer.printf("if_icmplt %s\n", beginLabel);
+            } else {
+                node.condition.jjtAccept(this, data);
+                writer.printf("ifne %s\n", beginLabel);
+            }
+
+            return null;
         }
-        node.body.jjtAccept(this, data);
-        writer.printf("goto %s\n", loopLabel);
-        writer.printf("%s:\n", endLabel);
-        return null;
     }
 
     @Override
@@ -419,7 +456,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             node.arguments.childrenAccept(this, data);
             writer.printf("invokevirtual %s/%s(", node.desc.getClassName(), node.desc.getName());
         }
-        for (String par: node.desc.getParameters()) {
+        for (String par : node.desc.getParameters()) {
             writer.print(getTypeString(par));
         }
         writer.printf(")%s\n", getTypeString(node.desc.getReturnType()));
@@ -464,14 +501,14 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         String lessLabel = context.generateLabel();
         String endLabel = context.generateLabel();
 
-        //see if variable is less than the other
-        writer.printf("if_icmplt %s\n",  lessLabel);
+        // see if variable is less than the other
+        writer.printf("if_icmplt %s\n", lessLabel);
         writer.printf("iconst_0\n");
         writer.printf("goto %s\n", endLabel);
         writer.printf("%s:\n", lessLabel);
         writer.printf("iconst_1\n");
         writer.printf("%s:\n", endLabel);
-        //finishes with 0 if false and 1 otherwise in the stack
+        // finishes with 0 if false and 1 otherwise in the stack
         return null;
     }
 
