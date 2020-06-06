@@ -3,7 +3,7 @@ package symbolTable.descriptor;
 public class VarDescriptor implements Descriptor {
     private final String name;
     private final String type;
-    private int stackOffset;
+    private int stackOffset = -1;
     private String className;
     private VarType varType;
 

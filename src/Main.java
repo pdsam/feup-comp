@@ -9,6 +9,7 @@ import symbolTable.exception.SemanticException;
 
 import java.io.*;
 import java.util.List;
+import java.util.Stack;
 
 public class Main{
 	private static boolean debug = false;
@@ -137,8 +138,13 @@ public class Main{
 				System.out.println(graph.toString());
 			}
 
+			/* Coloring algorithm */
+			Stack<VarNode> stack = new Stack<>();
 			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
-			int neededRegisters = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
+			int neededRegisters = ControlFlowAnalysis.simplification(interferenceGraph, numRegisters, stack);
+
+			InterferenceGraph interferenceGraph1 = ControlFlowAnalysis.interferenceGraph(graph);
+			ControlFlowAnalysis.selection(interferenceGraph1, neededRegisters, graph.getInitialStackOffset(), stack);
 
 			if(neededRegisters > numRegisters) {
 				throw new AllocationException(numRegisters, neededRegisters);
