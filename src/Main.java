@@ -11,6 +11,8 @@ import java.io.*;
 public class Main{
 	private static boolean debug = false;
 	private static String filename;
+	private static boolean optimize;
+	private static boolean optimizeBooleans;
 
 	public static boolean parseArgs(String[] args) {
 		if(args.length < 1 || args.length > 4){
@@ -35,6 +37,8 @@ public class Main{
 					break;
 
 				case "-o":
+					optimize = true;
+					optimizeBooleans = true;
 					break;
 
 				default:
@@ -71,7 +75,7 @@ public class Main{
 			}
 			FileOutputStream out = new FileOutputStream(generatedCodeFile);
 			PrintWriter writer = new PrintWriter(out);
-			JasminGeneratorVisitor generator = new JasminGeneratorVisitor(writer, false, false);
+			JasminGeneratorVisitor generator = new JasminGeneratorVisitor(writer, optimizeBooleans, optimize);
 			root.jjtAccept(generator, null);
 			writer.flush();
 			out.close();
