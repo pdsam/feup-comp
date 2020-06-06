@@ -90,13 +90,20 @@ public class ControlFlowAnalysis {
         return interferenceGraph;
     }
 
-    public static int simplification(InterferenceGraph graph, int numRegisters, Stack<VarNode> stack) {
+    public static int coloring(InterferenceGraph graph, int numRegisters, int initialStackOffset) {
+        Stack<VarNode> stack = new Stack<>();
         List<VarNode> nodes = graph.getNodes();
+        int localRegisters = simplification(nodes, numRegisters, stack);
+        selection(nodes, localRegisters, initialStackOffset, stack);
+
+        return localRegisters;
+    }
+
+    private static int simplification(List<VarNode> nodes, int numRegisters, Stack<VarNode> stack) {
         boolean notEnoughColors;
-        int neededRegisters = numRegisters;
+        int localRegisters = numRegisters;
         int minInterferences = Integer.MAX_VALUE;
 
-        //simplification
         do {
             notEnoughColors = true;
             for(VarNode node : nodes) {
@@ -113,21 +120,22 @@ public class ControlFlowAnalysis {
             }
 
             if(notEnoughColors) {
-                neededRegisters = minInterferences + 1;
+                localRegisters = minInterferences + 1;
             } else {
                 nodes.removeAll(stack);
             }
         } while(!nodes.isEmpty());
 
-        return neededRegisters;
+        return localRegisters;
     }
 
-    public static void selection(InterferenceGraph interferenceGraph, int neededRegisters, int initialStackOffset, Stack<VarNode> stack) {
+    private static void selection(List<VarNode> nodes, int localRegisters, int initialStackOffset, Stack<VarNode> stack) {
+        int totalRegisters = localRegisters + initialStackOffset;
 
         do {
             VarNode node = stack.pop();
 
-            for(int i = initialStackOffset; i < neededRegisters; i++) {
+            for(int i = initialStackOffset; i < totalRegisters; i++) {
                 //check if all interfering nodes don't have a same color
                 for (VarNode interfering : node.getInterferences()) {
                     if(i == interfering.getDescriptor().getStackOffset()){
