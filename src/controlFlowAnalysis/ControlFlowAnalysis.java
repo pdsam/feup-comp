@@ -92,8 +92,10 @@ public class ControlFlowAnalysis {
     public static int coloring(InterferenceGraph graph, int numRegisters, int initialStackOffset) {
         Stack<VarNode> stack = new Stack<>();
         List<VarNode> nodes = graph.getNodes();
+
         int localRegisters = simplification(nodes, numRegisters, stack);
-        selection(nodes, localRegisters, initialStackOffset, stack);
+
+        selection(localRegisters, initialStackOffset, stack);
 
         return localRegisters;
     }
@@ -109,11 +111,13 @@ public class ControlFlowAnalysis {
                 if (node.numInterferences() < numRegisters) {
                     stack.push(node);
 
+                    //Removing this node interference from the nodes that remain in the graph
                     for(VarNode interfering : node.getInterferences()) {
                         interfering.removeInterference(node);
                     }
                     notEnoughColors = false;
                 } else if (node.numInterferences() < minInterferences) {
+                    //Saving the minimum number of interferences to allocate more registers
                     minInterferences = node.numInterferences();
                 }
             }
@@ -128,27 +132,24 @@ public class ControlFlowAnalysis {
         return localRegisters;
     }
 
-    private static void selection(List<VarNode> nodes, InterferenceGraph interferenceGraph, int localRegisters, int initialStackOffset, Stack<VarNode> stack) {
+    private static void selection(int localRegisters, int initialStackOffset, Stack<VarNode> stack) {
         int totalRegisters = localRegisters + initialStackOffset;
 
         do {
             VarNode node = stack.pop();
-            //interference were removes during the simplification, putting them back
-            node = interferenceGraph.lookup(node.getDescriptor());
 
             //checks the color of the other interfering nodes
             for(int i = initialStackOffset; i < totalRegisters; i++) {
                 //check if any interfering node has the same color
                 for (VarNode interfering : node.getInterferences()) {
                     if(i == interfering.getDescriptor().getStackOffset()){
-                        //that color can not be assign
+                        //that color can not be assigned
                         continue;
                     }
                 }
-                //any other interfering node has the same color, attributing the unused color in that context
+                //no other interfering node has the same color, this color is safe to use
                 node.getDescriptor().setStackOffset(i);
             }
-
         } while(!stack.empty());
     }
 }

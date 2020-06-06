@@ -5,6 +5,7 @@ import symbolTable.descriptor.VarDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InterferenceGraph {
     private HashMap<String, VarNode> nodes = new HashMap<>();
@@ -22,6 +23,9 @@ public class InterferenceGraph {
     }
 
     public void addEdge(VarDescriptor varDescriptor1, VarDescriptor varDescriptor2) {
+        if(varDescriptor1.getName().equals(varDescriptor2.getName()))
+            return;
+
         VarNode node1 = lookup(varDescriptor1);
         VarNode node2 = lookup(varDescriptor2);
 
@@ -35,5 +39,15 @@ public class InterferenceGraph {
 
         node1.addEdge(node2);
         node2.addEdge(node1);
+    }
+
+    public String print(String methodName) {
+        String msg = "Interference Graph for '" + methodName + "':\n";
+
+        for(Map.Entry<String, VarNode> entry : nodes.entrySet()) {
+            msg += entry.getValue().toString() + '\n';
+        }
+
+        return msg;
     }
 }

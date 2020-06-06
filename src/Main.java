@@ -139,11 +139,14 @@ public class Main{
 			}
 
 			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
-			int neededRegisters = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
 
-			if(neededRegisters > numRegisters) {
-				throw new AllocationException(numRegisters, neededRegisters);
-			}
+			System.out.println(interferenceGraph.toString());
+
+//			int neededRegisters = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
+//
+//			if(neededRegisters > numRegisters) {
+//				throw new AllocationException(numRegisters, neededRegisters);
+//			}
 		}
 
 	}

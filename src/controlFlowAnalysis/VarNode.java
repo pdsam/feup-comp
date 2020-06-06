@@ -32,4 +32,18 @@ public class VarNode {
     }
 
     public int numInterferences() { return interferences.size(); }
+
+    @Override
+    public String toString() {
+        String msg = "\tVarNode '" + descriptor.getName() + "':\n";
+
+        msg += "\t\tInterferences: ";
+
+        for(VarNode interference : interferences) {
+            msg += interference.descriptor.getName() + "; ";
+        }
+
+
+        return msg;
+    }
 }
