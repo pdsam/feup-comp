@@ -250,9 +250,8 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
-        boolean var;
         MethodContext context = (MethodContext) data;
-        if (var) {
+        if (!optimizations) {
             String loopLabel = context.generateLabel();
             String endLabel = context.generateLabel();
 
