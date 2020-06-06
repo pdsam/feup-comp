@@ -21,6 +21,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         return writer;
     }
 
+    private boolean isArithmeticBoolean(Node node) {
+        return node instanceof ASTAnd || node instanceof ASTNegation || node instanceof ASTLessThan;
+    }
+
     private String getTypeString(String type) {
         switch (type) {
             case "void":
@@ -218,27 +222,32 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         String endifLabel = labels[1];
 
         Expression condition = node.condition;
-        if (condition instanceof ASTAnd) {
-            ASTAnd expr = (ASTAnd) condition;
-            expr.left.jjtAccept(this, data);
-            writer.printf("ifle %s\n", elseLabel);
-            expr.right.jjtAccept(this, data);
-            writer.printf("ifle %s\n", elseLabel);
-        } else if (condition instanceof ASTNegation) {
-            ASTNegation expr = (ASTNegation) condition;
-            expr.child.jjtAccept(this, data);
-            writer.printf("ifne %s\n", elseLabel);
-        } else if (condition instanceof ASTLessThan) {
-            ASTLessThan expr = (ASTLessThan) condition;
-            expr.left.jjtAccept(this, data);
-            expr.right.jjtAccept(this, data);
-
-            // see if variable is less than the other
-            writer.printf("if_icmpge %s\n", elseLabel);
+        if (optimizeBooleanExpressions && isArithmeticBoolean(condition)) {
+            BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
+            condition.jjtAccept(gen, new BooleanGenerationContext(context, null, elseLabel));
         } else {
-            node.condition.jjtAccept(this, data);
-            // ifeq makes the jump if the last value on stack is = 0 (= false)
-            writer.printf("ifeq %s\n", elseLabel);
+            if (condition instanceof ASTAnd) {
+                ASTAnd expr = (ASTAnd) condition;
+                expr.left.jjtAccept(this, data);
+                writer.printf("ifle %s\n", elseLabel);
+                expr.right.jjtAccept(this, data);
+                writer.printf("ifle %s\n", elseLabel);
+            } else if (condition instanceof ASTNegation) {
+                ASTNegation expr = (ASTNegation) condition;
+                expr.child.jjtAccept(this, data);
+                writer.printf("ifne %s\n", elseLabel);
+            } else if (condition instanceof ASTLessThan) {
+                ASTLessThan expr = (ASTLessThan) condition;
+                expr.left.jjtAccept(this, data);
+                expr.right.jjtAccept(this, data);
+
+                // see if variable is less than the other
+                writer.printf("if_icmpge %s\n", elseLabel);
+            } else {
+                node.condition.jjtAccept(this, data);
+                // ifeq makes the jump if the last value on stack is = 0 (= false)
+                writer.printf("ifeq %s\n", elseLabel);
+            }
         }
         node.thenStatement.jjtAccept(this, data);
         writer.printf("goto %s\n", endifLabel);
@@ -257,26 +266,31 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
             writer.printf("%s:\n", loopLabel);
             Expression condition = node.condition;
-            if (condition instanceof ASTAnd) {
-                ASTAnd expr = (ASTAnd) condition;
-                expr.left.jjtAccept(this, data);
-                writer.printf("ifle %s\n", endLabel);
-                expr.right.jjtAccept(this, data);
-                writer.printf("ifle %s\n", endLabel);
-            } else if (condition instanceof ASTNegation) {
-                ASTNegation expr = (ASTNegation) condition;
-                expr.child.jjtAccept(this, data);
-                writer.printf("ifne %s\n", endLabel);
-            } else if (condition instanceof ASTLessThan) {
-                ASTLessThan expr = (ASTLessThan) condition;
-                expr.left.jjtAccept(this, data);
-                expr.right.jjtAccept(this, data);
-
-                // see if variable is less than the other
-                writer.printf("if_icmpge %s\n", endLabel);
+            if (optimizeBooleanExpressions && isArithmeticBoolean(condition)) {
+                BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
+                condition.jjtAccept(gen, new BooleanGenerationContext(context, null, endLabel));
             } else {
-                node.condition.jjtAccept(this, data);
-                writer.printf("ifeq %s\n", endLabel);
+                if (condition instanceof ASTAnd) {
+                    ASTAnd expr = (ASTAnd) condition;
+                    expr.left.jjtAccept(this, data);
+                    writer.printf("ifle %s\n", endLabel);
+                    expr.right.jjtAccept(this, data);
+                    writer.printf("ifle %s\n", endLabel);
+                } else if (condition instanceof ASTNegation) {
+                    ASTNegation expr = (ASTNegation) condition;
+                    expr.child.jjtAccept(this, data);
+                    writer.printf("ifne %s\n", endLabel);
+                } else if (condition instanceof ASTLessThan) {
+                    ASTLessThan expr = (ASTLessThan) condition;
+                    expr.left.jjtAccept(this, data);
+                    expr.right.jjtAccept(this, data);
+
+                    // see if variable is less than the other
+                    writer.printf("if_icmpge %s\n", endLabel);
+                } else {
+                    node.condition.jjtAccept(this, data);
+                    writer.printf("ifeq %s\n", endLabel);
+                }
             }
             node.body.jjtAccept(this, data);
             writer.printf("goto %s\n", loopLabel);
@@ -293,28 +307,36 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             node.body.jjtAccept(this, data);
             writer.printf("%s:\n", conditionLabel);
             Expression condition = node.condition;
-            if (condition instanceof ASTAnd) {
-                String skipLabel = context.generateLabel();
-                ASTAnd expr = (ASTAnd) condition;
-                expr.left.jjtAccept(this, data);
-                writer.printf("ifle %s\n", skipLabel);
-                expr.right.jjtAccept(this, data);
-                writer.printf("ifgt %s\n", beginLabel);
-                writer.printf("%s:\n", skipLabel);
-            } else if (condition instanceof ASTNegation) {
-                ASTNegation expr = (ASTNegation) condition;
-                expr.child.jjtAccept(this, data);
-                writer.printf("ifeq %s\n", beginLabel);
-            } else if (condition instanceof ASTLessThan) {
-                ASTLessThan expr = (ASTLessThan) condition;
-                expr.left.jjtAccept(this, data);
-                expr.right.jjtAccept(this, data);
-
-                // see if variable is less than the other
-                writer.printf("if_icmplt %s\n", beginLabel);
+            if (optimizeBooleanExpressions && isArithmeticBoolean(condition)) {
+                String endLabel = context.generateLabel();
+                BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
+                condition.jjtAccept(gen, new BooleanGenerationContext(context, null, endLabel));
+                writer.printf("goto %s\n", beginLabel);
+                writer.printf("%s:\n", endLabel);
             } else {
-                node.condition.jjtAccept(this, data);
-                writer.printf("ifne %s\n", beginLabel);
+                if (condition instanceof ASTAnd) {
+                    String skipLabel = context.generateLabel();
+                    ASTAnd expr = (ASTAnd) condition;
+                    expr.left.jjtAccept(this, data);
+                    writer.printf("ifle %s\n", skipLabel);
+                    expr.right.jjtAccept(this, data);
+                    writer.printf("ifgt %s\n", beginLabel);
+                    writer.printf("%s:\n", skipLabel);
+                } else if (condition instanceof ASTNegation) {
+                    ASTNegation expr = (ASTNegation) condition;
+                    expr.child.jjtAccept(this, data);
+                    writer.printf("ifeq %s\n", beginLabel);
+                } else if (condition instanceof ASTLessThan) {
+                    ASTLessThan expr = (ASTLessThan) condition;
+                    expr.left.jjtAccept(this, data);
+                    expr.right.jjtAccept(this, data);
+
+                    // see if variable is less than the other
+                    writer.printf("if_icmplt %s\n", beginLabel);
+                } else {
+                    node.condition.jjtAccept(this, data);
+                    writer.printf("ifne %s\n", beginLabel);
+                }
             }
 
             return null;
