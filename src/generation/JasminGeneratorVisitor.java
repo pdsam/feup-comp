@@ -6,6 +6,12 @@ import symbolTable.descriptor.VarType;
 
 import java.io.PrintWriter;
 
+//TODO update stack counter to account for boolean optimization
+//TODO update iinc instruction to account for constant propagation
+//TODO binary op order inversion(if possible)
+//TODO constant folding
+
+
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
     private final PrintWriter writer;
     private boolean optimizeBooleanExpressions;
