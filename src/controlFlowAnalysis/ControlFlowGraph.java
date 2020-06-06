@@ -6,14 +6,20 @@ import java.util.List;
 public class ControlFlowGraph {
     private List<ControlFlowNode> nodeSet;
     private final String methodName;
+    private final int initialStackOffset;
 
-    public ControlFlowGraph(String methodName) {
-        this(new ArrayList<>(), methodName);
+    public ControlFlowGraph(String methodName, int initialStackOffset) {
+        this(new ArrayList<>(), methodName, initialStackOffset);
     }
 
-    public ControlFlowGraph(ArrayList<ControlFlowNode> nodeSet, String methodName) {
+    public ControlFlowGraph(ArrayList<ControlFlowNode> nodeSet, String methodName, int initialStackOffset) {
         this.nodeSet = nodeSet;
         this.methodName = methodName;
+        this.initialStackOffset = initialStackOffset;
+    }
+
+    public int getInitialStackOffset() {
+        return initialStackOffset;
     }
 
     public List<ControlFlowNode> getNodeSet() {

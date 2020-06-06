@@ -2,6 +2,7 @@ package controlFlowAnalysis;
 
 import parser.*;
 import symbolTable.SymbolTable;
+import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
 import symbolTable.descriptor.VarType;
 import symbolTable.exception.SemanticException;
@@ -67,7 +68,11 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTMethod node, Object data) {
         SymbolTable st = node.getStMethod();
-        ControlFlowData cfdata = new ControlFlowData(st, node.identifier);
+        // Getting the ParametersList children (the parameters)
+        int numParams = node.jjtGetChild(0).jjtGetNumChildren();
+        if(!node.isStatic) numParams++;
+        System.out.println(numParams);
+        ControlFlowData cfdata = new ControlFlowData(st, node.identifier, numParams);
         ControlFlowNode lastStatementNode = null;
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
@@ -96,7 +101,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTMainMethod node, Object data) {
         SymbolTable st = node.getStMethod();
-        ControlFlowData cfdata = new ControlFlowData(st, node.identifier);
+        ControlFlowData cfdata = new ControlFlowData(st, node.identifier, 1);
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
         node.childrenAccept(this, cfdata);

@@ -21,12 +21,14 @@ public class VarNode {
         this.descriptor = descriptor;
     }
 
-    public boolean lookup( VarDescriptor varDescriptor) {
-        return descriptor.equals(varDescriptor);
-    }
-
     public void addEdge(VarNode node) {
         interferences.add(node);
+    }
+
+    public void removeInterference(VarNode node) { interferences.remove(node); }
+
+    public List<VarNode> getInterferences() {
+        return interferences;
     }
 
     public int numInterferences() { return interferences.size(); }

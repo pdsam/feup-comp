@@ -42,6 +42,10 @@ public class Main{
 					if(args[i].matches("-r=\\d+")){
 						registerAllocation = true;
 						numRegisters = Integer.parseInt(args[i].substring(3));
+						if(numRegisters < 1) {
+							System.err.println("Invalid number of registers");
+							return false;
+						}
 					}
 					break;
 			}
@@ -134,7 +138,7 @@ public class Main{
 			}
 
 			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
-			int neededRegisters = ControlFlowAnalysis.coloring(interferenceGraph);
+			int neededRegisters = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
 
 			if(neededRegisters > numRegisters) {
 				throw new AllocationException(numRegisters, neededRegisters);

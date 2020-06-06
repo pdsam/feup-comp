@@ -65,6 +65,7 @@ public class ControlFlowAnalysis {
 
     public static InterferenceGraph interferenceGraph(ControlFlowGraph graph) {
         List<ControlFlowNode> nodes = graph.getNodeSet();
+
         InterferenceGraph interferenceGraph = new InterferenceGraph();
 
         //For each CFG node n that assigns the value to the variable a (ie, a $ \in$ def[n])
@@ -88,24 +89,38 @@ public class ControlFlowAnalysis {
         return interferenceGraph;
     }
 
-    public static int coloring(InterferenceGraph graph, int numRegisters) {
+    public static int coloring(InterferenceGraph graph, int numRegisters, int initialStackOffset) {
         List<VarNode> nodes = graph.getNodes();
         Stack<VarNode> stack = new Stack<>();
-        boolean spillingNeeded;
+        boolean notEnoughColors;
+        int neededRegisters = numRegisters;
+        int minInterferences = Integer.MAX_VALUE;
 
+        //simplification
         do {
-            spillingNeeded = true;
+            notEnoughColors = true;
             for(VarNode node : nodes) {
-                if(node.numInterferences() < numRegisters) {
+                if (node.numInterferences() < numRegisters) {
                     stack.push(node);
-                    spillingNeeded = false;
+
+                    for(VarNode interfering : node.getInterferences()) {
+                        interfering.removeInterference(node);
+                    }
+                    notEnoughColors = false;
+                } else if (node.numInterferences() < minInterferences) {
+                    minInterferences = node.numInterferences();
                 }
             }
 
-            nodes.removeAll(stack);
+            if(notEnoughColors) {
+                neededRegisters = minInterferences + 1;
+            } else {
+                nodes.removeAll(stack);
+            }
         } while(!nodes.isEmpty());
 
+        //selection
 
-        return 0;
+        return neededRegisters;
     }
 }
