@@ -9,12 +9,12 @@ import java.io.PrintWriter;
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
     private final PrintWriter writer;
     private boolean optimizeBooleanExpressions;
-    private boolean optimizations;
+    private boolean loopTemplates;
 
-    public JasminGeneratorVisitor(PrintWriter writer, boolean optimizeBooleanExpressions, boolean optimizations) {
+    public JasminGeneratorVisitor(PrintWriter writer, boolean optimizeBooleanExpressions, boolean loopTemplates) {
         this.writer = writer;
         this.optimizeBooleanExpressions = optimizeBooleanExpressions;
-        this.optimizations = optimizations;
+        this.loopTemplates = loopTemplates;
     }
 
     public PrintWriter getWriter() {
@@ -278,7 +278,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
         MethodContext context = (MethodContext) data;
-        if (!optimizations) {
+        if (!loopTemplates) {
             String loopLabel = context.generateLabel();
             String endLabel = context.generateLabel();
 
