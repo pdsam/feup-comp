@@ -40,9 +40,13 @@ public class ControlFlowGraph {
         String msg= "Method's " + methodName + " graph: \n";
 
         for(ControlFlowNode node : nodeSet){
-            msg += node.toString() + '\n';
+            msg += node.toString();
         }
 
         return msg;
+    }
+
+    public String getMethodName() {
+        return methodName;
     }
 }

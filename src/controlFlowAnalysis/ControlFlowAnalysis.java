@@ -70,7 +70,7 @@ public class ControlFlowAnalysis {
 
         //For each CFG node n that assigns the value to the variable a (ie, a $ \in$ def[n])
         // we add the edges (a, b1), (a, b2),...,(a, bm), where out[n] = {b1, b2,..., bm}
-        for(int i = 0; i < nodes.size(); i--) {
+        for(int i = 0; i < nodes.size(); i++) {
 
             ControlFlowNode current_node = nodes.get(i);
             List<VarDescriptor> current_nodeDef = current_node.getDef();
@@ -79,8 +79,10 @@ public class ControlFlowAnalysis {
             for(int j = 0; j < current_nodeDef.size(); j++) {
 
                 VarDescriptor descriptor = current_nodeDef.get(j);
+                descriptor.setStackOffset(-1);
 
                 for (VarDescriptor outDescriptor : current_nodeOut) {
+                    outDescriptor.setStackOffset(-1);
                     interferenceGraph.addEdge(descriptor, outDescriptor);
                 }
 
@@ -95,7 +97,14 @@ public class ControlFlowAnalysis {
 
         int localRegisters = simplification(nodes, numRegisters, stack);
 
+//        System.out.println(stack.toString());
+
         selection(localRegisters, initialStackOffset, stack);
+
+        for(VarNode node : graph.getNodes()) {
+            VarDescriptor var = node.getDescriptor();
+            System.out.println("Variable '" + var.getName() + "' allocated to register " + var.getStackOffset());
+        }
 
         return localRegisters;
     }
@@ -133,6 +142,8 @@ public class ControlFlowAnalysis {
     }
 
     private static void selection(int localRegisters, int initialStackOffset, Stack<VarNode> stack) {
+        System.out.println("Local registers: " + localRegisters);
+        System.out.println("Init Stack Off: " + initialStackOffset);
         int totalRegisters = localRegisters + initialStackOffset;
 
         do {

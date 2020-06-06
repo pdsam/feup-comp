@@ -22,7 +22,8 @@ public class VarNode {
     }
 
     public void addEdge(VarNode node) {
-        interferences.add(node);
+        if(!interferences.contains(node))
+            interferences.add(node);
     }
 
     public void removeInterference(VarNode node) { interferences.remove(node); }
@@ -44,6 +45,6 @@ public class VarNode {
         }
 
 
-        return msg;
+        return msg + '\n';
     }
 }

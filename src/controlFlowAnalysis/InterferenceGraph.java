@@ -23,22 +23,23 @@ public class InterferenceGraph {
     }
 
     public void addEdge(VarDescriptor varDescriptor1, VarDescriptor varDescriptor2) {
-        if(varDescriptor1.getName().equals(varDescriptor2.getName()))
-            return;
-
         VarNode node1 = lookup(varDescriptor1);
         VarNode node2 = lookup(varDescriptor2);
 
         if(node1 == null) {
             node1 =  new VarNode(varDescriptor1);
+            addNode(node1);
         }
 
-        if(node2 == null) {
+        if(node2 == null && node2 != node1) {
             node2 = new VarNode(varDescriptor2);
+            addNode(node2);
         }
 
-        node1.addEdge(node2);
-        node2.addEdge(node1);
+        if(!varDescriptor1.getName().equals(varDescriptor2.getName())) {
+            node1.addEdge(node2);
+            node2.addEdge(node1);
+        }
     }
 
     public String print(String methodName) {
