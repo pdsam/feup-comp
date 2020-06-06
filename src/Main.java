@@ -138,7 +138,7 @@ public class Main{
 				System.out.println(graph.toString());
 			}
 
-			/* Coloring algorithm */
+			/* start of the coloring algorithm */
 			Stack<VarNode> stack = new Stack<>();
 			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
 			int neededRegisters = ControlFlowAnalysis.simplification(interferenceGraph, numRegisters, stack);
@@ -146,6 +146,7 @@ public class Main{
 			InterferenceGraph interferenceGraph1 = ControlFlowAnalysis.interferenceGraph(graph);
 			ControlFlowAnalysis.selection(interferenceGraph1, neededRegisters, graph.getInitialStackOffset(), stack);
 
+			/* end of the coloring algorithm */
 			if(neededRegisters > numRegisters) {
 				throw new AllocationException(numRegisters, neededRegisters);
 			}

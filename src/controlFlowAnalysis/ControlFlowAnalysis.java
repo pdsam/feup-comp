@@ -2,7 +2,6 @@ package controlFlowAnalysis;
 
 import symbolTable.descriptor.VarDescriptor;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -126,15 +125,19 @@ public class ControlFlowAnalysis {
 
         do {
             VarNode node = stack.pop();
+            //interference were removes during the simplification, putting them back
+            node = interferenceGraph.lookup(node.getDescriptor());
 
+            //checks the color of the other interfering nodes
             for(int i = initialStackOffset; i < neededRegisters; i++) {
-                //check if all interfering nodes don't have a same color
+                //check if any interfering node has the same color
                 for (VarNode interfering : node.getInterferences()) {
                     if(i == interfering.getDescriptor().getStackOffset()){
                         //that color can not be assign
                         continue;
                     }
                 }
+                //any other interfering node has the same color, attributing the unused color in that context
                 node.getDescriptor().setStackOffset(i);
             }
 
