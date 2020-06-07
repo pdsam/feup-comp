@@ -43,7 +43,7 @@ java -cp "./build/classes/java/main/" <class_name> <arguments>
 Where ``<class_name>`` is the name of the class you want to run and ``<arguments>`` are the arguments to be passed to ``main()``.
 
 ### Run ``.jar``
-
+    
 To run the JAR, do the following command:
 
 ```cmd
@@ -61,13 +61,14 @@ Our compiler supports deep error recovery in the while condition, finding up to 
 
 We also feature detailed error messages for the while condition.
 
-## SEMANTIC ANALYSIS: 
+## SEMANTIC ANALYSIS:
+For the semantic analysis stage we use a Visitor design pattern to go through the Abstract Syntax Tree.  
 The required semantic rules are all implemented. This include:
 + operands must be of same type (e.g. a sum must be applied to to integers)
 + arrays cannot be directly used on operations (e.g. arr1 + arr2 is not permitted)
 + array accesses must be done to an array
 + array access index must be an integer
-+ type checking for assignements (e.g. a_int = b_boolean is not permitted)
++ type checking for assignments (e.g. a_int = b_boolean is not permitted)
 + operations type checking (e.g. boolean operators can only be applied to boolean expressions)
 + conditional expressions (i.e. ifs and whiles) must be of type boolean
 + checking var initialization (by default this only produces a warning, see -werror flag to produce errors instead)
@@ -86,7 +87,12 @@ As extra rules, we implemented:
 ## INTERMEDIATE REPRESENTATIONS (IRs): 
 (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
 ## CODE GENERATION: 
-(describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
+For the code generation stage, our tool revisits the AST generating the necessary code for each node.
+The generated code is directly written to the output file (a file with the name of the class and '.j' extension).  
+For better performance, we generate JVM with lower cost instructions when possible (e.g. i=i+1; is translated to an iinc instruction).
+By default we also try to optimize if and while conditions by generating the least possible code for specific cases.  
+We tested thoroughly our tool and the generated code does not appear to have any problem.
+
 ## OVERVIEW: 
 (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
 **TASK DISTRIBUTION: 
