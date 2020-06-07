@@ -109,8 +109,8 @@ The method table stores the local variables and parameters used in the method de
 ### Checkpoint 2
 * Symbol Tables - Carlos Albuquerque, Maria Helena
 * Semantic Analysis - Carlos Albuquerque, Paulo Marques
-* Jasmin code generation for invocation of functions - 
-* Jasmin code generation for arithmetic expressions -
+* Jasmin code generation for invocation of functions - Moisés Rocha
+* Jasmin code generation for arithmetic expressions - Moisés Rocha
 ### Checkpoint 3
 * Jasmin code generation for conditional expressions-
 * Jasmin code generation for loops-
@@ -123,7 +123,13 @@ The method table stores the local variables and parameters used in the method de
 * Boolean Expression Optimization - Moisés Rocha
 
 ## PROS: (Identify the most positive aspects of your tool)
+* Helpful and detailed error messages.
+* Use of flags for custom usage.
+* Some optimizations.
+* Detects a wide variety of sematic error checking.
+
 ## CONS: (Identify the most negative aspects of your tool)
+* Further optimizations could be implemented in the compiler.
 
 
 For this project, you need to [install Gradle](https://gradle.org/install/)
