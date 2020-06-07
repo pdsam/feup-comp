@@ -109,7 +109,7 @@ public class ControlFlowNode {
             msg+= descriptor.getName() + "; ";
         }
 
-        return msg;
+        return msg + '\n';
     }
 
 }

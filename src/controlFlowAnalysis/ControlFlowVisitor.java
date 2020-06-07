@@ -67,6 +67,9 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
+        System.out.println("============================");
+        System.out.println("Visiting method " + node.identifier);
+
         SymbolTable st = node.getStMethod();
         // Getting the ParametersList children (the parameters)
         int numParams = node.jjtGetChild(0).jjtGetNumChildren();
@@ -81,7 +84,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
             //If there is a StatementList, then we save the last statement node
             //in order to register the ReturnStatement as its successor
-            if(child instanceof ASTStatementList) {
+            if(child instanceof ASTStatementList && child.jjtGetNumChildren() > 0) {
                 Statement lastStatement = (Statement) child.jjtGetChild(child.jjtGetNumChildren() - 1);
                 lastStatementNode = lastStatement.cfNode;
             }
@@ -93,6 +96,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
             cfdata.getGraph().addSuccessor(lastStatementNode, cfdata.getNode());
 
         graphList.add(cfdata.getGraph());
+        System.out.print("\n");
 
         return null;
     }
@@ -181,16 +185,22 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         //or the only Statement in the each statement branch
         Statement thenStmt;
         Statement elseStmt;
-        if(node.thenStatement instanceof ASTScopedStatementList) {
+        if(node.thenStatement instanceof ASTScopedStatementList && node.thenStatement.jjtGetNumChildren() > 0) {
             thenStmt = (Statement) node.thenStatement.jjtGetChild(0);
-            elseStmt = (Statement) node.elseStatement.jjtGetChild(0);
         } else {
             thenStmt = node.thenStatement;
+        }
+
+        if(node.elseStatement instanceof ASTScopedStatementList && node.elseStatement.jjtGetNumChildren() > 0) {
+            elseStmt = (Statement) node.elseStatement.jjtGetChild(0);
+        } else {
             elseStmt = node.elseStatement;
         }
 
-        cfg.addSuccessor(thisNode, thenStmt.cfNode);
-        cfg.addSuccessor(thisNode, elseStmt.cfNode);
+        if(thenStmt.cfNode != null)
+            cfg.addSuccessor(thisNode, thenStmt.cfNode);
+        if(elseStmt.cfNode != null)
+            cfg.addSuccessor(thisNode, elseStmt.cfNode);
 
         return null;
     }

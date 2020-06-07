@@ -20,11 +20,11 @@ class ASTBranch extends Statement {
   public void dump(String prefix) {
     System.out.println(toString(prefix));
     System.out.printf("%s  Condition:\n", prefix);
-    condition.dump(prefix + "  ");
+    condition.dump(prefix + "    ");
     System.out.printf("%s  Then:\n", prefix);
-    thenStatement.dump(prefix + "  ");
+    thenStatement.dump(prefix + "    ");
     System.out.printf("%s  Else:\n", prefix);
-    elseStatement.dump(prefix + "  ");
+    elseStatement.dump(prefix + "    ");
   }
 
   @Override

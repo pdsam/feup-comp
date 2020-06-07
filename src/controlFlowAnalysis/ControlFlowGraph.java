@@ -47,7 +47,7 @@ public class ControlFlowGraph {
 
     @Override
     public String toString() {
-        String msg= "Method's " + method + " graph: \n";
+        String msg= "Method's " + getMethodName() + " graph: \n";
 
         for(ControlFlowNode node : nodeSet){
             msg += node.toString();
