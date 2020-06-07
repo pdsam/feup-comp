@@ -1,13 +1,15 @@
 class Test {
     public static void main(String[] args) {
-        boolean a;
-        boolean b;
-        boolean c;
+        int a;
+        int i;
+        a = 1;
 
-        a = true;
-        b = true;
-        c = true;
+        i = 0;
+        while(i < 3) {
+               a=0;
+            i = i+1;
+        }
 
-        1/2;
+        a = 1000 +a ;
     }
 }

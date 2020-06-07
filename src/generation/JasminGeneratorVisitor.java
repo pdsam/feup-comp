@@ -413,7 +413,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTIntegerLiteral node, Object data) {
-        System.out.printf("Integer: %d\n", node.val);
         loadIntInstruction(node.val);
         return null;
     }
@@ -439,7 +438,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTVarReference node, Object data) {
         if (node.value != null) {
-            System.out.printf("Constant %s: ", node.identifier);
             ((Expression)node.value).jjtAccept(this, data);
             return null;
         }
