@@ -215,19 +215,20 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
-        node.childrenAccept(this, data);
+        node.arrayRef.index.jjtAccept(this, data);
+        node.value.jjtAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTExprStatement node, Object data) {
-        node.childrenAccept(this, data);
+        node.expression.jjtAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTArrayAccess node, Object data) {
-        node.childrenAccept(this, data);
+        node.index.jjtAccept(this, data);
         return null;
     }
 
@@ -256,7 +257,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayCreation node, Object data) {
-        node.childrenAccept(this, data);
+        node.size.jjtAccept(this, data);
         return null;
     }
 
@@ -268,7 +269,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTNegation node, Object data) {
-        node.childrenAccept(this, data);
+        node.child.jjtAccept(this, data);
         return null;
     }
 
@@ -292,37 +293,43 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAnd node, Object data) {
-        node.childrenAccept(this, data);
+        node.left.jjtAccept(this, data);
+        node.right.jjtAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTLessThan node, Object data) {
-        node.childrenAccept(this, data);
+        node.left.jjtAccept(this, data);
+        node.right.jjtAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTSum node, Object data) {
-        node.childrenAccept(this, data);
+        node.left.jjtAccept(this, data);
+        node.right.jjtAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTSub node, Object data) {
-        node.childrenAccept(this, data);
+        node.left.jjtAccept(this, data);
+        node.right.jjtAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTMul node, Object data) {
-        node.childrenAccept(this, data);
+        node.left.jjtAccept(this, data);
+        node.right.jjtAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTDiv node, Object data) {
-        node.childrenAccept(this, data);
+        node.left.jjtAccept(this, data);
+        node.right.jjtAccept(this, data);
         return null;
     }
 }
