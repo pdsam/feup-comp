@@ -55,6 +55,10 @@ Where ``<jar filename>`` is the name of the JAR file that has been copied to the
 #### Avaiable flags
 + -v - Turns on the verbose mode, which turns on the programms debug prints.
 + -werror - The Warnings will be treated like errors by the compiler.
++ -r<N>
++ -o - Enables the following optimizations: While loop templates, Constant propagation and folding and Booleans Expression Optimization.
++ -lp - Enables the while loop template separately.
++ -pfc - Enables Constant propagation and folding separately.
 
 ## Dealing With Syntatic Errors: 
 Our compiler supports deep error recovery in the while condition, finding up to a predetermined number of errors (currently 10). In other code blocks our tool does not performe error recovery, exiting after the first error.
