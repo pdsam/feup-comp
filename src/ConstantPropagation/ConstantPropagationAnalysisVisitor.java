@@ -166,6 +166,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
                 }
             } else {
                 state.add(keyTemp, null);
+                second.remove(keyTemp);
 
             }
 
@@ -174,8 +175,12 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
         while (keysecondItr.hasNext()) {
             VarDescriptor keyTemp = keythenItr.next();
             if (second.get(keyTemp) != null) {
-                if (second.get(keyTemp).equals(first.get(keyTemp))) {
+                if (!second.get(keyTemp).equals(first.get(keyTemp))) {
                     state.add(keyTemp, null);
+                }
+                else{
+                    //should never enter here
+                    state.add(keyTemp, second.get(keyTemp));
                 }
             }
 
