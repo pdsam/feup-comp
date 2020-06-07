@@ -88,12 +88,19 @@ As extra rules, we implemented:
 + expression statements without meaning are not permitted (e.g. true; or 1+20; are not valid statements)
 
 ## INTERMEDIATE REPRESENTATIONS (IRs): 
-The HLIR consists on a AST with adicional informations on the nodes.In fact, our tool starts with an AST and adds information to its nodes. 
-(for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
+Our tool does not use an intermediate representation. However we do annotate the AST with extra information in diferent stages of the compiler. For example, the semantic analyser adds to the nodes their corresponding symbol table.
 ## CODE GENERATION: 
 (describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
 ## OVERVIEW: 
-(refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+Our tool does not use any third party tool or package.
+
+After generating the AST, we use the Visitor pattern to "visit" each node of the tree and perform the necessary operations in that node.
+Every stage of the compiler has a diferent visitor class, therefore, the tree is visited multiple times.
+We also make use of a symbol table hierarchy by having three different types of symbol tables: we have a symbol table for the document, one for the class and one for each method.
+
+The document table stores the imported methods and classes.
+The class table stores the information of every method in the class and any possible methods from a superclass.
+The method table stores the local variables and parameters used in the method definition. 
 ## TASK DISTRIBUTION: 
 ### Checkpoint 1
 * Parser development - 
