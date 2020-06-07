@@ -87,6 +87,15 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
+        //do stuff
+        node.value.jjtAccept(this,data);
+        if(node.value instanceof ASTIntegerLiteral ||node.value instanceof  ASTBooleanLiteral){
+            ASTVarReference aux =(ASTVarReference) node.varReference;
+            aux.desc.setValue(node.value);
+        }
+        
+
+
         return null;
     }
 
@@ -127,6 +136,9 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
+        
+
+
         return null;
     }
 
