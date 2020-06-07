@@ -1,5 +1,80 @@
 # COMP - Project 1
 
+## PROJECT TITLE: A compiler of Java-- programs to Java bytecodes.
+
+## GROUP: <identifier of the group>
+(Names, numbers, self assessment, and contribution of the members of the group to the project according to:)
+
+NAME1: Carlos Albuquerque, NR1: up201706735, GRADE1: <0 to 20 value>, CONTRIBUTION1: <0 to 100 %>
+
+NAME2: Maria Ferreira, NR2: up201704508, GRADE2: <0 to 20 value>, CONTRIBUTION2: <0 to 100 %>
+
+NAME3: Moisés Rocha, NR3: up201707329, GRADE3: <0 to 20 value>, CONTRIBUTION3: <0 to 100 %>
+
+NAME4: Paulo Marques, NR4: up201705615, GRADE3: <0 to 20 value>, CONTRIBUTION3: <0 to 100 %>
+
+...
+
+(Note that the sum of the CONTRIBUTION? values must be 100 %)
+GLOBAL Grade of the project: 20
+
+## Summary:
+The compiler, named jmm, translates programs in Java-- ,into java bytecodes. The compiler, besides having the normal stages of a compiler(syntatic analysis, semantic analysis, code generation) has some optimization options such as Constant propagation and folding, while template, boolean expression optimization, optimized register alocation.
+
+
+## Execute: 
+
+### Compile
+
+To compile the program, run ``gradle build``. This will compile and generate a JAR file in the root directory.
+
+### Run
+
+To run you have two options: Run the ``.class`` files or run the JAR.
+
+### Run ``.class``
+
+To run the ``.class`` files, do the following:
+
+```cmd
+java -cp "./build/classes/java/main/" <class_name> <arguments>
+```
+
+Where ``<class_name>`` is the name of the class you want to run and ``<arguments>`` are the arguments to be passed to ``main()``.
+
+### Run ``.jar``
+
+To run the JAR, do the following command:
+
+```cmd
+java -jar <jar filename> <arguments>
+```
+
+Where ``<jar filename>`` is the name of the JAR file that has been copied to the root folder, and ``<arguments>`` are the arguments to be passed to ``main()``.
+
+#### Avaiable flags
++ -v - Turns on the verbose mode, which turns on the programms debug prints.
++ -werror - The Warnings will be treated like errors by the compiler.
+
+## Dealing With Syntatic Errors: 
+Our compiler supports deep error recovery in the while condition, finding up to a predetermined number of errors (currently 10). In other code blocks our tool does not performe error recovery, exiting after the first error.
+
+We also feature detailed error messages for the while condition.
+
+## SEMANTIC ANALYSIS: 
+(Refer the semantic rules implemented by your tool.)
+## INTERMEDIATE REPRESENTATIONS (IRs): 
+(for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
+## CODE GENERATION: 
+(describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
+## OVERVIEW: 
+(refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+**TASK DISTRIBUTION: 
+(Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
+**PROS: (Identify the most positive aspects of your tool)
+**CONS: (Identify the most negative aspects of your tool)
+
+
 For this project, you need to [install Gradle](https://gradle.org/install/)
 
 ## Project setup
@@ -25,6 +100,8 @@ java -cp "./build/classes/java/main/" <class_name> <arguments>
 ```
 
 Where ``<class_name>`` is the name of the class you want to run and ``<arguments>`` are the arguments to be passed to ``main()``.
+
+
 
 #### Avaiable flags
 + -v - Turns on the verbose mode, which turns on the programms debug prints.
@@ -90,21 +167,3 @@ To test the program, run ``gradle test``. This will execute the build, and run t
 		- neste checkpoint não é necessário a seleção das operações mais eficientes mas isto será considerado no CP3 e versão final
 	* invocação de métodos
 
-**PROJECT TITLE: <title of the project>
-**GROUP: <identifier of the group>
-(Names, numbers, self assessment, and contribution of the members of the group to the project according to:)
-NAME1: <name>, NR1: <student number>, GRADE1: <0 to 20 value>, CONTRIBUTION1: <0 to 100 %>
-NAME2: <name>, NR2: < student number >, GRADE2: <0 to 20 value>, CONTRIBUTION2: <0 to 100 %>
-...
-(Note that the sum of the CONTRIBUTION? values must be 100 %)
-GLOBAL Grade of the project: <0 to 20>
-** SUMMARY: (Describe what your tool does and its main features.)
-** EXECUTE: (indicate how to run your tool)
-**DEALING WITH SYNTACTIC ERRORS: (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
-**SEMANTIC ANALYSIS: (Refer the semantic rules implemented by your tool.)
-**INTERMEDIATE REPRESENTATIONS (IRs): (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
-**CODE GENERATION: (describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
-**OVERVIEW: (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
-**TASK DISTRIBUTION: (Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
-**PROS: (Identify the most positive aspects of your tool)
-**CONS: (Identify the most negative aspects of your tool)
