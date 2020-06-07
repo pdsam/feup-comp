@@ -118,9 +118,13 @@ public class ControlFlowAnalysis {
         int minInterferences = Integer.MAX_VALUE;
 
         do {
+            System.out.println("====================================");
+
             notEnoughColors = true;
             for(VarNode node : nodes) {
-                if (node.numInterferences() < numRegisters) {
+                System.out.println("Iteration for node " + node.getDescriptor().getName());
+                if (node.numInterferences() < localRegisters) {
+                    System.out.println("\tPushing node " + node.getDescriptor().getName());
                     stack.push(node);
 
                     //Removing this node interference from the nodes that remain in the graph
@@ -131,11 +135,16 @@ public class ControlFlowAnalysis {
                 } else if (node.numInterferences() < minInterferences) {
                     //Saving the minimum number of interferences to allocate more registers
                     minInterferences = node.numInterferences();
+                    System.out.println("\tUpdating minInterferences " + minInterferences);
                 }
             }
 
+            System.out.println("====================================");
+
             if(notEnoughColors) {
                 localRegisters = minInterferences + 1;
+                System.out.println("There were not enough colors.");
+                System.out.println("Increasing the num registers to " + localRegisters);
             } else {
                 nodes.removeAll(stack);
             }
