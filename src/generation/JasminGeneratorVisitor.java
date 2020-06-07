@@ -13,12 +13,12 @@ import static utils.Utils.isArithmeticBoolean;
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
     private final PrintWriter writer;
     private boolean optimizeBooleanExpressions;
-    private boolean optimizations;
+    private boolean loopTemplates;
 
-    public JasminGeneratorVisitor(PrintWriter writer, boolean optimizeBooleanExpressions, boolean optimizations) {
+    public JasminGeneratorVisitor(PrintWriter writer, boolean optimizeBooleanExpressions, boolean loopTemplates) {
         this.writer = writer;
         this.optimizeBooleanExpressions = optimizeBooleanExpressions;
-        this.optimizations = optimizations;
+        this.loopTemplates = loopTemplates;
     }
 
     public PrintWriter getWriter() {
@@ -204,6 +204,24 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             node.value.jjtAccept(this, data);
             writer.printf("putfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
         } else {
+            if (node.value instanceof ASTSum) {
+                ASTSum value = (ASTSum) node.value;
+                if (value.left instanceof ASTVarReference && value.right instanceof ASTIntegerLiteral) {
+                    ASTVarReference left = (ASTVarReference) value.left;
+                    ASTIntegerLiteral right = (ASTIntegerLiteral) value.right;
+                    if (left.identifier.equals(ref.identifier) && right.val < 128 && right.val >= 0) {
+                        writer.printf("iinc %d %d\n", desc.getStackOffset(), right.val);
+                        return null;
+                    }
+                } else if (value.right instanceof ASTVarReference && value.left instanceof ASTIntegerLiteral) {
+                    ASTVarReference right = (ASTVarReference) value.right;
+                    ASTIntegerLiteral left = (ASTIntegerLiteral) value.left;
+                    if (right.identifier.equals(ref.identifier) && left.val < 128 && left.val >= 0) {
+                        writer.printf("iinc %d %d\n", desc.getStackOffset(), left.val);
+                        return null;
+                    }
+                }
+            }
             node.value.jjtAccept(this, data);
             if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
                 writer.printf("istore %d\n", desc.getStackOffset());
@@ -260,7 +278,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
         MethodContext context = (MethodContext) data;
-        if (!optimizations) {
+        if (!loopTemplates) {
             String loopLabel = context.generateLabel();
             String endLabel = context.generateLabel();
 
