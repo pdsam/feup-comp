@@ -142,8 +142,10 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
         ConstantState state = (ConstantState) data;
 
-        ConstantState thenState = new ConstantState(state.getVarstate());
-        ConstantState elseState = new ConstantState(state.getVarstate());
+        ConstantState thenState = new ConstantState();
+        thenState.clone(state);
+        ConstantState elseState = new ConstantState();
+        elseState.clone(state);
 
         node.thenStatement.jjtAccept(this, thenState);
         node.elseStatement.jjtAccept(this, elseState);
@@ -153,9 +155,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
         Map<VarDescriptor, Object> first = thenState.getVarstate();
         Map<VarDescriptor, Object> second = elseState.getVarstate();
 
-        Iterator<VarDescriptor> keythenItr = first.keySet().iterator();
-        while (keythenItr.hasNext()) {
-            VarDescriptor keyTemp = keythenItr.next();
+        for (VarDescriptor keyTemp : first.keySet()) {
             if (first.get(keyTemp) != null) {
                 if (first.get(keyTemp).equals(second.get(keyTemp))) { // If same key, same value mapped
                     state.add(keyTemp, first.get(keyTemp)); // add key value to map
@@ -169,11 +169,8 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
                 second.remove(keyTemp);
 
             }
-
         }
-        Iterator<VarDescriptor> keysecondItr = second.keySet().iterator();
-        while (keysecondItr.hasNext()) {
-            VarDescriptor keyTemp = keythenItr.next();
+        for (VarDescriptor keyTemp : second.keySet()) {
             if (second.get(keyTemp) != null) {
                 if (!second.get(keyTemp).equals(first.get(keyTemp))) {
                     state.add(keyTemp, null);
@@ -182,13 +179,9 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
                     //should never enter here
                     state.add(keyTemp, second.get(keyTemp));
                 }
-            }
-
-            else {
+            } else {
                 state.add(keyTemp, null);
-
             }
-
         }
 
         return null;
@@ -208,9 +201,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
         boolean redo = false;
         Map<VarDescriptor, Object> outsideVars = state.getVarstate();
-        Iterator<VarDescriptor> varsIter = outsideVars.keySet().iterator();
-        while (varsIter.hasNext()) {
-            VarDescriptor keyTemp = varsIter.next();
+        for (VarDescriptor keyTemp : outsideVars.keySet()) {
             if (!Objects.equals(outsideVars.get(keyTemp), bodyState.getVarstate().get(keyTemp))) {
                 redo = true;
                 bodyState.add(keyTemp, null);
@@ -219,6 +210,9 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
         }
 
         if (redo) {
+            ConstantState conditionState = new ConstantState();
+            conditionState.clone(bodyState);
+            node.condition.jjtAccept(this, conditionState);
             node.body.jjtAccept(this, bodyState);
         }
 

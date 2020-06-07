@@ -10,13 +10,7 @@ import parser.*;
 public class ConstantState {
     
     private Map<VarDescriptor, Object>  varState = new HashMap<>();
-    
-    ConstantState(){}
 
-    ConstantState(Map<VarDescriptor, Object> original){
-        this.varState = original;
-    }
-    
     public void add(VarDescriptor var, Object value){
 
         varState.put(var, value);

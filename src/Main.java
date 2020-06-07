@@ -1,3 +1,4 @@
+import ConstantPropagation.ConstantPropagationAnalysisVisitor;
 import generation.JasminGeneratorVisitor;
 import parser.ASTDocument;
 import parser.MyGrammar;
@@ -67,6 +68,9 @@ public class Main{
 		}
 
 		String filename = semanticAnalysis(root);
+
+		ConstantPropagationAnalysisVisitor constProp = new ConstantPropagationAnalysisVisitor();
+		root.jjtAccept(constProp, null);
 
 		try {
 			File generatedCodeFile = new File(filename + ".j");

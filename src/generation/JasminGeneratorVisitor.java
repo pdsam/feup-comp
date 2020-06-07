@@ -125,6 +125,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
+        System.out.println("Method " + node.identifier);
         writer.printf(".method public %s(", node.identifier);
         SimpleNode params = (SimpleNode) node.children[0];
         params.childrenAccept(this, data);
@@ -408,7 +409,12 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTIntegerLiteral node, Object data) {
-        int val = node.val;
+        System.out.printf("Integer: %d\n", node.val);
+        loadIntInstruction(node.val);
+        return null;
+    }
+
+    private void loadIntInstruction(int val) {
         if (val >= 0 && val <= 5) {
             writer.printf("iconst_%d\n", val);
         } else if (val <= 127) {
@@ -416,9 +422,8 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         } else if (val <= 32767) {
             writer.printf("sipush %d\n", val);
         } else {
-            writer.printf("ldc %d\n", node.val);
+            writer.printf("ldc %d\n", val);
         }
-        return null;
     }
 
     @Override
@@ -429,6 +434,11 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
+        if (node.value != null) {
+            System.out.printf("Constant %s: ", node.identifier);
+            ((Expression)node.value).jjtAccept(this, data);
+            return null;
+        }
         VarDescriptor desc = node.desc;
         if (desc.getVarType() == VarType.FIELD) {
             writer.println("aload_0");
