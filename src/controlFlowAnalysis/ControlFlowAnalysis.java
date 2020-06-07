@@ -91,11 +91,14 @@ public class ControlFlowAnalysis {
         return interferenceGraph;
     }
 
-    public static int coloring(InterferenceGraph graph, int numRegisters, int initialStackOffset) {
+    public static void coloring(InterferenceGraph graph, int numRegisters, int initialStackOffset) throws AllocationException {
         Stack<VarNode> stack = new Stack<>();
         List<VarNode> nodes = graph.getNodes();
 
         int localRegisters = simplification(nodes, numRegisters, stack);
+
+        if(localRegisters > numRegisters)
+            throw new AllocationException(numRegisters, localRegisters);
 
         System.out.println(stack.toString());
 
@@ -107,8 +110,6 @@ public class ControlFlowAnalysis {
             System.out.println("Variable '" + var.getName() + "' allocated to register " + var.getStackOffset());
         }
         System.out.print("\n\n");
-
-        return localRegisters;
     }
 
     private static int simplification(List<VarNode> nodes, int numRegisters, Stack<VarNode> stack) {
