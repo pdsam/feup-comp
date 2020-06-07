@@ -1,9 +1,17 @@
 package generation;
 
+import jdk.jshell.execution.Util;
 import parser.*;
 import symbolTable.descriptor.VarType;
+import utils.Utils;
 
 public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
+
+    private boolean optimizeBooleanExpressions;
+
+    public StackLimitCalculatorVisitor(boolean optimizeBooleanExpressions) {
+        this.optimizeBooleanExpressions = optimizeBooleanExpressions;
+    }
 
     private int getMaxOfChildren(SimpleNode node, Object data) {
         int max = 0;
@@ -187,7 +195,11 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
         if (node.foldedValue != null) {
             return 1;
         }
-        return Integer.max(1, (int) node.child.jjtAccept(this, data));
+        if (optimizeBooleanExpressions && Utils.isArithmeticBoolean(node.child)) {
+            return node.child.jjtAccept(this, data);
+        } else {
+            return Integer.max(1, (int) node.child.jjtAccept(this, data));
+        }
     }
 
     @Override
@@ -232,7 +244,12 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAnd node, Object data) {
-        return BinOpSize(node, data);
+        if (optimizeBooleanExpressions) {
+            int i = (!Utils.isArithmeticBoolean(node.left) || !Utils.isArithmeticBoolean(node.right)) ? 1 : 0;
+            return Integer.max(i, Integer.max((int) node.left.jjtAccept(this, data), (int) node.right.jjtAccept(this, data)));
+        } else {
+            return Integer.max(1, Integer.max((int) node.left.jjtAccept(this, data), (int) node.right.jjtAccept(this, data)));
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package generation;
 
 import parser.*;
+import utils.Utils;
 
 import java.io.PrintWriter;
 
@@ -12,10 +13,6 @@ public class BooleanExpressionGeneratorVisitor implements MyGrammarVisitor {
     public BooleanExpressionGeneratorVisitor(JasminGeneratorVisitor generator) {
         this.generator = generator;
         this.writer = generator.getWriter();
-    }
-
-    private boolean isArithmeticBoolean(Node node) {
-        return node instanceof ASTAnd || node instanceof ASTNegation || node instanceof ASTLessThan;
     }
 
     @Override
@@ -172,7 +169,7 @@ public class BooleanExpressionGeneratorVisitor implements MyGrammarVisitor {
         BooleanGenerationContext newCtx = new BooleanGenerationContext(ctx.methodcontext, ctx.failLabel, success);
 
         node.child.jjtAccept(this, newCtx);
-        if (!(isArithmeticBoolean(node.child))) {
+        if (!(Utils.isArithmeticBoolean(node.child))) {
             writer.printf("ifgt %s\n", ctx.failLabel);
         } else {
             writer.printf("goto %s\n", ctx.failLabel);
@@ -203,11 +200,11 @@ public class BooleanExpressionGeneratorVisitor implements MyGrammarVisitor {
     public Object visit(ASTAnd node, Object data) {
         BooleanGenerationContext ctx = (BooleanGenerationContext) data;
         node.left.jjtAccept(this, ctx);
-        if (!(isArithmeticBoolean(node.left))) {
+        if (!(Utils.isArithmeticBoolean(node.left))) {
             writer.printf("ifle %s\n", ctx.failLabel);
         }
         node.right.jjtAccept(this, ctx);
-        if (!(isArithmeticBoolean(node.right))) {
+        if (!(Utils.isArithmeticBoolean(node.right))) {
             writer.printf("ifle %s\n", ctx.failLabel);
         }
         return null;

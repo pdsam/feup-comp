@@ -1,8 +1,10 @@
 package generation;
 
+import jdk.jshell.execution.Util;
 import parser.*;
 import symbolTable.descriptor.VarDescriptor;
 import symbolTable.descriptor.VarType;
+import utils.Utils;
 
 import java.io.PrintWriter;
 
@@ -11,6 +13,7 @@ import java.io.PrintWriter;
 //TODO binary op order inversion(if possible)
 //TODO constant folding
 
+import static utils.Utils.isArithmeticBoolean;
 
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
     private final PrintWriter writer;
@@ -25,10 +28,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     public PrintWriter getWriter() {
         return writer;
-    }
-
-    private boolean isArithmeticBoolean(Node node) {
-        return node instanceof ASTAnd || node instanceof ASTNegation || node instanceof ASTLessThan;
     }
 
     private String getTypeString(String type) {
@@ -131,7 +130,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         params.childrenAccept(this, data);
         writer.printf(")%s\n", getTypeString(node.type));
 
-        writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(), null));
+        writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(optimizeBooleanExpressions), null));
         writer.printf(".limit locals %d\n", getLocalCount(node));
 
         MethodContext context = new MethodContext(node.getStMethod());
@@ -174,7 +173,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
     public Object visit(ASTMainMethod node, Object data) {
         writer.println(".method public static main([Ljava/lang/String;)V");
 
-        writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(), null));
+        writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(optimizeBooleanExpressions), null));
         writer.printf(".limit locals %d\n", getLocalCount(node));
 
         MethodContext context = new MethodContext(node.getStMethod());
