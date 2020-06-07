@@ -1,11 +1,15 @@
 package ConstantPropagation;
 
 import parser.*;
+import ConstantPropagation.*;
+import symbolTable.descriptor.VarDescriptor;
+import java.util.Iterator;
+import java.util.Map;
 
-public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
+public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
-    private void logDebug(String msg){
-        System.out.println("Debug: "+ msg);
+    private void logDebug(String msg) {
+        System.out.println("Debug: " + msg);
     }
 
     @Override
@@ -64,7 +68,8 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        node.childrenAccept(this, data);
+        ConstantState state = new ConstantState();
+        node.childrenAccept(this, state);
         return null;
     }
 
@@ -82,7 +87,8 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTMainMethod node, Object data) {
-        node.childrenAccept(this, data);
+        ConstantState state = new ConstantState();
+        node.childrenAccept(this, state);
         return null;
     }
 
@@ -106,31 +112,48 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        node.value.jjtAccept(this,data);
+        node.value.jjtAccept(this, data);
 
-        ASTVarReference aux =(ASTVarReference) node.varReference;
-        if(node.value instanceof ASTIntegerLiteral ||node.value instanceof  ASTBooleanLiteral){
+        ASTVarReference aux = (ASTVarReference) node.varReference;
+        if (node.value instanceof ASTIntegerLiteral || node.value instanceof ASTBooleanLiteral) {
             aux.value = node.value;
 
         }
-        
-        else{
+
+        else {
             aux.value = null;
         }
+        if (data != null) {
+            ConstantState state = (ConstantState) data;
+            state.add(aux.desc, aux.value);
 
+        }
 
         return null;
     }
 
     @Override
     public Object visit(ASTBranch node, Object data) {
+        ConstantState state = (ConstantState) data;
+
         ConstantState thenState = new ConstantState();
         ConstantState elseState = new ConstantState();
 
         node.thenStatement.jjtAccept(this, thenState);
         node.elseStatement.jjtAccept(this, elseState);
 
-        //compare if they both modify the same variables, or the previous ones.
+        // compare if they both modify the same variables, or the previous ones.
+
+        Map<VarDescriptor, Expression> first = thenState.getVarstate();
+        Map<VarDescriptor, Expression> second = elseState.getVarstate();
+
+        Iterator<VarDescriptor> keythenItr = first.keySet().iterator();
+        while (keythenItr.hasNext()) {
+            VarDescriptor keyTemp = keythenItr.next();
+            if (first.get(keyTemp).equals(second.get(keyTemp))) { // If same key, same value mapped
+                state.add(keyTemp, first.get(keyTemp)); // add key value to map
+            }
+        }
 
         return null;
     }

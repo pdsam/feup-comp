@@ -12,10 +12,12 @@ public class ConstantState {
 
     public void add(VarDescriptor var, Expression value){
 
-        //do logic to see if redefinition
-
         varState.put(var, value);
+
     }
 
+    public Map<VarDescriptor, Expression> getVarstate(){
+        return varState;
+    }
 
 }
