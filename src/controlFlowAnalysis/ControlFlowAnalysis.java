@@ -97,14 +97,16 @@ public class ControlFlowAnalysis {
 
         int localRegisters = simplification(nodes, numRegisters, stack);
 
-//        System.out.println(stack.toString());
+        System.out.println(stack.toString());
 
         selection(localRegisters, initialStackOffset, stack);
 
+        System.out.println("\n========== Allocation table ============");
         for(VarNode node : graph.getNodes()) {
             VarDescriptor var = node.getDescriptor();
             System.out.println("Variable '" + var.getName() + "' allocated to register " + var.getStackOffset());
         }
+        System.out.print("\n\n");
 
         return localRegisters;
     }
@@ -142,24 +144,34 @@ public class ControlFlowAnalysis {
     }
 
     private static void selection(int localRegisters, int initialStackOffset, Stack<VarNode> stack) {
-        System.out.println("Local registers: " + localRegisters);
-        System.out.println("Init Stack Off: " + initialStackOffset);
         int totalRegisters = localRegisters + initialStackOffset;
+        boolean interferes;
 
         do {
             VarNode node = stack.pop();
+            System.out.println("====================================");
+            System.out.print("Popped Node: " + node);
 
             //checks the color of the other interfering nodes
             for(int i = initialStackOffset; i < totalRegisters; i++) {
+                interferes = false;
+                System.out.println("For color " + i + ": ");
                 //check if any interfering node has the same color
                 for (VarNode interfering : node.getInterferences()) {
+                    System.out.println("\tChecking interference with " + interfering.getDescriptor().getName()
+                            + " with value " + interfering.getDescriptor().getStackOffset());
                     if(i == interfering.getDescriptor().getStackOffset()){
                         //that color can not be assigned
-                        continue;
+                        interferes = true;
+                        break;
                     }
                 }
                 //no other interfering node has the same color, this color is safe to use
-                node.getDescriptor().setStackOffset(i);
+                if(!interferes) {
+                    System.out.println("\tColor chosen!");
+                    node.getDescriptor().setStackOffset(i);
+                    break;
+                }
             }
         } while(!stack.empty());
     }

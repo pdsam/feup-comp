@@ -140,7 +140,7 @@ public class Main{
 
 			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
 
-			System.out.println(interferenceGraph.print(graph.getMethodName()));
+//			System.out.println(interferenceGraph.print(graph.getMethodName()));
 
 			int neededRegisters = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
 
