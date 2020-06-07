@@ -8,6 +8,6 @@ class Test {
         b = true;
         c = true;
 
-        !(1 < 2) && c;
+        1/2;
     }
 }

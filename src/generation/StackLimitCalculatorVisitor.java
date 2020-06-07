@@ -184,6 +184,9 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTNegation node, Object data) {
+        if (node.foldedValue != null) {
+            return 1;
+        }
         return Integer.max(1, (int) node.child.jjtAccept(this, data));
     }
 
@@ -221,6 +224,9 @@ public class StackLimitCalculatorVisitor implements MyGrammarVisitor {
     }
 
     private int BinOpSize(BinOpExpression node, Object data) {
+        if (node.foldedValue != null) {
+            return 1;
+        }
         return Integer.max(2, Integer.max((int) node.left.jjtAccept(this, data), 1 + (int) node.right.jjtAccept(this, data)));
     }
 

@@ -213,6 +213,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
             ConstantState conditionState = new ConstantState();
             conditionState.clone(bodyState);
             node.condition.jjtAccept(this, conditionState);
+
             node.body.jjtAccept(this, bodyState);
         }
 
@@ -240,18 +241,29 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTIntegerLiteral node, Object data) {
+        node.foldedValue = node.val;
         return null;
     }
 
     @Override
     public Object visit(ASTBooleanLiteral node, Object data) {
+        node.foldedValue = node.val;
         return null;
     }
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
+        node.foldedValue = null;
         ConstantState state = (ConstantState) data;
         node.value = state.getVarstate().get(node.desc);
+
+        node.foldedValue = state.getVarstate().get(node.desc);
+        if (node.value instanceof ASTIntegerLiteral) {
+            node.foldedValue = ((ASTIntegerLiteral) node.value).val;
+        }
+        if (node.value instanceof ASTBooleanLiteral) {
+            node.foldedValue = ((ASTBooleanLiteral) node.value).val;
+        }
         return null;
     }
 
@@ -275,7 +287,12 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTNegation node, Object data) {
+        node.foldedValue = null;
         node.child.jjtAccept(this, data);
+
+        if (node.child.foldedValue != null) {
+            node.foldedValue = !(boolean) node.child.foldedValue;
+        }
         return null;
     }
 
@@ -299,43 +316,74 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAnd node, Object data) {
+        node.foldedValue = null;
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
+
+        if (node.left.foldedValue != null && node.right.foldedValue != null) {
+            node.foldedValue = (boolean) node.left.foldedValue && (boolean) node.right.foldedValue;
+        }
         return null;
     }
 
     @Override
     public Object visit(ASTLessThan node, Object data) {
+        node.foldedValue = null;
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
+
+        if (node.left.foldedValue != null && node.right.foldedValue != null) {
+            node.foldedValue = (int) node.left.foldedValue < (int) node.right.foldedValue;
+        }
+
         return null;
     }
 
     @Override
     public Object visit(ASTSum node, Object data) {
+        node.foldedValue = null;
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
+
+        if (node.left.foldedValue != null && node.right.foldedValue != null) {
+            node.foldedValue = (int) node.left.foldedValue + (int) node.right.foldedValue;
+        }
         return null;
     }
 
     @Override
     public Object visit(ASTSub node, Object data) {
+        node.foldedValue = null;
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
+
+        if (node.left.foldedValue != null && node.right.foldedValue != null) {
+            node.foldedValue = (int) node.left.foldedValue - (int) node.right.foldedValue;
+        }
         return null;
     }
 
     @Override
     public Object visit(ASTMul node, Object data) {
+        node.foldedValue = null;
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
+
+        if (node.left.foldedValue != null && node.right.foldedValue != null) {
+            node.foldedValue = (int) node.left.foldedValue * (int) node.right.foldedValue;
+        }
         return null;
     }
 
     @Override
     public Object visit(ASTDiv node, Object data) {
+        node.foldedValue = null;
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
+
+        if (node.left.foldedValue != null && node.right.foldedValue != null) {
+            node.foldedValue = (int) node.left.foldedValue / (int) node.right.foldedValue;
+        }
         return null;
     }
 }
