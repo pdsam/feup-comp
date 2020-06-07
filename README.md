@@ -55,7 +55,7 @@ Where ``<jar filename>`` is the name of the JAR file that has been copied to the
 #### Avaiable flags
 + -v - Turns on the verbose mode, which turns on the programms debug prints.
 + -werror - The Warnings will be treated like errors by the compiler.
-+ -r<N>
++ -r=``<n>`` -  the compiler tries to assign the local variables used in each function of  each Java-- class to  the  first <n> local  variables  of  the JVM.
 + -o - Enables the following optimizations: While loop templates, Constant propagation and folding and Booleans Expression Optimization.
 + -lp - Enables the while loop template separately.
 + -pfc - Enables Constant propagation and folding separately.
@@ -88,15 +88,35 @@ As extra rules, we implemented:
 + expression statements without meaning are not permitted (e.g. true; or 1+20; are not valid statements)
 
 ## INTERMEDIATE REPRESENTATIONS (IRs): 
+The HLIR consists on a AST with adicional informations on the nodes.In fact, our tool starts with an AST and adds information to its nodes. 
 (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
 ## CODE GENERATION: 
 (describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
 ## OVERVIEW: 
 (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
-**TASK DISTRIBUTION: 
-(Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
-**PROS: (Identify the most positive aspects of your tool)
-**CONS: (Identify the most negative aspects of your tool)
+## TASK DISTRIBUTION: 
+### Checkpoint 1
+* Parser development - 
+* Error treatment and Recovery mecanism - Paulo Marques
+* Syntax tree generation -
+### Checkpoint 2
+* Symbol Tables - Carlos Albuquerque, Maria Helena
+* Semantic Analysis - Carlos Albuquerque, Paulo Marques
+* Jasmin code generation for invocation of functions - 
+* Jasmin code generation for arithmetic expressions -
+### Checkpoint 3
+* Jasmin code generation for conditional expressions-
+* Jasmin code generation for loops-
+* Jasmin code generation to deal with arrays - 
+* Test classes - Carlos Albuquerque, Maria Ferreira, Paulo Marques
+### Optimizations
+* Option –r=`<n>` - Carlos Albuquerque, Maria Ferreira
+* Option -o - Moisés Rocha, Paulo Marques
+* Constant folding - Moisés Rocha
+* Boolean Expression Optimization - Moisés Rocha
+
+## PROS: (Identify the most positive aspects of your tool)
+## CONS: (Identify the most negative aspects of your tool)
 
 
 For this project, you need to [install Gradle](https://gradle.org/install/)
