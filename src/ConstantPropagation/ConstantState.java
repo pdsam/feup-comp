@@ -8,21 +8,21 @@ import parser.*;
 
 public class ConstantState {
     
-    private Map<VarDescriptor, Expression>  varState = new HashMap<>();
+    private Map<VarDescriptor, Object>  varState = new HashMap<>();
     
     ConstantState(){}
 
-    ConstantState(Map<VarDescriptor, Expression> original){
+    ConstantState(Map<VarDescriptor, Object> original){
         this.varState = original;
     }
     
-    public void add(VarDescriptor var, Expression value){
+    public void add(VarDescriptor var, Object value){
 
         varState.put(var, value);
 
     }
 
-    public Map<VarDescriptor, Expression> getVarstate(){
+    public Map<VarDescriptor, Object> getVarstate(){
         return varState;
     }
 
