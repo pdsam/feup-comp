@@ -64,8 +64,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        ConstantState state = new ConstantState();
-        node.childrenAccept(this, state);
+        node.childrenAccept(this, data);
         return null;
     }
 
@@ -83,8 +82,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTMainMethod node, Object data) {
-        ConstantState state = new ConstantState();
-        node.childrenAccept(this, state);
+        node.childrenAccept(this, data);
         return null;
     }
 
@@ -108,17 +106,16 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        ConstantState state = (ConstantState) data;
         node.value.jjtAccept(this,data);
 
         ASTVarReference aux =(ASTVarReference) node.varReference;
         if(node.value instanceof ASTIntegerLiteral ||node.value instanceof  ASTBooleanLiteral){
-            state.add(aux.desc,node.value);
+            aux.value = node.value;
+
         }
         
         else{
-            state.add(aux.desc,null);
-            this.logDebug("Reseting: "+aux.identifier);
+            aux.value = null;
         }
 
 
@@ -133,18 +130,13 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
         node.thenStatement.jjtAccept(this, thenState);
         node.elseStatement.jjtAccept(this, elseState);
 
-
+        //compare if they both modify the same variables, or the previous ones.
 
         return null;
     }
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
-        ConstantState bodyState = new ConstantState();
-
-
-
-
         return null;
     }
 
@@ -178,6 +170,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
+
         node.childrenAccept(this, data);
         return null;
     }
