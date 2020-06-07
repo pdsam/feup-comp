@@ -108,16 +108,16 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
-        //do stuff
+        ConstantState state = (ConstantState) data;
         node.value.jjtAccept(this,data);
+
         ASTVarReference aux =(ASTVarReference) node.varReference;
         if(node.value instanceof ASTIntegerLiteral ||node.value instanceof  ASTBooleanLiteral){
-            aux.desc.setValue(node.value);
-            this.logDebug("Saving "+aux.identifier+ " for later");
+            state.add(aux.desc,node.value);
         }
         
         else{
-            aux.desc.setValue(null);
+            state.add(aux.desc,null);
             this.logDebug("Reseting: "+aux.identifier);
         }
 
@@ -134,12 +134,17 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor{
         node.elseStatement.jjtAccept(this, elseState);
 
 
+
         return null;
     }
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
-        node.childrenAccept(this, data);
+        ConstantState bodyState = new ConstantState();
+
+
+
+
         return null;
     }
 
