@@ -1,10 +1,10 @@
 package ConstantPropagation;
 
 import parser.*;
-import ConstantPropagation.*;
 import symbolTable.descriptor.VarDescriptor;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
@@ -20,7 +20,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTDocument node, Object data) {
-        node.childrenAccept(this, data);
+        node.children[1].jjtAccept(this, data);
         return null;
     }
 
@@ -38,7 +38,9 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTClass node, Object data) {
-        node.childrenAccept(this, data);
+        node.children[1].jjtAccept(this, data); // Method declarations
+        node.children[2].jjtAccept(this, data); // Main declaration
+        node.children[3].jjtAccept(this, data); // Method declarations
         return null;
     }
 
@@ -69,7 +71,9 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTMethod node, Object data) {
         ConstantState state = new ConstantState();
-        node.childrenAccept(this, state);
+        node.children[2].jjtAccept(this, state); // Generate code for statements
+
+        node.children[3].jjtAccept(this, state); // Generate code for return statement
         return null;
     }
 
@@ -88,7 +92,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
     @Override
     public Object visit(ASTMainMethod node, Object data) {
         ConstantState state = new ConstantState();
-        node.childrenAccept(this, state);
+        node.children[2].jjtAccept(this, state);
         return null;
     }
 
@@ -180,6 +184,32 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTWhileLoop node, Object data) {
+
+        ConstantState state = (ConstantState) data;
+
+        node.condition.jjtAccept(this, state);
+
+        ConstantState bodyState = new ConstantState();
+        bodyState.clone(state);
+
+        node.body.jjtAccept(this, bodyState);
+
+        boolean redo = false;
+        Map<VarDescriptor, Expression> outsideVars = state.getVarstate();
+        Iterator<VarDescriptor> varsIter = outsideVars.keySet().iterator();
+        while (varsIter.hasNext()) {
+            VarDescriptor keyTemp = varsIter.next();
+            if (!Objects.equals(outsideVars.get(keyTemp), bodyState.getVarstate().get(keyTemp))) {
+                redo = true;
+                bodyState.add(keyTemp, null);
+                state.add(keyTemp, null);
+            }
+        }
+
+        if (redo) {
+            node.body.jjtAccept(this, bodyState);
+        }
+
         return null;
     }
 
@@ -213,8 +243,8 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
-
-        node.childrenAccept(this, data);
+        ConstantState state = (ConstantState) data;
+        node.val = state.getVarstate().get(node.desc);
         return null;
     }
 

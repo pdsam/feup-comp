@@ -1,5 +1,6 @@
 package ConstantPropagation;
 
+import jdk.jshell.EvalException;
 import symbolTable.SymbolTable;
 import symbolTable.descriptor.VarDescriptor;
 import java.util.HashMap;
@@ -26,4 +27,10 @@ public class ConstantState {
         return varState;
     }
 
+    public void clone(ConstantState state) {
+        varState.clear();
+        state.getVarstate().forEach((var, val) -> {
+            varState.put(var, val);
+        });
+    }
 }
