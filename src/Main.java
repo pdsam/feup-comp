@@ -135,11 +135,15 @@ public class Main{
 		for(ControlFlowGraph graph: graphList){
 			ControlFlowAnalysis.liveness(graph);
 
-			System.out.println(graph.toString());
+			if(debug) {
+				System.out.println(graph.toString());
+			}
 
 			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
 
-			System.out.println(interferenceGraph.print(graph.getMethodName()));
+			if(debug) {
+				System.out.println(interferenceGraph.print(graph.getMethodName()));
+			}
 
 			int methodLocalsCount = graph.getInitialStackOffset();
 

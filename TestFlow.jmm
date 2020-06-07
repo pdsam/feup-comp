@@ -20,6 +20,10 @@ class TestFlow{
             b = a+1;
             c = c+b;
             a = b*2;
+            while(0 < a) {
+                a = a - 1;
+                c = b;
+            }
         }
 
         return c;
@@ -42,29 +46,5 @@ class TestFlow{
         v=u + w + y;
 
         return v * u;
-    }
-
-    public int ifcenas(boolean flag) {
-        int value;
-
-        if(flag) {
-            value=10;
-        } else {
-            value=0;
-        }
-        value = 0-5;
-        return value;
-    }
-
-    public int cenas(boolean flag) {
-        int value;
-
-        if(flag) {
-            value=10;
-        } else {
-            value=0;
-        }
-
-        return value;
     }
 }

@@ -134,6 +134,25 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         return null;
     }
 
+    @Override
+    public Object visit(ASTScopedStatementList node, Object data) {
+        node.childrenAccept(this, data);
+        ControlFlowData cfdata = (ControlFlowData) data;
+        ControlFlowGraph cfg = cfdata.getGraph();
+
+        for (int i = 0; i < node.jjtGetNumChildren() - 1; i++) {
+            Statement current = (Statement) node.jjtGetChild(i);
+            Statement next = (Statement) node.jjtGetChild(i+1);
+
+            if(current instanceof ASTBranch)
+                addIfSuccessor((ASTBranch) current, next.cfNode, cfg);
+            else
+                cfg.addSuccessor(current.cfNode, next.cfNode);
+        }
+
+        return null;
+    }
+
     private void addIfSuccessor(ASTBranch node, ControlFlowNode next, ControlFlowGraph cfg) {
         Statement thenStmt;
         Statement elseStmt;
@@ -152,26 +171,24 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //Adding the next statement (after the IF clause) as the branches' successors
         //but only if they are not empty
-        if(thenStmt.cfNode != null)
-            cfg.addSuccessor(thenStmt.cfNode, next);
-        if(elseStmt.cfNode != null)
-            cfg.addSuccessor(elseStmt.cfNode, next);
-    }
-
-    @Override
-    public Object visit(ASTScopedStatementList node, Object data) {
-        node.childrenAccept(this, data);
-        ControlFlowData cfdata = (ControlFlowData) data;
-        ControlFlowGraph cfg = cfdata.getGraph();
-
-        for (int i = 0; i < node.jjtGetNumChildren() - 1; i++) {
-            Statement current = (Statement) node.jjtGetChild(i);
-            Statement next = (Statement) node.jjtGetChild(i+1);
-
-            cfg.addSuccessor(current.cfNode, next.cfNode);
+        if(thenStmt.cfNode != null) {
+            if(thenStmt instanceof ASTBranch)
+                addIfSuccessor((ASTBranch) thenStmt, next, cfg);
+            else
+                cfg.addSuccessor(thenStmt.cfNode, next);
+        }
+        if(elseStmt.cfNode != null) {
+            if(elseStmt instanceof ASTBranch)
+                addIfSuccessor((ASTBranch) elseStmt, next, cfg);
+            else
+                cfg.addSuccessor(elseStmt.cfNode, next);
         }
 
-        return null;
+        //If at least one of the branches is empty, then the IF statement can directly jump to
+        //the following statement in the list
+        if(thenStmt.cfNode == null || elseStmt.cfNode == null) {
+            cfg.addSuccessor(node.cfNode, next);
+        }
     }
 
     @Override
@@ -226,10 +243,12 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //Adding the first ThenStatement and first ElseStatement as this node's successors
         //but only if they are not empty
-        if(thenStmt.cfNode != null)
+        if(thenStmt.cfNode != null) {
             cfg.addSuccessor(thisNode, thenStmt.cfNode);
-        if(elseStmt.cfNode != null)
+        }
+        if(elseStmt.cfNode != null) {
             cfg.addSuccessor(thisNode, elseStmt.cfNode);
+        }
 
         return null;
     }
@@ -250,21 +269,30 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         //This will create the successor node
         node.body.jjtAccept(this, cfdata);
-        //After the above line runs, the node that remains in CFData is the last
-        //body statement node, which must jump to the while() statement (thisNode)
-        ControlFlowNode lastBodyNode = cfdata.getNode();
-        cfg.addSuccessor(lastBodyNode, thisNode);
 
         //This node has the first statement of the body as its successor
         //The first statement may either be the first on a ScopedStatementList
         //or the only Statement in the body
-        Statement bodyStmt;
-        if(node.body instanceof ASTScopedStatementList) {
-            bodyStmt = (Statement) node.body.jjtGetChild(0);
+        Statement firstBodyStmt;
+        Statement lastBodyStmt;
+        if(node.body instanceof ASTScopedStatementList && node.body.jjtGetNumChildren() > 0) {
+            firstBodyStmt = (Statement) node.body.jjtGetChild(0);
+            lastBodyStmt = (Statement) node.body.jjtGetChild(node.body.jjtGetNumChildren() - 1);
         } else {
-            bodyStmt = node.body;
+            firstBodyStmt = node.body;
+            lastBodyStmt = firstBodyStmt;
         }
-        cfg.addSuccessor(thisNode, bodyStmt.cfNode);
+
+        if(firstBodyStmt.cfNode != null)
+            cfg.addSuccessor(thisNode, firstBodyStmt.cfNode);
+
+        //The last statement in the while body must have the while statement as its successor
+        if(lastBodyStmt.cfNode != null) {
+            if(lastBodyStmt instanceof ASTBranch)
+                addIfSuccessor((ASTBranch) lastBodyStmt, thisNode, cfg);
+            else
+                cfg.addSuccessor(lastBodyStmt.cfNode, thisNode);
+        }
 
         return null;
     }

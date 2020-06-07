@@ -57,11 +57,11 @@ public class InterferenceGraph {
     }
 
     public String printAllocation(String methodName) {
-        StringBuilder msg = new StringBuilder("\n========== Allocation for method " + methodName + " ============\n");
+        StringBuilder msg = new StringBuilder("\n========== Allocation for method '" + methodName + "' ============\n");
 
         for(Map.Entry<String, VarNode> entry : nodes.entrySet()) {
             VarDescriptor var = entry.getValue().getDescriptor();
-            msg.append("Variable '").append(var.getName()).append("' allocated to register ").append(var.getStackOffset()).append('\n');
+            msg.append("Variable '").append(var.getName()).append("' allocated to JVM variable ").append(var.getStackOffset()).append('\n');
         }
 
         return msg.toString();
