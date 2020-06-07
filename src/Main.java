@@ -16,9 +16,9 @@ public class Main{
 	private static boolean registerAllocation = false;
 	private static int numRegisters = 0;
 	private static String filename;
-	private static boolean useLoopTemplates;
-	private static boolean optimizeBooleans;
-	private static boolean propagateAndFoldConstants;
+	private static boolean useLoopTemplates = false;
+	private static boolean optimizeBooleans = false;
+	private static boolean propagateAndFoldConstants = false;
 
 	public static boolean parseArgs(String[] args) {
 		if(args.length < 1 || args.length > 4){
