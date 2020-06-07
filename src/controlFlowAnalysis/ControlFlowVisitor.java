@@ -67,15 +67,13 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        System.out.println("============================");
-        System.out.println("Visiting method " + node.identifier);
-
         SymbolTable st = node.getStMethod();
         // Getting the ParametersList children (the parameters)
         int numParams = node.jjtGetChild(0).jjtGetNumChildren();
         if(!node.isStatic) numParams++;
+
         ControlFlowData cfdata = new ControlFlowData(st, node.descriptor, numParams);
-        ControlFlowNode lastStatementNode = null;
+        Statement lastStatement = null;
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
         for(int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -85,18 +83,20 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
             //If there is a StatementList, then we save the last statement node
             //in order to register the ReturnStatement as its successor
             if(child instanceof ASTStatementList && child.jjtGetNumChildren() > 0) {
-                Statement lastStatement = (Statement) child.jjtGetChild(child.jjtGetNumChildren() - 1);
-                lastStatementNode = lastStatement.cfNode;
+                lastStatement = (Statement) child.jjtGetChild(child.jjtGetNumChildren() - 1);
             }
         }
 
         //If there was a StatementList, then we register the last statement as the
         //Return's predecessor
-        if(lastStatementNode != null)
-            cfdata.getGraph().addSuccessor(lastStatementNode, cfdata.getNode());
+        if(lastStatement != null){
+            if(lastStatement instanceof ASTBranch)
+                addIfSuccessor((ASTBranch) lastStatement, cfdata.getNode(), cfdata.getGraph());
+            else
+                cfdata.getGraph().addSuccessor(lastStatement.cfNode, cfdata.getNode());
+        }
 
         graphList.add(cfdata.getGraph());
-        System.out.print("\n");
 
         return null;
     }
@@ -125,10 +125,37 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
             Statement current = (Statement) node.jjtGetChild(i);
             Statement next = (Statement) node.jjtGetChild(i+1);
 
-            cfg.addSuccessor(current.cfNode, next.cfNode);
+            if(current instanceof ASTBranch)
+                addIfSuccessor((ASTBranch) current, next.cfNode, cfg);
+            else
+                cfg.addSuccessor(current.cfNode, next.cfNode);
         }
 
         return null;
+    }
+
+    private void addIfSuccessor(ASTBranch node, ControlFlowNode next, ControlFlowGraph cfg) {
+        Statement thenStmt;
+        Statement elseStmt;
+
+        if(node.thenStatement instanceof ASTScopedStatementList && node.thenStatement.jjtGetNumChildren() > 0) {
+            thenStmt = (Statement) node.thenStatement.jjtGetChild(node.thenStatement.jjtGetNumChildren() - 1);
+        } else {
+            thenStmt = node.thenStatement;
+        }
+
+        if(node.elseStatement instanceof ASTScopedStatementList && node.elseStatement.jjtGetNumChildren() > 0) {
+            elseStmt = (Statement) node.elseStatement.jjtGetChild(node.elseStatement.jjtGetNumChildren() - 1);
+        } else {
+            elseStmt = node.elseStatement;
+        }
+
+        //Adding the next statement (after the IF clause) as the branches' successors
+        //but only if they are not empty
+        if(thenStmt.cfNode != null)
+            cfg.addSuccessor(thenStmt.cfNode, next);
+        if(elseStmt.cfNode != null)
+            cfg.addSuccessor(elseStmt.cfNode, next);
     }
 
     @Override
@@ -197,6 +224,8 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
             elseStmt = node.elseStatement;
         }
 
+        //Adding the first ThenStatement and first ElseStatement as this node's successors
+        //but only if they are not empty
         if(thenStmt.cfNode != null)
             cfg.addSuccessor(thisNode, thenStmt.cfNode);
         if(elseStmt.cfNode != null)
@@ -278,7 +307,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         ASTVarReference var = (ASTVarReference) node.arrayRef.arrayRef;
         varDef(var.identifier, cfdata);
         //This will fill use[] properties of this node
-        node.value.jjtAccept(this, cfdata);
+        node.childrenAccept(this, cfdata);
         //Adding the constructed node to the graph
         cfg.addNode(thisNode);
         node.cfNode = thisNode;

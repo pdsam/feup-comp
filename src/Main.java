@@ -5,6 +5,7 @@ import parser.MyGrammar;
 import parser.ParseException;
 import semantics.SemanticVisitor;
 import symbolTable.SymbolTable;
+import symbolTable.descriptor.VarDescriptor;
 import symbolTable.exception.SemanticException;
 
 import java.io.*;
@@ -134,15 +135,20 @@ public class Main{
 		for(ControlFlowGraph graph: graphList){
 			ControlFlowAnalysis.liveness(graph);
 
-			if(debug) {
-				System.out.println(graph.toString());
-			}
+			System.out.println(graph.toString());
 
 			InterferenceGraph interferenceGraph = ControlFlowAnalysis.interferenceGraph(graph);
 
-//			System.out.println(interferenceGraph.print(graph.getMethodName()));
+			System.out.println(interferenceGraph.print(graph.getMethodName()));
 
-			int methodLocalsCount = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
+			int methodLocalsCount = graph.getInitialStackOffset();
+
+			if(!interferenceGraph.isEmpty()) {
+				methodLocalsCount = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
+
+				System.out.println(interferenceGraph.printAllocation(graph.getMethodName()));
+			}
+
 			graph.getMethodDescriptor().setLocalsCount(methodLocalsCount);
 		}
 

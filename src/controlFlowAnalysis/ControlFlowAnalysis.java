@@ -100,16 +100,7 @@ public class ControlFlowAnalysis {
         if(localRegisters > numRegisters)
             throw new AllocationException(numRegisters, localRegisters);
 
-        System.out.println(stack.toString());
-
         int maxStackOffset = selection(localRegisters, initialStackOffset, stack);
-
-        System.out.println("\n========== Allocation table ============");
-        for(VarNode node : graph.getNodes()) {
-            VarDescriptor var = node.getDescriptor();
-            System.out.println("Variable '" + var.getName() + "' allocated to register " + var.getStackOffset());
-        }
-        System.out.print("\n\n");
 
         return maxStackOffset + 1;
     }
@@ -120,13 +111,13 @@ public class ControlFlowAnalysis {
         int minInterferences = Integer.MAX_VALUE;
 
         do {
-            System.out.println("====================================");
+            //System.out.println("====================================");
 
             notEnoughColors = true;
             for(VarNode node : nodes) {
-                System.out.println("Iteration for node " + node.getDescriptor().getName());
+                //System.out.println("Iteration for node " + node.getDescriptor().getName());
                 if (node.numInterferences() < localRegisters) {
-                    System.out.println("\tPushing node " + node.getDescriptor().getName());
+                    //System.out.println("\tPushing node " + node.getDescriptor().getName());
                     stack.push(node);
 
                     //Removing this node interference from the nodes that remain in the graph
@@ -137,16 +128,16 @@ public class ControlFlowAnalysis {
                 } else if (node.numInterferences() < minInterferences) {
                     //Saving the minimum number of interferences to allocate more registers
                     minInterferences = node.numInterferences();
-                    System.out.println("\tUpdating minInterferences " + minInterferences);
+                    //System.out.println("\tUpdating minInterferences " + minInterferences);
                 }
             }
 
-            System.out.println("====================================");
+            //System.out.println("====================================");
 
             if(notEnoughColors) {
                 localRegisters = minInterferences + 1;
-                System.out.println("There were not enough colors.");
-                System.out.println("Increasing the num registers to " + localRegisters);
+                //System.out.println("There were not enough colors.");
+                //System.out.println("Increasing the num registers to " + localRegisters);
             } else {
                 nodes.removeAll(stack);
             }
@@ -162,17 +153,17 @@ public class ControlFlowAnalysis {
 
         do {
             VarNode node = stack.pop();
-            System.out.println("====================================");
-            System.out.print("Popped Node: " + node);
+            //System.out.println("====================================");
+            //System.out.print("Popped Node: " + node);
 
             //checks the color of the other interfering nodes
             for(int i = initialStackOffset; i < totalRegisters; i++) {
                 interferes = false;
-                System.out.println("For color " + i + ": ");
+                //System.out.println("For color " + i + ": ");
                 //check if any interfering node has the same color
                 for (VarNode interfering : node.getInterferences()) {
-                    System.out.println("\tChecking interference with " + interfering.getDescriptor().getName()
-                            + " with value " + interfering.getDescriptor().getStackOffset());
+                    //System.out.println("\tChecking interference with " + interfering.getDescriptor().getName()
+                            //+ " with value " + interfering.getDescriptor().getStackOffset());
                     if(i == interfering.getDescriptor().getStackOffset()){
                         //that color can not be assigned
                         interferes = true;
@@ -181,7 +172,7 @@ public class ControlFlowAnalysis {
                 }
                 //no other interfering node has the same color, this color is safe to use
                 if(!interferes) {
-                    System.out.println("\tColor chosen!");
+                    //System.out.println("\tColor chosen!");
                     node.getDescriptor().setStackOffset(i);
                     if(i > maxStackOffset) maxStackOffset = i;
                     break;

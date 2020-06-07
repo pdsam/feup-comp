@@ -42,13 +42,28 @@ public class InterferenceGraph {
         }
     }
 
+    public boolean isEmpty() {
+        return nodes.isEmpty();
+    }
+
     public String print(String methodName) {
-        String msg = "Interference Graph for '" + methodName + "':\n";
+        StringBuilder msg = new StringBuilder("Interference Graph for '" + methodName + "':\n");
 
         for(Map.Entry<String, VarNode> entry : nodes.entrySet()) {
-            msg += entry.getValue().toString() + '\n';
+            msg.append(entry.getValue().toString()).append('\n');
         }
 
-        return msg;
+        return msg.toString();
+    }
+
+    public String printAllocation(String methodName) {
+        StringBuilder msg = new StringBuilder("\n========== Allocation for method " + methodName + " ============\n");
+
+        for(Map.Entry<String, VarNode> entry : nodes.entrySet()) {
+            VarDescriptor var = entry.getValue().getDescriptor();
+            msg.append("Variable '").append(var.getName()).append("' allocated to register ").append(var.getStackOffset()).append('\n');
+        }
+
+        return msg.toString();
     }
 }

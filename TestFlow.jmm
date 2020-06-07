@@ -43,4 +43,28 @@ class TestFlow{
 
         return v * u;
     }
+
+    public int ifcenas(boolean flag) {
+        int value;
+
+        if(flag) {
+            value=10;
+        } else {
+            value=0;
+        }
+        value = 0-5;
+        return value;
+    }
+
+    public int cenas(boolean flag) {
+        int value;
+
+        if(flag) {
+            value=10;
+        } else {
+            value=0;
+        }
+
+        return value;
+    }
 }
