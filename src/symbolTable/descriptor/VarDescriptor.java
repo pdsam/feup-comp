@@ -1,11 +1,14 @@
 package symbolTable.descriptor;
 
+import parser.*;
+
 public class VarDescriptor implements Descriptor {
     private final String name;
     private final String type;
     private int stackOffset = -1;
     private String className;
     private VarType varType;
+    private Expression value = null;
 
     public VarDescriptor(String name, String type) {
         this.name = name;
@@ -53,4 +56,13 @@ public class VarDescriptor implements Descriptor {
                 ", stackOffset=" + stackOffset +
                 '}';
     }
+
+    public void setValue(Expression e){
+        this.value = e;
+    }
+
+    public Expression getValue(){
+        return this.value;
+    }
+
 }

@@ -2,6 +2,7 @@ package parser;
 
 public abstract class Expression extends SimpleNode {
     public String type;
+    public Object foldedValue = null;
 
     public Expression(int id) {
         super(id);

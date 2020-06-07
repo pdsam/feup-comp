@@ -6,6 +6,11 @@ import symbolTable.descriptor.VarType;
 
 import java.io.PrintWriter;
 
+//TODO update stack counter to account for boolean optimization
+//TODO update iinc instruction to account for constant propagation
+//TODO binary op order inversion(if possible)
+//TODO constant folding
+
 import static utils.Utils.isArithmeticBoolean;
 
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
@@ -117,6 +122,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
+        System.out.println("Method " + node.identifier);
         writer.printf(".method public %s(", node.identifier);
         SimpleNode params = (SimpleNode) node.children[0];
         params.childrenAccept(this, data);
@@ -393,7 +399,12 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTIntegerLiteral node, Object data) {
-        int val = node.val;
+        System.out.printf("Integer: %d\n", node.val);
+        loadIntInstruction(node.val);
+        return null;
+    }
+
+    private void loadIntInstruction(int val) {
         if (val >= 0 && val <= 5) {
             writer.printf("iconst_%d\n", val);
         } else if (val <= 127) {
@@ -401,9 +412,8 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         } else if (val <= 32767) {
             writer.printf("sipush %d\n", val);
         } else {
-            writer.printf("ldc %d\n", node.val);
+            writer.printf("ldc %d\n", val);
         }
-        return null;
     }
 
     @Override
@@ -414,6 +424,11 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTVarReference node, Object data) {
+        if (node.value != null) {
+            System.out.printf("Constant %s: ", node.identifier);
+            ((Expression)node.value).jjtAccept(this, data);
+            return null;
+        }
         VarDescriptor desc = node.desc;
         if (desc.getVarType() == VarType.FIELD) {
             writer.println("aload_0");
@@ -452,6 +467,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTNegation node, Object data) {
+        if (node.foldedValue != null) {
+            loadIntInstruction(((boolean) node.foldedValue) ? 1 : 0);
+            return null;
+        }
         MethodContext context = (MethodContext) data;
         String failLabel = context.generateLabel();
         String endLabel = context.generateLabel();
@@ -501,6 +520,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAnd node, Object data) {
+        if (node.foldedValue != null) {
+            loadIntInstruction(((boolean) node.foldedValue) ? 1 : 0);
+            return null;
+        }
         MethodContext context = (MethodContext) data;
         String failLabel = context.generateLabel();
         String endLabel = context.generateLabel();
@@ -525,6 +548,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTLessThan node, Object data) {
+        if (node.foldedValue != null) {
+            loadIntInstruction(((boolean) node.foldedValue) ? 1 : 0);
+            return null;
+        }
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
 
@@ -545,6 +572,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTSum node, Object data) {
+        if (node.foldedValue != null) {
+            loadIntInstruction((int)node.foldedValue);
+            return null;
+        }
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
 
@@ -554,6 +585,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTSub node, Object data) {
+        if (node.foldedValue != null) {
+            loadIntInstruction((int)node.foldedValue);
+            return null;
+        }
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
 
@@ -563,6 +598,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMul node, Object data) {
+        if (node.foldedValue != null) {
+            loadIntInstruction((int)node.foldedValue);
+            return null;
+        }
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
 
@@ -572,6 +611,10 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTDiv node, Object data) {
+        if (node.foldedValue != null) {
+            loadIntInstruction((int)node.foldedValue);
+            return null;
+        }
         node.left.jjtAccept(this, data);
         node.right.jjtAccept(this, data);
 

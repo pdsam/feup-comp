@@ -1,3 +1,4 @@
+import ConstantPropagation.ConstantPropagationAnalysisVisitor;
 import controlFlowAnalysis.*;
 import generation.JasminGeneratorVisitor;
 import parser.ASTDocument;
@@ -5,12 +6,10 @@ import parser.MyGrammar;
 import parser.ParseException;
 import semantics.SemanticVisitor;
 import symbolTable.SymbolTable;
-import symbolTable.descriptor.VarDescriptor;
 import symbolTable.exception.SemanticException;
 
 import java.io.*;
 import java.util.List;
-import java.util.Stack;
 
 public class Main{
 	private static boolean debug = false;
@@ -19,6 +18,7 @@ public class Main{
 	private static String filename;
 	private static boolean useLoopTemplates;
 	private static boolean optimizeBooleans;
+	private static boolean propagateAndFoldConstants;
 
 	public static boolean parseArgs(String[] args) {
 		if(args.length < 1 || args.length > 4){
@@ -42,8 +42,17 @@ public class Main{
 				case "-o":
 					useLoopTemplates = true;
 					optimizeBooleans = true;
+					propagateAndFoldConstants = true;
 					break;
-
+				case "-lp":
+					useLoopTemplates = true;
+					break;
+				case "-ob":
+					optimizeBooleans = true;
+					break;
+				case "-pfc":
+				    propagateAndFoldConstants = true;
+					break;
 				default:
 					if(args[i].matches("-r=\\d+")){
 						registerAllocation = true;
@@ -81,6 +90,11 @@ public class Main{
 
 		if(registerAllocation)
 			controlFlowAnalysis(root);
+
+		if (propagateAndFoldConstants) {
+			ConstantPropagationAnalysisVisitor constProp = new ConstantPropagationAnalysisVisitor();
+			root.jjtAccept(constProp, null);
+		}
 
 		try {
 			File generatedCodeFile = new File(filename + ".j");
