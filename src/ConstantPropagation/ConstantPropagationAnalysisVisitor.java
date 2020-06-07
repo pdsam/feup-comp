@@ -156,6 +156,7 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
         Iterator<VarDescriptor> keythenItr = first.keySet().iterator();
         while (keythenItr.hasNext()) {
             VarDescriptor keyTemp = keythenItr.next();
+            if(first.get(keyTemp) != null){
             if (first.get(keyTemp).equals(second.get(keyTemp))) { // If same key, same value mapped
                 state.add(keyTemp, first.get(keyTemp)); // add key value to map
                 second.remove(keyTemp);
@@ -164,6 +165,10 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
                 state.add(keyTemp, null);
                 second.remove(keyTemp);
             }
+        }
+        else{
+
+        }
 
         }
             Iterator<VarDescriptor> keysecondItr = second.keySet().iterator();
