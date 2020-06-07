@@ -8,6 +8,7 @@ public
 class ASTVarReference extends Expression {
   public String identifier;
   public VarDescriptor desc;
+  public Expression value = null;
 
   public ASTVarReference(int id) {
     super(id);

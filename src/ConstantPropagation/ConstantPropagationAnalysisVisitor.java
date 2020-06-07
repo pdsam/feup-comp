@@ -134,10 +134,13 @@ public class ConstantPropagationAnalysisVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTBranch node, Object data) {
+
+        node.condition.jjtAccept(this, data);
+
         ConstantState state = (ConstantState) data;
 
-        ConstantState thenState = new ConstantState();
-        ConstantState elseState = new ConstantState();
+        ConstantState thenState = new ConstantState(state.getVarstate());
+        ConstantState elseState = new ConstantState(state.getVarstate());
 
         node.thenStatement.jjtAccept(this, thenState);
         node.elseStatement.jjtAccept(this, elseState);
