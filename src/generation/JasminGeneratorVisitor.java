@@ -185,11 +185,14 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             node.value.jjtAccept(this, data);
             writer.printf("putfield %s/%s %s\n", desc.getClassName(), desc.getName(), getTypeString(desc.getType()));
         } else {
-            node.value.jjtAccept(this, data);
-            if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
-                writer.printf("istore %d\n", desc.getStackOffset());
-            } else {
-                writer.printf("astore %d\n", desc.getStackOffset());
+            if(desc.getStackOffset() != -1){
+                node.value.jjtAccept(this, data);
+
+                if (node.value.type.equals("int") || node.value.type.equals("boolean")) {
+                    writer.printf("istore %d\n", desc.getStackOffset());
+                } else {
+                    writer.printf("astore %d\n", desc.getStackOffset());
+                }
             }
         }
         return null;

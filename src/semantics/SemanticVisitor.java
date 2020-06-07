@@ -304,6 +304,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
             logError(node, "Returned type '" + returnStm.expr.type + "' does not match method's type '" + node.type + '\'');
         }
 
+        node.descriptor.setLocalsCount(st.getLocalsCount());
         return null;
     }
 
@@ -316,6 +317,8 @@ public class SemanticVisitor implements MyGrammarVisitor {
         FlowState fstate = new FlowState(st);
 
         node.childrenAccept(this, fstate);
+
+        node.descriptor.setLocalsCount(st.getLocalsCount());
         return null;
     }
 

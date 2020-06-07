@@ -317,7 +317,8 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
         try {
             VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(varName);
-            thisNode.addDef(varDescriptor);
+            if(varDescriptor.getVarType() == VarType.LOCAL)
+                thisNode.addDef(varDescriptor);
         } catch (SemanticException e) {
             e.printStackTrace();
         }
@@ -367,9 +368,8 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         try {
             VarDescriptor varDescriptor = cfdata.getSymbolTable().variable_lookup(varName);
             //We are only interested in variables that are allocated to registers inside
-            //the current method (i.e. Locals and Parameters)
-            if(varDescriptor.getVarType() == VarType.LOCAL ||
-                varDescriptor.getVarType() == VarType.PARAMETER)
+            //the current method (i.e. Locals)
+            if(varDescriptor.getVarType() == VarType.LOCAL)
                 thisNode.addUse(varDescriptor);
         } catch (SemanticException e) {
             e.printStackTrace();
@@ -385,23 +385,17 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTParameterList node, Object data) {
-        //TODO: check later if we can optimize parameters alocation
         node.childrenAccept(this, data);
         return null;
     }
 
     @Override
     public Object visit(ASTParameter node, Object data) {
-        //varDef(node.identifier, (ControlFlowData) data);
-        //TODO: check later if we can optimize parameters alocation
-        //def var
         return null;
     }
 
     @Override
     public Object visit(ASTSelfReference node, Object data) {
-        //TODO: check later if we can optimize 'this' alocation
-        //use var
         return null;
     }
 
