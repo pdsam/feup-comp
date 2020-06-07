@@ -114,7 +114,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         writer.printf(")%s\n", getTypeString(node.type));
 
         writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(), null));
-        writer.printf(".limit locals %d\n", getLocalCount(node));
+        writer.printf(".limit locals %d\n", node.descriptor.getLocalsCount());
 
         MethodContext context = new MethodContext(node.getStMethod());
         node.children[2].jjtAccept(this, context); //Generate code for statements
@@ -123,15 +123,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
         writer.println(".end method\n");
         return null;
-    }
-
-    private int getLocalCount(ASTMethod node) {
-        int locals = 0;
-        if(!node.isStatic)
-            locals++;
-
-        locals += node.getStMethod().getLocalsCount();
-        return locals;
     }
 
     @Override
@@ -157,7 +148,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         writer.println(".method public static main([Ljava/lang/String;)V");
 
         writer.printf(".limit stack %d\n", (int) node.jjtAccept(new StackLimitCalculatorVisitor(), null));
-        writer.printf(".limit locals %d\n", getLocalCount(node));
+        writer.printf(".limit locals %d\n", node.descriptor.getLocalsCount());
 
         MethodContext context = new MethodContext(node.getStMethod());
         node.children[2].jjtAccept(this, context);

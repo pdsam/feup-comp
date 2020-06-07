@@ -163,6 +163,7 @@ public class SemanticVisitor implements MyGrammarVisitor {
         mtd.setParameters(parameters);
         try {
             classTable.put(mtd);
+            node.descriptor = mtd;
         } catch(UnknownTypeException e) {
             logError(node, e.getMessage() + " '" + mtd.getReturnType() + "' as return for method " + mtd.getName());
         } catch (Exception e) {

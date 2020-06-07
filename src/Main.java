@@ -142,7 +142,8 @@ public class Main{
 
 //			System.out.println(interferenceGraph.print(graph.getMethodName()));
 
-			ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
+			int methodLocalsCount = ControlFlowAnalysis.coloring(interferenceGraph, numRegisters, graph.getInitialStackOffset());
+			graph.getMethodDescriptor().setLocalsCount(methodLocalsCount);
 		}
 
 	}

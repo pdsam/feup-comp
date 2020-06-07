@@ -1,13 +1,14 @@
 package controlFlowAnalysis;
 
 import symbolTable.SymbolTable;
+import symbolTable.descriptor.MethodDescriptor;
 
 public class ControlFlowData {
     private SymbolTable symbolTable;
     private ControlFlowGraph cfg;
     private ControlFlowNode node;
 
-    public ControlFlowData(SymbolTable symbolTable, String methodName, int initialStackOffset) {
+    public ControlFlowData(SymbolTable symbolTable, MethodDescriptor methodName, int initialStackOffset) {
         this.symbolTable = symbolTable;
         this.cfg = new ControlFlowGraph(methodName, initialStackOffset);
     }

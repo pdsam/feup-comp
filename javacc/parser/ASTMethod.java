@@ -3,12 +3,14 @@
 package parser;
 
 import symbolTable.SymbolTableMethod;
+import symbolTable.descriptor.MethodDescriptor;
 
 public
 class ASTMethod extends SimpleNode {
   public boolean isStatic = false;
   public String identifier;
   public String type;
+  public MethodDescriptor descriptor;
   protected SymbolTableMethod symbol_table = new SymbolTableMethod();
 
   public ASTMethod(int id) {

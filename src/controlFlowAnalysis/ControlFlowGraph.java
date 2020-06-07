@@ -1,20 +1,22 @@
 package controlFlowAnalysis;
 
+import symbolTable.descriptor.MethodDescriptor;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ControlFlowGraph {
     private List<ControlFlowNode> nodeSet;
-    private final String methodName;
+    private final MethodDescriptor method;
     private final int initialStackOffset;
 
-    public ControlFlowGraph(String methodName, int initialStackOffset) {
-        this(new ArrayList<>(), methodName, initialStackOffset);
+    public ControlFlowGraph(MethodDescriptor method, int initialStackOffset) {
+        this(new ArrayList<>(), method, initialStackOffset);
     }
 
-    public ControlFlowGraph(ArrayList<ControlFlowNode> nodeSet, String methodName, int initialStackOffset) {
+    public ControlFlowGraph(ArrayList<ControlFlowNode> nodeSet, MethodDescriptor method, int initialStackOffset) {
         this.nodeSet = nodeSet;
-        this.methodName = methodName;
+        this.method = method;
         this.initialStackOffset = initialStackOffset;
     }
 
@@ -35,18 +37,22 @@ public class ControlFlowGraph {
         succ.addPredecessor(current);
     }
 
+    public String getMethodName() {
+        return method.getName();
+    }
+
+    public MethodDescriptor getMethodDescriptor() {
+        return this.method;
+    }
+
     @Override
     public String toString() {
-        String msg= "Method's " + methodName + " graph: \n";
+        String msg= "Method's " + method + " graph: \n";
 
         for(ControlFlowNode node : nodeSet){
             msg += node.toString();
         }
 
         return msg;
-    }
-
-    public String getMethodName() {
-        return methodName;
     }
 }

@@ -71,8 +71,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
         // Getting the ParametersList children (the parameters)
         int numParams = node.jjtGetChild(0).jjtGetNumChildren();
         if(!node.isStatic) numParams++;
-        System.out.println("'" + node.identifier + "' parameters = " + numParams);
-        ControlFlowData cfdata = new ControlFlowData(st, node.identifier, numParams);
+        ControlFlowData cfdata = new ControlFlowData(st, node.descriptor, numParams);
         ControlFlowNode lastStatementNode = null;
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
@@ -102,7 +101,7 @@ public class ControlFlowVisitor implements MyGrammarVisitor {
     public Object visit(ASTMainMethod node, Object data) {
         SymbolTable st = node.getStMethod();
         //The initial stack offset is 1 due to the args parameter
-        ControlFlowData cfdata = new ControlFlowData(st, node.identifier, 1);
+        ControlFlowData cfdata = new ControlFlowData(st, node.descriptor, 1);
 
         //All nodes of the CFG will be filled with succ[], pred[], use[] and def[]
         node.childrenAccept(this, cfdata);

@@ -12,7 +12,6 @@ import symbolTable.exception.UnknownDeclarationException;
 import java.util.HashMap;
 import java.util.List;
 
-//TODO access string array in main arguments
 public class SymbolTableMethod extends SymbolTable {
 
     private HashMap<String, VarDescriptor> variables = new HashMap<>();
@@ -26,10 +25,6 @@ public class SymbolTableMethod extends SymbolTable {
 
     public boolean isStaticContext() {
         return isStaticContext;
-    }
-
-    public int getLocalsCount() {
-        return variables.size();
     }
 
     @Override

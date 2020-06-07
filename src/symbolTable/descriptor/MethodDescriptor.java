@@ -9,6 +9,7 @@ public class MethodDescriptor implements Descriptor {
     private List<String> parameters;
     private String className;
     private boolean isStatic;
+    private int localsCount;
 
     public MethodDescriptor(String name, String returnType, boolean isStatic) {
         this(name, returnType, new ArrayList<>(), "this", isStatic);
@@ -49,6 +50,14 @@ public class MethodDescriptor implements Descriptor {
         return className;
     }
 
+    public void setLocalsCount(int localsCount) {
+        this.localsCount = localsCount;
+    }
+
+    public int getLocalsCount() {
+        return localsCount;
+    }
+
     public boolean isStatic() {
         return isStatic;
     }
@@ -63,7 +72,5 @@ public class MethodDescriptor implements Descriptor {
                 ", isStatic=" + isStatic +
                 '}';
     }
-
-
 }
 

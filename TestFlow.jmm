@@ -6,11 +6,11 @@ class TestFlow{
         int result;
 
         thisClass = new TestFlow();
-        result = thisClass.test();
+        result = thisClass.three(0, false);
         io.println(result);
     }
 
-    public int test() {
+    public int two() {
         int a;
         int b;
         int c;
@@ -23,5 +23,24 @@ class TestFlow{
         }
 
         return c;
+    }
+
+    public int three(int param, boolean flag) {
+        int v;
+        int z;
+        int x;
+        int y;
+        int w;
+        int u;
+
+        v = 1;
+        z = v + 1;
+        x = z * v;
+        y = x * 2;
+        w=x + z * y;
+        u=z + 2;
+        v=u + w + y;
+
+        return v * u;
     }
 }

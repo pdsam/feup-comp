@@ -91,7 +91,7 @@ public class ControlFlowAnalysis {
         return interferenceGraph;
     }
 
-    public static void coloring(InterferenceGraph graph, int numRegisters, int initialStackOffset) throws AllocationException {
+    public static int coloring(InterferenceGraph graph, int numRegisters, int initialStackOffset) throws AllocationException {
         Stack<VarNode> stack = new Stack<>();
         List<VarNode> nodes = graph.getNodes();
 
@@ -102,7 +102,7 @@ public class ControlFlowAnalysis {
 
         System.out.println(stack.toString());
 
-        selection(localRegisters, initialStackOffset, stack);
+        int maxStackOffset = selection(localRegisters, initialStackOffset, stack);
 
         System.out.println("\n========== Allocation table ============");
         for(VarNode node : graph.getNodes()) {
@@ -110,6 +110,8 @@ public class ControlFlowAnalysis {
             System.out.println("Variable '" + var.getName() + "' allocated to register " + var.getStackOffset());
         }
         System.out.print("\n\n");
+
+        return maxStackOffset + 1;
     }
 
     private static int simplification(List<VarNode> nodes, int numRegisters, Stack<VarNode> stack) {
@@ -153,8 +155,9 @@ public class ControlFlowAnalysis {
         return localRegisters;
     }
 
-    private static void selection(int localRegisters, int initialStackOffset, Stack<VarNode> stack) {
+    private static int selection(int localRegisters, int initialStackOffset, Stack<VarNode> stack) {
         int totalRegisters = localRegisters + initialStackOffset;
+        int maxStackOffset = 0;
         boolean interferes;
 
         do {
@@ -180,9 +183,12 @@ public class ControlFlowAnalysis {
                 if(!interferes) {
                     System.out.println("\tColor chosen!");
                     node.getDescriptor().setStackOffset(i);
+                    if(i > maxStackOffset) maxStackOffset = i;
                     break;
                 }
             }
         } while(!stack.empty());
+
+        return maxStackOffset;
     }
 }
