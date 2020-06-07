@@ -62,7 +62,27 @@ Our compiler supports deep error recovery in the while condition, finding up to 
 We also feature detailed error messages for the while condition.
 
 ## SEMANTIC ANALYSIS: 
-(Refer the semantic rules implemented by your tool.)
+The required semantic rules are all implemented. This include:
++ operands must be of same type (e.g. a sum must be applied to to integers)
++ arrays cannot be directly used on operations (e.g. arr1 + arr2 is not permitted)
++ array accesses must be done to an array
++ array access index must be an integer
++ type checking for assignements (e.g. a_int = b_boolean is not permitted)
++ operations type checking (e.g. boolean operators can only be applied to boolean expressions)
++ conditional expressions (i.e. ifs and whiles) must be of type boolean
++ checking var initialization (by default this only produces a warning, see -werror flag to produce errors instead)
++ methods must be invoked on a class that implements the method (either explicitly our by inheritance)
++ checking if methods not declared are imported
++ checking if the number and types of arguments of an invocation match the method's prototype
+
+Note that we assure method overloading and inheritance. This among other ordinary features of a language are part of the
+specification of the project.  
+As extra rules, we implemented:
++ method return type checking (e.g. a method declared to return boolean must return boolean)
++ using non static variables, fields or methods in a static context is not allowed
++ non initialized variables produce errors (when the -werror flag is active)
++ expression statements without meaning are not permitted (e.g. true; or 1+20; are not valid statements)
+
 ## INTERMEDIATE REPRESENTATIONS (IRs): 
 (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
 ## CODE GENERATION: 
