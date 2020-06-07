@@ -14,6 +14,7 @@ public class Main{
 	private static String filename;
 	private static boolean useLoopTemplates;
 	private static boolean optimizeBooleans;
+	private static boolean propagateAndFoldConstants;
 
 	public static boolean parseArgs(String[] args) {
 		if(args.length < 1 || args.length > 4){
@@ -40,8 +41,17 @@ public class Main{
 				case "-o":
 					useLoopTemplates = true;
 					optimizeBooleans = true;
+					propagateAndFoldConstants = true;
 					break;
-
+				case "-lp":
+					useLoopTemplates = true;
+					break;
+				case "-ob":
+					optimizeBooleans = true;
+					break;
+				case "-pfc":
+				    propagateAndFoldConstants = true;
+					break;
 				default:
 					break;
 			}
@@ -69,8 +79,10 @@ public class Main{
 
 		String filename = semanticAnalysis(root);
 
-		ConstantPropagationAnalysisVisitor constProp = new ConstantPropagationAnalysisVisitor();
-		root.jjtAccept(constProp, null);
+		if (propagateAndFoldConstants) {
+			ConstantPropagationAnalysisVisitor constProp = new ConstantPropagationAnalysisVisitor();
+			root.jjtAccept(constProp, null);
+		}
 
 		try {
 			File generatedCodeFile = new File(filename + ".j");
