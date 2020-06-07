@@ -17,6 +17,8 @@ public class Main{
 	private static boolean registerAllocation = false;
 	private static int numRegisters = 0;
 	private static String filename;
+	private static boolean useLoopTemplates;
+	private static boolean optimizeBooleans;
 
 	public static boolean parseArgs(String[] args) {
 		if(args.length < 1 || args.length > 4){
@@ -38,6 +40,8 @@ public class Main{
 					break;
 
 				case "-o":
+					useLoopTemplates = true;
+					optimizeBooleans = true;
 					break;
 
 				default:
@@ -85,7 +89,7 @@ public class Main{
 			}
 			FileOutputStream out = new FileOutputStream(generatedCodeFile);
 			PrintWriter writer = new PrintWriter(out);
-			JasminGeneratorVisitor generator = new JasminGeneratorVisitor(writer);
+			JasminGeneratorVisitor generator = new JasminGeneratorVisitor(writer, optimizeBooleans, useLoopTemplates);
 			root.jjtAccept(generator, null);
 			writer.flush();
 			out.close();
