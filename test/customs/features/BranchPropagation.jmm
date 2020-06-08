@@ -1,0 +1,23 @@
+class BranchPropagation {
+    public static void main(String[] args) {
+        int a;
+        int b;
+        int c;
+
+        a = 4;
+        c = 4;
+
+        if (c < 3) {
+            b = 1 + a;
+            a = 1;
+
+            b = 1 + a + a + a + a;
+        } else {
+            b = 2+a;
+            a = 1;
+        }
+
+        c = a+2;
+
+    }
+}

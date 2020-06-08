@@ -1,0 +1,23 @@
+class LoopPropagation {
+    public static void main(String[] args) {
+        int a;
+        int b;
+        int c;
+
+        a = 4;
+
+        c = 4;
+        while (0 < c) {
+            b = a +1;
+
+            a = 2;
+
+            b = a + 2;
+
+            c = c - 1;
+        }
+
+        c = a+2;
+
+    }
+}

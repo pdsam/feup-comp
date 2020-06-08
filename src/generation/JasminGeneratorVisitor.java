@@ -186,6 +186,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTAssignment node, Object data) {
+        writer.println(" ; assign");
         ASTVarReference ref = (ASTVarReference) node.varReference;
         VarDescriptor desc = ref.desc;
         if (desc.getVarType() == VarType.FIELD) {
@@ -248,6 +249,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
         String elseLabel = labels[0];
         String endifLabel = labels[1];
 
+        writer.println(" ; if");
         Expression condition = node.condition;
         if (optimizeBooleanExpressions && isArithmeticBoolean(condition)) {
             BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
@@ -276,11 +278,14 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
                 writer.printf("ifeq %s\n", elseLabel);
             }
         }
+        writer.println(" ; then");
         node.thenStatement.jjtAccept(this, data);
         writer.printf("goto %s\n", endifLabel);
         writer.printf("%s:\n", elseLabel);
+        writer.println(" ; else");
         node.elseStatement.jjtAccept(this, data);
         writer.printf("%s:\n", endifLabel);
+        writer.println(" ; endif");
         return null;
     }
 
@@ -291,12 +296,15 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
             String loopLabel = context.generateLabel();
             String endLabel = context.generateLabel();
 
+            writer.println(" ; while");
             writer.printf("%s:\n", loopLabel);
             Expression condition = node.condition;
             if (optimizeBooleanExpressions && isArithmeticBoolean(condition)) {
                 BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
+                writer.println(" ; condition");
                 condition.jjtAccept(gen, new BooleanGenerationContext(context, null, endLabel));
             } else {
+                writer.println(" ; condition");
                 if (condition instanceof ASTAnd) {
                     ASTAnd expr = (ASTAnd) condition;
                     expr.left.jjtAccept(this, data);
@@ -319,6 +327,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
                     writer.printf("ifeq %s\n", endLabel);
                 }
             }
+            writer.println(" ; body");
             node.body.jjtAccept(this, data);
             writer.printf("goto %s\n", loopLabel);
             writer.printf("%s:\n", endLabel);
@@ -331,16 +340,19 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
             writer.printf("goto %s\n",conditionLabel);
             writer.printf("%s:\n", beginLabel);
+            writer.println(" ; body");
             node.body.jjtAccept(this, data);
             writer.printf("%s:\n", conditionLabel);
             Expression condition = node.condition;
             if (optimizeBooleanExpressions && isArithmeticBoolean(condition)) {
                 String endLabel = context.generateLabel();
                 BooleanExpressionGeneratorVisitor gen = new BooleanExpressionGeneratorVisitor(this);
+                writer.println(" ; condition");
                 condition.jjtAccept(gen, new BooleanGenerationContext(context, null, endLabel));
                 writer.printf("goto %s\n", beginLabel);
                 writer.printf("%s:\n", endLabel);
             } else {
+                writer.println(" ; condition");
                 if (condition instanceof ASTAnd) {
                     String skipLabel = context.generateLabel();
                     ASTAnd expr = (ASTAnd) condition;
@@ -365,6 +377,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
                     writer.printf("ifne %s\n", beginLabel);
                 }
             }
+            writer.println(" ; endwhile");
 
             return null;
         }
@@ -372,6 +385,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTArrayAssignment node, Object data) {
+        writer.println(" ; array assign");
         if (node.arrayRef.type.equals("int")) {
             node.arrayRef.arrayRef.jjtAccept(this, data);
             node.arrayRef.index.jjtAccept(this, data);
@@ -470,6 +484,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTConstructorCall node, Object data) {
+        writer.println(" ; contructor");
         writer.printf("new %s\ndup\n", node.identifier);
         writer.printf("invokespecial %s/<init>()V\n", node.identifier);
         return null;
@@ -508,6 +523,7 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTFunctionCall node, Object data) {
+        writer.println(" ; function call");
         if (node.desc.isStatic()) {
             node.arguments.childrenAccept(this, data);
             writer.printf("invokestatic %s/%s(", node.desc.getClassName(), node.desc.getName());
