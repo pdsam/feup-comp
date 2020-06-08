@@ -1,7 +1,12 @@
+
+import static io.print(int) void;
+
 class RegisterAllocation {
 
     public static void main(String[] args){
-        this.func();
+        RegisterAllocation alocator;
+        alocator = new RegisterAllocation();
+        alocator.func();
     }
 
      public int func(){
@@ -10,9 +15,10 @@ class RegisterAllocation {
             i = 0;
             size = 20;
             while( i < size) {//we know 'size' will not change event inside the while stmt, but 'i' changes!
-           	io.println(i);
+           	io.print(i);
            	i=i+1;
             }
+            return 0;
      }
 
 }

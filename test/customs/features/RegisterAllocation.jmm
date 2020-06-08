@@ -1,7 +1,9 @@
 class RegisterAllocation {
 
     public static void main(String[] args){
-        this.soManyRegisters();
+        RegisterAllocation alocator;
+        alocator = new RegisterAllocation();
+        alocator.soManyRegisters();
     }
 
      public int soManyRegisters(){
