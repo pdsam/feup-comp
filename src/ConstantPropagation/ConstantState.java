@@ -1,11 +1,9 @@
 package ConstantPropagation;
 
-import jdk.jshell.EvalException;
-import symbolTable.SymbolTable;
 import symbolTable.descriptor.VarDescriptor;
+
 import java.util.HashMap;
 import java.util.Map;
-import parser.*;
 
 public class ConstantState {
     

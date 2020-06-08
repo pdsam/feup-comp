@@ -2,9 +2,6 @@ package generation;
 
 import symbolTable.SymbolTable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MethodContext {
     private int currentLabel;
     private int currentIfLabel;

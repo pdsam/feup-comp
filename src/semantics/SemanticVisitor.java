@@ -1,10 +1,14 @@
 package semantics;
 
 import parser.*;
-import symbolTable.*;
-import symbolTable.descriptor.*;
+import symbolTable.SymbolTable;
+import symbolTable.SymbolTableClass;
+import symbolTable.SymbolTableDoc;
+import symbolTable.SymbolTableMethod;
+import symbolTable.descriptor.MethodDescriptor;
+import symbolTable.descriptor.VarDescriptor;
+import symbolTable.descriptor.VarType;
 import symbolTable.exception.AlreadyDeclaredException;
-import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownTypeException;
 
 import java.util.ArrayList;

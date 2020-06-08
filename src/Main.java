@@ -21,7 +21,7 @@ public class Main{
 	private static boolean propagateAndFoldConstants = false;
 
 	public static boolean parseArgs(String[] args) {
-		if(args.length < 1 || args.length > 4){
+		if(args.length < 1){
 			System.err.println("Usage: java jmm [-v] [-r=<num>] [-o] <input_file.jmm>");
 			return false;
 		}

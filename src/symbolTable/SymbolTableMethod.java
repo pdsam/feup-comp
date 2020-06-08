@@ -6,8 +6,8 @@ import symbolTable.descriptor.VarDescriptor;
 import symbolTable.descriptor.VarType;
 import symbolTable.exception.AlreadyDeclaredException;
 import symbolTable.exception.SemanticException;
-import symbolTable.exception.UnknownTypeException;
 import symbolTable.exception.UnknownDeclarationException;
+import symbolTable.exception.UnknownTypeException;
 
 import java.util.HashMap;
 import java.util.List;

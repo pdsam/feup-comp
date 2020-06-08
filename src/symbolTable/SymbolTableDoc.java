@@ -1,10 +1,5 @@
 package symbolTable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import symbolTable.descriptor.Descriptor;
 import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
@@ -12,6 +7,11 @@ import symbolTable.exception.AlreadyDeclaredException;
 import symbolTable.exception.SemanticException;
 import symbolTable.exception.UnknownDeclarationException;
 import symbolTable.exception.UnknownTypeException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class SymbolTableDoc extends SymbolTable {
 

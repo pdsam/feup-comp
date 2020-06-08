@@ -2,12 +2,10 @@ package controlFlowAnalysis;
 
 import parser.*;
 import symbolTable.SymbolTable;
-import symbolTable.descriptor.MethodDescriptor;
 import symbolTable.descriptor.VarDescriptor;
 import symbolTable.descriptor.VarType;
 import symbolTable.exception.SemanticException;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

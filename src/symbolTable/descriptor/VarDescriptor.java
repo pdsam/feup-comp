@@ -1,6 +1,6 @@
 package symbolTable.descriptor;
 
-import parser.*;
+import parser.Expression;
 
 public class VarDescriptor implements Descriptor {
     private final String name;

@@ -6,7 +6,6 @@ import symbolTable.descriptor.VarType;
 
 import java.io.PrintWriter;
 
-
 import static utils.Utils.isArithmeticBoolean;
 
 public class JasminGeneratorVisitor implements MyGrammarVisitor {
@@ -118,7 +117,6 @@ public class JasminGeneratorVisitor implements MyGrammarVisitor {
 
     @Override
     public Object visit(ASTMethod node, Object data) {
-        System.out.println("Method " + node.identifier);
         writer.printf(".method public %s(", node.identifier);
         SimpleNode params = (SimpleNode) node.children[0];
         params.childrenAccept(this, data);
