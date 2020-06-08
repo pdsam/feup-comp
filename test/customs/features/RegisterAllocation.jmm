@@ -1,0 +1,19 @@
+class RegisterAllocation {
+
+    public static void main(String[] args){
+        this.soManyRegisters();
+    }
+
+     public int soManyRegisters(){
+           int a;
+           int b;
+           int c;
+           int d;
+           a = 0;
+           b = a;
+           c = b;
+           d = c;
+           return d;
+     }
+
+}

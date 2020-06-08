@@ -1,0 +1,18 @@
+class RegisterAllocation {
+
+    public static void main(String[] args){
+        this.func();
+    }
+
+     public int func(){
+            int size;
+            int i;
+            i = 0;
+            size = 20;
+            while( i < size) {//we know 'size' will not change event inside the while stmt, but 'i' changes!
+           	io.println(i);
+           	i=i+1;
+            }
+     }
+
+}
