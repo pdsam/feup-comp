@@ -1,18 +1,17 @@
 # COMP - Project 1
 
-## PROJECT TITLE: A compiler of Java-- programs to Java bytecodes.
+##A compiler of Java-- programs to Java bytecodes.
 
 ## GROUP: 5B
 
-NAME1: Carlos Albuquerque, NR1: up201706735, GRADE1: 19, CONTRIBUTION1: 23%
+Carlos Albuquerque
 
-NAME2: Maria Ferreira, NR2: up201704508, GRADE2: 19, CONTRIBUTION2: 23%
+Maria Ferreira
 
-NAME3: Moisés Rocha, NR3: up201707329, GRADE3: 20, CONTRIBUTION3: 31%
+Moisés Rocha
 
-NAME4: Paulo Marques, NR4: up201705615, GRADE4: 19, CONTRIBUTION4: 23%
+Paulo Marques
 
-GLOBAL Grade of the project: 20
 
 ## Summary:
 The compiler, named jmm, translates programs in Java-- ,into java bytecodes. The compiler, besides having the normal stages of a compiler(syntatic analysis, semantic analysis, code generation) has some optimization options such as Constant propagation and folding, while template, boolean expression optimization, optimized register alocation.
@@ -104,26 +103,6 @@ The document table stores the imported methods and classes.
 The class table stores the information of every method in the class and any possible methods from a superclass.
 The method table stores the local variables and parameters used in the method definition. 
 
-## TASK DISTRIBUTION: 
-### Checkpoint 1
-* Parser development - Moisés Rocha, Carlos Albuquerque
-* Error treatment and Recovery mechanism - Paulo Marques
-* Syntax tree generation - Moisés Rocha, Helena Ferreira
-### Checkpoint 2
-* Symbol Tables - Carlos Albuquerque, Maria Helena
-* Semantic Analysis - Carlos Albuquerque, Paulo Marques
-* Jasmin code generation for invocation of functions - Moisés Rocha
-* Jasmin code generation for arithmetic expressions - Moisés Rocha
-### Checkpoint 3
-* Jasmin code generation for conditional expressions- Carlos Albuquerque, Maria Helena
-* Jasmin code generation for loops- Moisés Rocha, Paulo Marques
-* Jasmin code generation to deal with arrays - Moisés Rocha
-* Test classes - Carlos Albuquerque, Maria Ferreira, Paulo Marques
-### Optimizations
-* Option –r=<n> - Carlos Albuquerque, Maria Ferreira
-* Option -o - Moisés Rocha, Paulo Marques
-* Constant folding - Moisés Rocha
-* Boolean Expression Optimization - Moisés Rocha
 
 ## PROS: (Identify the most positive aspects of your tool)
 * Helpful and detailed error messages.
